@@ -21,10 +21,17 @@ const i18n = createI18n({
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    // TODO: Add routes
-    // { path: '/', name: 'Dashboard', component: () => import('./views/Dashboard.vue') },
-    // { path: '/reviews', name: 'Reviews', component: () => import('./views/Reviews.vue') },
-    // { path: '/reviews/:id', name: 'ReviewDetail', component: () => import('./views/ReviewDetail.vue') },
+    {
+      path: '/',
+      name: 'Dashboard',
+      component: () => import('./views/DashboardView.vue'),
+    },
+    {
+      path: '/reviews/:reviewId/goals',
+      name: 'GoalSetting',
+      component: () => import('./views/GoalSettingView.vue'),
+      props: true,
+    },
   ]
 })
 

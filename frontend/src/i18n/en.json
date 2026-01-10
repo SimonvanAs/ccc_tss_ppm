@@ -21,7 +21,8 @@
     "unauthorized": "You are not authorized to view this page."
   },
   "dashboard": {
-    "welcome": "Welcome, {name}",
+    "title": "Dashboard",
+    "welcome": "Welcome to TSS PPM",
     "tasksTitle": "Your Tasks",
     "noTasks": "No pending tasks",
     "pendingSignatures": "Pending Signatures",
@@ -64,6 +65,8 @@
   },
   "goals": {
     "title": "Goals",
+    "pageTitle": "Goal Setting",
+    "pageSubtitle": "Define your performance goals for this review period",
     "what": "WHAT (Goals)",
     "addGoal": "Add Goal",
     "goalTitle": "Goal Title",
@@ -71,6 +74,7 @@
     "weight": "Weight",
     "score": "Score",
     "type": "Type",
+    "typeStandard": "Standard",
     "types": {
       "STANDARD": "Standard",
       "KAR": "Key Action Required",
@@ -78,9 +82,19 @@
     },
     "weightTotal": "Total Weight",
     "weightMustBe100": "Goal weights must total 100%",
+    "weightValid": "Weights are valid",
+    "weightUnder": "{amount}% remaining",
+    "weightOver": "{amount}% over limit",
     "dragToReorder": "Drag to reorder",
+    "edit": "Edit goal",
+    "delete": "Delete goal",
     "deleteGoal": "Delete Goal",
-    "confirmDelete": "Are you sure you want to delete this goal?",
+    "confirmDelete": "Are you sure you want to delete \"{title}\"?",
+    "loading": "Loading goals...",
+    "emptyTitle": "No goals yet",
+    "emptyDescription": "Add your first goal to get started",
+    "submit": "Submit Goals",
+    "submitHint": "Goal weights must total 100% before submitting",
     "scores": {
       "1": "Below Expectations",
       "2": "Meets Expectations",
