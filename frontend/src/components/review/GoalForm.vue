@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { GoalType } from '../../types'
 import type { Goal, GoalCreate } from '../../types'
+import VoiceInput from '../common/VoiceInput.vue'
 
 const props = defineProps<{
   reviewId: string
@@ -101,6 +102,16 @@ function handleSubmit() {
 function handleCancel() {
   emit('cancel')
 }
+
+// Handle voice transcription
+function handleTranscription(text: string) {
+  // Append transcribed text to description
+  if (description.value) {
+    description.value += ' ' + text
+  } else {
+    description.value = text
+  }
+}
 </script>
 
 <template>
@@ -126,20 +137,26 @@ function handleCancel() {
       </p>
     </div>
 
-    <!-- Description field -->
+    <!-- Description field with voice input -->
     <div class="form-group">
       <label for="description" class="form-label">
         {{ t('goals.description') }}
       </label>
-      <textarea
-        id="description"
-        v-model="description"
-        name="description"
-        class="form-textarea"
-        :placeholder="t('goals.form.descriptionPlaceholder')"
-        :disabled="loading"
-        rows="3"
-      />
+      <div class="description-input-group">
+        <textarea
+          id="description"
+          v-model="description"
+          name="description"
+          class="form-textarea"
+          :placeholder="t('goals.form.descriptionPlaceholder')"
+          :disabled="loading"
+          rows="3"
+        />
+        <VoiceInput
+          :disabled="loading"
+          @transcription="handleTranscription"
+        />
+      </div>
     </div>
 
     <!-- Goal type field -->
@@ -272,6 +289,16 @@ function handleCancel() {
 .form-textarea {
   resize: vertical;
   min-height: 80px;
+}
+
+.description-input-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.description-input-group .form-textarea {
+  flex: 1;
 }
 
 .weight-input-group {

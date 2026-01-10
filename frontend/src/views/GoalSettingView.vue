@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useGoals } from '../composables/useGoals'
+import { submitReview } from '../api/goals'
 import type { Goal, GoalCreate } from '../types'
 import GoalList from '../components/review/GoalList.vue'
 import GoalForm from '../components/review/GoalForm.vue'
@@ -12,6 +14,8 @@ import ConfirmDialog from '../components/common/ConfirmDialog.vue'
 const props = defineProps<{
   reviewId: string
 }>()
+
+const router = useRouter()
 
 const { t } = useI18n()
 
@@ -36,6 +40,11 @@ const showDeleteDialog = ref(false)
 const editingGoal = ref<Goal | null>(null)
 const deletingGoal = ref<Goal | null>(null)
 const isSaving = ref(false)
+
+// Submission states
+const isSubmitting = ref(false)
+const submitSuccess = ref(false)
+const submitError = ref<string | null>(null)
 
 // Computed modal title
 const editModalTitle = computed(() =>
@@ -131,9 +140,26 @@ async function handleReorder(goalIds: string[]) {
 }
 
 // Handle goal submission
-function handleSubmit() {
-  // TODO: Implement submit logic in Phase 4
-  console.log('Submit review')
+async function handleSubmit() {
+  if (!isWeightValid.value || isSubmitting.value) {
+    return
+  }
+
+  isSubmitting.value = true
+  submitError.value = null
+
+  try {
+    await submitReview(props.reviewId)
+    submitSuccess.value = true
+
+    // Navigate to dashboard after short delay to show success
+    setTimeout(() => {
+      router.push({ name: 'dashboard' })
+    }, 1500)
+  } catch (e) {
+    submitError.value = t('errors.submitFailed')
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -174,16 +200,26 @@ function handleSubmit() {
       />
     </section>
 
-    <!-- Submit button -->
+    <!-- Submit section -->
     <footer class="page-footer">
+      <!-- Success message -->
+      <div v-if="submitSuccess" class="submit-success">
+        {{ t('goals.submitSuccess') }}
+      </div>
+
+      <!-- Error message -->
+      <div v-if="submitError" class="submit-error">
+        {{ submitError }}
+      </div>
+
       <button
         class="btn btn-submit"
-        :disabled="!isWeightValid"
+        :disabled="!isWeightValid || isSubmitting || submitSuccess"
         @click="handleSubmit"
       >
-        {{ t('goals.submit') }}
+        {{ isSubmitting ? t('goals.submitting') : t('goals.submit') }}
       </button>
-      <p v-if="!isWeightValid" class="submit-hint">
+      <p v-if="!isWeightValid && !submitSuccess" class="submit-hint">
         {{ t('goals.submitHint') }}
       </p>
     </footer>
@@ -318,5 +354,23 @@ function handleSubmit() {
   margin: 0;
   font-size: 0.875rem;
   color: var(--color-gray-600);
+}
+
+.submit-success {
+  background: #D1FAE5;
+  color: #065F46;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.submit-error {
+  background: #FEE2E2;
+  color: #991B1B;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 1rem;
 }
 </style>

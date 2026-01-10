@@ -87,7 +87,7 @@ describe('GoalForm', () => {
       const wrapper = createWrapper()
 
       const saveButton = wrapper.find('button[type="submit"]')
-      const cancelButton = wrapper.find('button[type="button"]')
+      const cancelButton = wrapper.find('.form-actions button.btn-secondary')
 
       expect(saveButton.exists()).toBe(true)
       expect(cancelButton.exists()).toBe(true)
@@ -273,7 +273,7 @@ describe('GoalForm', () => {
     it('should emit cancel event when cancel button clicked', async () => {
       const wrapper = createWrapper()
 
-      const cancelButton = wrapper.find('button[type="button"]')
+      const cancelButton = wrapper.find('.form-actions button.btn-secondary')
       await cancelButton.trigger('click')
 
       const cancelEvents = wrapper.emitted('cancel')
