@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: TSS PPM v3.0 project setup\n\nComplete project scaffolding including:\n- Vue 3 + Vite frontend with TypeScript\n- FastAPI backend with asyncpg\n- Docker Compose development environment\n- Keycloak authentication with custom theme\n- Project documentation and requirements\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}
