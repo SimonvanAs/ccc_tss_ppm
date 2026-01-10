@@ -2,7 +2,7 @@
 """Async PostgreSQL connection pool using asyncpg."""
 
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 
 import asyncpg
 
@@ -13,7 +13,7 @@ class Database:
     """Manages the asyncpg connection pool."""
 
     def __init__(self):
-        self.pool: asyncpg.Pool | None = None
+        self.pool: Optional[asyncpg.Pool] = None
 
     async def connect(self) -> None:
         """Create the connection pool."""

@@ -2,8 +2,7 @@
 """Keycloak JWT validation middleware and dependencies."""
 
 from dataclasses import dataclass
-from typing import Annotated
-from uuid import UUID
+from typing import Annotated, List, Optional
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -22,8 +21,8 @@ class CurrentUser:
     keycloak_id: str
     email: str
     name: str
-    roles: list[str]
-    opco_id: str | None = None
+    roles: List[str]
+    opco_id: Optional[str] = None
 
     def has_role(self, role: str) -> bool:
         """Check if user has a specific role."""
@@ -51,7 +50,7 @@ class CurrentUser:
 
 
 # Cache for JWKS keys (in production, use a proper cache with TTL)
-_jwks_cache: dict | None = None
+_jwks_cache: Optional[dict] = None
 
 
 async def get_jwks() -> dict:
