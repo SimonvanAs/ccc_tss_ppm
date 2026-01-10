@@ -249,7 +249,12 @@ Implement goal creation, editing, deletion, and drag-drop reordering with proper
   - Call reorder API on drop
   - Update local order optimistically
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Goal Editing and Validation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Goal Editing and Validation' (Protocol in workflow.md)
+  - All 83 frontend tests passing
+  - GoalForm component with validation
+  - Goal CRUD operations integrated into GoalSettingView
+  - Drag-drop reordering functional
+  - Modal and ConfirmDialog components added
 
 ---
 
