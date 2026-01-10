@@ -41,8 +41,8 @@
   "defaultRoles": ["employee"],
   "clients": [
     {
-      "clientId": "tss-ppm-frontend",
-      "name": "TSS PPM Frontend",
+      "clientId": "tss-ppm-web",
+      "name": "TSS PPM Web",
       "enabled": true,
       "publicClient": true,
       "standardFlowEnabled": true,
