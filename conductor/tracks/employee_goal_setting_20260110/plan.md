@@ -14,7 +14,7 @@ Create the core backend API endpoints for goal management with proper authentica
 
 ### Tasks
 
-- [ ] Task: Set up backend project structure
+- [x] Task: Set up backend project structure (36f07f9)
   - Create routers/, repositories/, services/, schemas/ directories under backend/src/
   - Set up database connection pool with asyncpg
   - Configure Keycloak JWT validation middleware
