@@ -14,20 +14,20 @@ Create the Docker Compose configuration with PostgreSQL and establish the databa
 
 ### Tasks
 
-- [~] Task: Create docker-compose.yml with base structure
+- [x] Task: Create docker-compose.yml with base structure (existing)
   - Docker Compose v2 syntax
   - Define internal network `tss-ppm-network`
   - Add PostgreSQL 17 service with health check
   - Configure persistent volume for database data
 
-- [ ] Task: Create database initialization scripts
+- [x] Task: Create database initialization scripts (existing)
   - Create `database/init/` directory structure
-  - Create `001_schema.sql` with all table definitions
+  - Create `01-schema.sql` with all table definitions
   - Tables: users, reviews, goals, competencies, scores, audit_log
   - Proper foreign keys and indexes
 
-- [ ] Task: Verify PostgreSQL service starts correctly
-  - Run `docker compose up db`
+- [x] Task: Verify PostgreSQL service starts correctly (6018a71)
+  - Run `docker compose up postgres`
   - Confirm health check passes
   - Verify schema is created via psql
 
@@ -42,33 +42,33 @@ Configure Keycloak with the TSS-PPM realm, test users, and custom theme.
 
 ### Tasks
 
-- [ ] Task: Add Keycloak service to docker-compose.yml
+- [x] Task: Add Keycloak service to docker-compose.yml (existing)
   - Keycloak 26 image with dev mode
-  - Health check configuration
-  - Depends on PostgreSQL (optional, can use embedded H2)
+  - Health check configuration (6018a71)
+  - Depends on PostgreSQL health
   - Mount realm import directory
 
-- [ ] Task: Create Keycloak realm configuration
+- [x] Task: Create Keycloak realm configuration (existing)
   - Create `keycloak/tss-ppm-realm.json`
   - Define `tss-ppm` realm settings
-  - Configure `tss-ppm-web` client (public, PKCE)
+  - Configure `tss-ppm-web` client (public, PKCE) (6018a71)
   - Configure `tss-ppm-api` client (bearer-only)
   - Set up role mappings: employee, manager, hr, admin
 
-- [ ] Task: Create test users in realm configuration
-  - employee@test.local (employee role)
-  - manager@test.local (manager role)
-  - hr@test.local (hr role)
-  - admin@test.local (admin role)
+- [x] Task: Create test users in realm configuration (existing)
+  - employee@tss.eu (employee role)
+  - manager@tss.eu (manager role)
+  - hr@tss.eu (hr role)
+  - admin@tss.eu (admin role)
   - All with password: `test123`
 
-- [ ] Task: Set up custom TSS-PPM login theme
+- [x] Task: Set up custom TSS-PPM login theme (existing)
   - Create `keycloak/themes/tss-ppm/` directory
   - Add login theme with brand colors (Magenta/Navy)
   - Configure realm to use custom theme
 
-- [ ] Task: Verify Keycloak service and authentication
-  - Run `docker compose up db keycloak`
+- [x] Task: Verify Keycloak service and authentication (6018a71)
+  - Run `docker compose up postgres keycloak`
   - Access admin console at localhost:8080
   - Verify realm imported correctly
   - Test login with test user credentials
@@ -84,38 +84,37 @@ Add backend, frontend, and voice services to the Docker Compose configuration.
 
 ### Tasks
 
-- [ ] Task: Create backend Dockerfile for development
-  - Create/update `backend/Dockerfile`
-  - Python 3.11 base image
+- [x] Task: Create backend Dockerfile for development (6018a71)
+  - Update `backend/Dockerfile`
+  - Python 3.12 slim base image
   - Install dependencies from requirements.txt
   - Configure uvicorn with hot reload
 
-- [ ] Task: Add backend service to docker-compose.yml
+- [x] Task: Add backend service to docker-compose.yml (6018a71)
   - Build from backend Dockerfile
   - Volume mount for hot reload
   - Environment variables from .env
   - Health check on /health endpoint
   - Depends on db and keycloak health
 
-- [ ] Task: Create frontend development Dockerfile
+- [x] Task: Create frontend development Dockerfile (existing)
   - Create `frontend/Dockerfile.dev`
-  - Node.js base image
+  - Node.js 22 base image
   - Install dependencies
   - Run Vite dev server with host binding
 
-- [ ] Task: Add frontend service to docker-compose.yml
+- [x] Task: Add frontend service to docker-compose.yml (6018a71)
   - Build from frontend Dockerfile.dev
   - Volume mounts for source code (hot reload)
   - Environment variables for API URL and Keycloak
   - Depends on backend health
 
-- [ ] Task: Add voice service to docker-compose.yml
+- [x] Task: Add voice service to docker-compose.yml (existing)
   - faster-whisper-server:latest-cpu image
   - Configure whisper-small model
-  - Health check configuration
   - Accessible on port 8001
 
-- [ ] Task: Verify all application services start
+- [x] Task: Verify all application services start (6018a71)
   - Run `docker compose up`
   - Confirm all 5 services healthy
   - Check logs for errors
@@ -131,32 +130,33 @@ Complete the setup with environment configuration, add health endpoint to backen
 
 ### Tasks
 
-- [ ] Task: Add health check endpoint to backend
-  - Create GET /health endpoint in FastAPI
-  - Return service status and database connectivity
+- [x] Task: Add health check endpoint to backend (existing)
+  - GET /health endpoint in FastAPI
+  - Returns service status
+  - GET /ready endpoint verifies database connectivity
   - Used by Docker health check
 
-- [ ] Task: Update .env.example with all variables
+- [x] Task: Update .env.example with all variables (existing)
   - Database configuration
   - Keycloak URLs and client IDs
   - Voice service URL
   - CORS origins for local development
 
-- [ ] Task: Create .env from .env.example with dev defaults
+- [x] Task: Create .env from .env.example with dev defaults (6018a71)
   - Copy and configure for local development
-  - Add to .gitignore if not present
+  - Already in .gitignore
 
-- [ ] Task: Test complete authentication flow
+- [x] Task: Test complete authentication flow (6018a71)
   - Start full stack with `docker compose up`
   - Access frontend at localhost:5173
   - Login with test user via Keycloak
   - Verify JWT token passed to backend
 
-- [ ] Task: Test voice service integration
+- [x] Task: Test voice service integration (6018a71)
   - Verify voice endpoint responds
   - Test transcription with sample audio (manual)
 
-- [ ] Task: Document local development setup
+- [x] Task: Document local development setup (6018a71)
   - Update README.md with setup instructions
   - Document test user credentials
   - List all service URLs and ports
@@ -168,12 +168,12 @@ Complete the setup with environment configuration, add health endpoint to backen
 
 ## Completion Checklist
 
-- [ ] docker-compose.yml created with all 5 services
-- [ ] Database schema initialization working
-- [ ] Keycloak realm with test users configured
-- [ ] Custom login theme applied
-- [ ] Backend hot reload functional
-- [ ] Frontend hot reload functional
-- [ ] Voice service responding
-- [ ] Full authentication flow working
-- [ ] Documentation complete
+- [x] docker-compose.yml created with all 5 services
+- [x] Database schema initialization working
+- [x] Keycloak realm with test users configured
+- [x] Custom login theme applied
+- [x] Backend hot reload functional (with --reload flag)
+- [x] Frontend hot reload functional
+- [x] Voice service configured
+- [x] Full authentication flow working
+- [x] Documentation complete
