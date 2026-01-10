@@ -84,83 +84,83 @@ Create the Vue components for displaying goals and the overall goal setting view
 
 ### Tasks
 
-- [ ] Task: Set up frontend project structure
+- [x] Task: Set up frontend project structure
   - Create api/, components/, composables/, views/, types/ directories under frontend/src/
   - Configure vue-router with protected routes
   - Set up Keycloak authentication service
 
-- [ ] Task: Write tests for API client module
+- [x] Task: Write tests for API client module
   - Create tests for api/goals.ts
   - Test fetchGoals(), createGoal(), updateGoal(), deleteGoal()
   - Test error handling
   - Mock fetch responses
 
-- [ ] Task: Implement API client module
+- [x] Task: Implement API client module
   - Create api/client.ts with auth interceptor
   - Create api/goals.ts with goal API functions
   - Handle token refresh and error responses
 
-- [ ] Task: Write tests for Goal types
+- [x] Task: Write tests for Goal types
   - Create tests for types/goal.ts
   - Validate type definitions match API schemas
 
-- [ ] Task: Implement Goal TypeScript types
+- [x] Task: Implement Goal TypeScript types
   - Create types/goal.ts with Goal, GoalCreate, GoalUpdate interfaces
   - Create types/review.ts with Review interface
   - Export GoalType enum
 
-- [ ] Task: Write tests for GoalItem component
+- [x] Task: Write tests for GoalItem component
   - Create tests for components/review/GoalItem.vue
   - Test rendering goal data
   - Test goal type badge display
   - Test weight display
   - Test edit/delete button visibility
 
-- [ ] Task: Implement GoalItem component
+- [x] Task: Implement GoalItem component
   - Create components/review/GoalItem.vue
   - Display goal title, type badge, weight
   - Add edit and delete action buttons
   - Apply brand styling
 
-- [ ] Task: Write tests for GoalList component
+- [x] Task: Write tests for GoalList component
   - Create tests for components/review/GoalList.vue
   - Test rendering multiple goals
   - Test empty state
   - Test loading state
 
-- [ ] Task: Implement GoalList component
+- [x] Task: Implement GoalList component
   - Create components/review/GoalList.vue
   - Render list of GoalItem components
   - Show empty state when no goals
   - Show loading spinner while fetching
 
-- [ ] Task: Write tests for WeightIndicator component
+- [x] Task: Write tests for WeightIndicator component
   - Create tests for components/review/WeightIndicator.vue
   - Test weight total display
   - Test valid state (100%)
   - Test invalid state (not 100%)
   - Test visual styling for states
 
-- [ ] Task: Implement WeightIndicator component
+- [x] Task: Implement WeightIndicator component
   - Create components/review/WeightIndicator.vue
   - Display current total and target (100%)
   - Show success state when valid
   - Show error state when invalid
   - Use brand colors
 
-- [ ] Task: Write tests for GoalSettingView
+- [x] Task: Write tests for GoalSettingView
   - Create tests for views/GoalSettingView.vue
   - Test page layout
   - Test goal list integration
   - Test weight indicator integration
 
-- [ ] Task: Implement GoalSettingView
+- [x] Task: Implement GoalSettingView
   - Create views/GoalSettingView.vue
   - Integrate GoalList and WeightIndicator
   - Add page header and navigation
   - Add "Add Goal" button
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Goal List and Display' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Goal List and Display' (Protocol in workflow.md)
 
 ---
 
