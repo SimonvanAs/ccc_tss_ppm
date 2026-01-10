@@ -94,6 +94,11 @@
       "approved": "Goedgekeurd",
       "rejected": "Afgewezen",
       "reason": "Reden voor Wijziging"
+    },
+    "form": {
+      "titlePlaceholder": "Voer doeltitel in",
+      "descriptionPlaceholder": "Voer doelbeschrijving in (optioneel)",
+      "weightStep": "Gewicht moet een veelvoud van 5 zijn"
     }
   },
   "competencies": {

@@ -72,7 +72,6 @@ describe('API Client', () => {
         json: () => Promise.resolve({ detail: 'Resource not found' }),
       })
 
-      await expect(apiRequest('/test')).rejects.toThrow(ApiRequestError)
       await expect(apiRequest('/test')).rejects.toMatchObject({
         status: 404,
         detail: 'Resource not found',

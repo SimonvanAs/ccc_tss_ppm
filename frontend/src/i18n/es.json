@@ -94,6 +94,11 @@
       "approved": "Aprobado",
       "rejected": "Rechazado",
       "reason": "Razón del Cambio"
+    },
+    "form": {
+      "titlePlaceholder": "Ingrese el título del objetivo",
+      "descriptionPlaceholder": "Ingrese la descripción del objetivo (opcional)",
+      "weightStep": "El peso debe ser múltiplo de 5"
     }
   },
   "competencies": {

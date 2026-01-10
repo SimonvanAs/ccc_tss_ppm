@@ -108,6 +108,11 @@
       "approved": "Approved",
       "rejected": "Rejected",
       "reason": "Reason for Change"
+    },
+    "form": {
+      "titlePlaceholder": "Enter goal title",
+      "descriptionPlaceholder": "Enter goal description (optional)",
+      "weightStep": "Weight must be a multiple of 5"
     }
   },
   "competencies": {
