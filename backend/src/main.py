@@ -57,7 +57,6 @@ async def readiness_check():
 
 
 # Import and include routers
-# These will be added as we implement them
-# from src.routers import goals, reviews
-# app.include_router(goals.router, prefix='/api/v1', tags=['Goals'])
-# app.include_router(reviews.router, prefix='/api/v1', tags=['Reviews'])
+from src.routers import goals
+
+app.include_router(goals.router)
