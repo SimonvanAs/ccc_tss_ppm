@@ -19,30 +19,30 @@ Create the core backend API endpoints for goal management with proper authentica
   - Set up database connection pool with asyncpg
   - Configure Keycloak JWT validation middleware
 
-- [ ] Task: Write tests for Goal schema and validation
+- [x] Task: Write tests for Goal schema and validation
   - Create tests/test_schemas.py
   - Test GoalCreate, GoalUpdate, GoalResponse schemas
   - Test weight validation (5-100, multiples of 5)
   - Test goal type enum validation
 
-- [ ] Task: Implement Goal Pydantic schemas
+- [x] Task: Implement Goal Pydantic schemas
   - Create schemas/goal.py with GoalCreate, GoalUpdate, GoalResponse
   - Implement validation for weight constraints
   - Implement goal type enum
 
-- [ ] Task: Write tests for Goal repository
+- [x] Task: Write tests for Goal repository
   - Create tests/test_repositories.py
   - Test CRUD operations with mock database
   - Test weight total calculation query
   - Test goal ordering
 
-- [ ] Task: Implement Goal repository
+- [x] Task: Implement Goal repository
   - Create repositories/goals.py
   - Implement get_goals_by_review(), create_goal(), update_goal(), delete_goal()
   - Implement reorder_goals(), get_weight_total()
   - Use raw SQL with asyncpg
 
-- [ ] Task: Write tests for Goal API endpoints
+- [x] Task: Write tests for Goal API endpoints
   - Create tests/test_api_goals.py
   - Test GET /reviews/:id/goals
   - Test POST /reviews/:id/goals
@@ -52,25 +52,28 @@ Create the core backend API endpoints for goal management with proper authentica
   - Test authentication requirements
   - Test authorization (employee can only access own review)
 
-- [ ] Task: Implement Goal API router
+- [x] Task: Implement Goal API router
   - Create routers/goals.py
   - Implement all CRUD endpoints
   - Add authentication dependency
   - Add authorization checks (employee owns review)
   - Return proper HTTP status codes and error messages
 
-- [ ] Task: Write tests for Review submission endpoint
+- [x] Task: Write tests for Review submission endpoint
   - Add tests to tests/test_api_reviews.py
   - Test POST /reviews/:id/submit
   - Test weight validation (must total 100%)
   - Test status transition to PENDING_MANAGER_SIGNATURE
 
-- [ ] Task: Implement Review submission endpoint
+- [x] Task: Implement Review submission endpoint
   - Create/update routers/reviews.py
   - Implement submit endpoint with weight validation
   - Update review status on successful submission
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Goal API Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Goal API Foundation' (Protocol in workflow.md)
+  - All 74 tests passing
+  - Goal CRUD endpoints implemented
+  - Review submission with weight validation implemented
 
 ---
 
