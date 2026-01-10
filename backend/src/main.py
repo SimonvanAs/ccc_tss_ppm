@@ -57,6 +57,7 @@ async def readiness_check():
 
 
 # Import and include routers
-from src.routers import goals
+from src.routers import goals, reviews
 
 app.include_router(goals.router)
+app.include_router(reviews.router)
