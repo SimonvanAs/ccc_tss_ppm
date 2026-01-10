@@ -1,0 +1,8 @@
+{
+  "track_id": "employee_goal_setting_20260110",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-10T20:30:00Z",
+  "updated_at": "2026-01-10T20:30:00Z",
+  "description": "Build the Employee Goal Setting workflow - Implement the core goal management functionality allowing employees to create, edit, and submit goals with proper weight validation (must total 100%), including the WHAT-axis scoring foundation."
+}
