@@ -10,6 +10,6 @@ _Link: [./tracks/employee_goal_setting_20260110/](./tracks/employee_goal_setting
 
 ---
 
-## [~] Track: Local Development Infrastructure
+## [x] Track: Local Development Infrastructure
 
 _Link: [./tracks/local_dev_infrastructure_20260110/](./tracks/local_dev_infrastructure_20260110/)_
