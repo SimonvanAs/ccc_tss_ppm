@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 withDefaults(
   defineProps<{
     showHamburger?: boolean
@@ -18,13 +22,13 @@ function toggleSidebar() {
 </script>
 
 <template>
-  <header class="app-header">
+  <header class="app-header" :aria-label="t('layout.header.ariaLabel')">
     <div class="header-left">
       <button
         v-if="showHamburger"
         class="hamburger-btn"
         type="button"
-        aria-label="Toggle sidebar"
+        :aria-label="t('layout.header.toggleSidebar')"
         @click="toggleSidebar"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -57,8 +61,8 @@ function toggleSidebar() {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  min-width: 44px;
+  min-height: 44px;
   background: transparent;
   border: none;
   border-radius: 4px;

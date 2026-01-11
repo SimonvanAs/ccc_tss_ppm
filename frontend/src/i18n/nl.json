@@ -320,6 +320,28 @@
       "privacyNote": "Plausible is privacyvriendelijk en AVG-conform. Er worden geen persoonlijke gegevens verzameld."
     }
   },
+  "layout": {
+    "sidebar": {
+      "ariaLabel": "Hoofdnavigatie",
+      "profile": "Gebruikersprofiel",
+      "navigation": "Navigatiemenu"
+    },
+    "header": {
+      "ariaLabel": "Applicatie header",
+      "toggleSidebar": "Zijbalk menu aan/uit",
+      "skipToMain": "Ga naar hoofdinhoud"
+    },
+    "mainContent": {
+      "ariaLabel": "Hoofdinhoud"
+    },
+    "languageSelector": {
+      "ariaLabel": "Selecteer taal",
+      "english": "Engels",
+      "dutch": "Nederlands",
+      "spanish": "Spaans",
+      "currentLanguage": "Huidige taal: {language}"
+    }
+  },
   "common": {
     "loading": "Laden...",
     "noData": "Geen gegevens beschikbaar",

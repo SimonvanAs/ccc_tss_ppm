@@ -79,13 +79,14 @@ function changeLocale(code: string) {
       'app-sidebar--hidden': mode === 'hidden' && !isOpen,
       'app-sidebar--mobile-open': isMobileOpen,
     }"
+    :aria-label="t('layout.sidebar.ariaLabel')"
   >
     <div class="sidebar-header">
       <div class="sidebar-brand">
         <span class="brand-text">TSS PPM</span>
       </div>
 
-      <div class="language-selector">
+      <div class="language-selector" role="group" :aria-label="t('layout.languageSelector.ariaLabel')">
         <button
           v-for="lang in languages"
           :key="lang.code"
@@ -93,6 +94,8 @@ function changeLocale(code: string) {
           :class="{ 'is-active': locale === lang.code }"
           type="button"
           :title="lang.label"
+          :aria-label="lang.label"
+          :aria-pressed="locale === lang.code"
           @click="changeLocale(lang.code)"
         >
           <!-- UK Flag -->
@@ -118,7 +121,7 @@ function changeLocale(code: string) {
       </div>
     </div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" :aria-label="t('layout.sidebar.navigation')">
       <RouterLink
         to="/"
         class="nav-item"
@@ -149,7 +152,7 @@ function changeLocale(code: string) {
       </RouterLink>
     </nav>
 
-    <div class="sidebar-profile">
+    <div class="sidebar-profile" :aria-label="t('layout.sidebar.profile')">
       <div class="profile-avatar">
         <img
           v-if="user?.picture"
@@ -256,7 +259,9 @@ function changeLocale(code: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.375rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
   background: transparent;
   border: 2px solid transparent;
   border-radius: 4px;
@@ -291,6 +296,7 @@ function changeLocale(code: string) {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-height: 44px;
   padding: 0.75rem 1.5rem;
   color: var(--color-navy);
   text-decoration: none;

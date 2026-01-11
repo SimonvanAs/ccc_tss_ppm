@@ -43,6 +43,10 @@ vi.mock('vue-i18n', () => ({
         'nav.team': 'Team Dashboard',
         'nav.profile': 'Profile',
         'nav.settings': 'Settings',
+        'layout.sidebar.ariaLabel': 'Main navigation',
+        'layout.sidebar.navigation': 'Navigation menu',
+        'layout.sidebar.profile': 'User profile',
+        'layout.languageSelector.ariaLabel': 'Select language',
       }
       return messages[key] || key
     },
@@ -184,24 +188,35 @@ describe('AppSidebar', () => {
       expect(langButtons.length).toBe(3)
     })
 
-    it('should show EN, NL, and ES options', () => {
+    it('should have flag icons for EN, NL, and ES options', () => {
       const wrapper = createWrapper()
-      const text = wrapper.text()
-      expect(text).toContain('EN')
-      expect(text).toContain('NL')
-      expect(text).toContain('ES')
+      const langButtons = wrapper.findAll('.lang-btn')
+      // Check that each button has the correct aria-label
+      const ariaLabels = langButtons.map((btn) => btn.attributes('aria-label'))
+      expect(ariaLabels).toContain('English')
+      expect(ariaLabels).toContain('Nederlands')
+      expect(ariaLabels).toContain('Español')
     })
 
     it('should highlight current locale button', () => {
       mockLocale.value = 'nl'
       const wrapper = createWrapper()
-      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.text().includes('NL'))
+      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.attributes('aria-label') === 'Nederlands')
       expect(nlButton?.classes()).toContain('is-active')
+    })
+
+    it('should have aria-pressed attribute on active language button', () => {
+      mockLocale.value = 'en'
+      const wrapper = createWrapper()
+      const enButton = wrapper.findAll('.lang-btn').find((btn) => btn.attributes('aria-label') === 'English')
+      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.attributes('aria-label') === 'Nederlands')
+      expect(enButton?.attributes('aria-pressed')).toBe('true')
+      expect(nlButton?.attributes('aria-pressed')).toBe('false')
     })
 
     it('should emit locale-change when language button clicked', async () => {
       const wrapper = createWrapper()
-      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.text().includes('NL'))
+      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.attributes('aria-label') === 'Nederlands')
       await nlButton?.trigger('click')
       expect(wrapper.emitted('locale-change')).toBeTruthy()
       expect(wrapper.emitted('locale-change')?.[0]).toEqual(['nl'])
@@ -209,9 +224,36 @@ describe('AppSidebar', () => {
 
     it('should change locale when language button clicked', async () => {
       const wrapper = createWrapper()
-      const esButton = wrapper.findAll('.lang-btn').find((btn) => btn.text().includes('ES'))
+      const esButton = wrapper.findAll('.lang-btn').find((btn) => btn.attributes('aria-label') === 'Español')
       await esButton?.trigger('click')
       expect(mockLocale.value).toBe('es')
+    })
+  })
+
+  describe('accessibility', () => {
+    it('should have aria-label on sidebar', () => {
+      const wrapper = createWrapper()
+      const sidebar = wrapper.find('.app-sidebar')
+      expect(sidebar.attributes('aria-label')).toBe('Main navigation')
+    })
+
+    it('should have aria-label on navigation', () => {
+      const wrapper = createWrapper()
+      const nav = wrapper.find('.sidebar-nav')
+      expect(nav.attributes('aria-label')).toBe('Navigation menu')
+    })
+
+    it('should have aria-label on profile section', () => {
+      const wrapper = createWrapper()
+      const profile = wrapper.find('.sidebar-profile')
+      expect(profile.attributes('aria-label')).toBe('User profile')
+    })
+
+    it('should have role and aria-label on language selector', () => {
+      const wrapper = createWrapper()
+      const langSelector = wrapper.find('.language-selector')
+      expect(langSelector.attributes('role')).toBe('group')
+      expect(langSelector.attributes('aria-label')).toBe('Select language')
     })
   })
 })

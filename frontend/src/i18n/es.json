@@ -320,6 +320,28 @@
       "privacyNote": "Plausible es respetuoso con la privacidad y cumple con GDPR. No se recopilan datos personales."
     }
   },
+  "layout": {
+    "sidebar": {
+      "ariaLabel": "Navegación principal",
+      "profile": "Perfil de usuario",
+      "navigation": "Menú de navegación"
+    },
+    "header": {
+      "ariaLabel": "Encabezado de la aplicación",
+      "toggleSidebar": "Alternar menú lateral",
+      "skipToMain": "Ir al contenido principal"
+    },
+    "mainContent": {
+      "ariaLabel": "Contenido principal"
+    },
+    "languageSelector": {
+      "ariaLabel": "Seleccionar idioma",
+      "english": "Inglés",
+      "dutch": "Holandés",
+      "spanish": "Español",
+      "currentLanguage": "Idioma actual: {language}"
+    }
+  },
   "common": {
     "loading": "Cargando...",
     "noData": "No hay datos disponibles",

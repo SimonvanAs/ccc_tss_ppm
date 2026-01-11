@@ -344,6 +344,28 @@
       "privacyNote": "Plausible is privacy-friendly and GDPR compliant. No personal data is collected."
     }
   },
+  "layout": {
+    "sidebar": {
+      "ariaLabel": "Main navigation",
+      "profile": "User profile",
+      "navigation": "Navigation menu"
+    },
+    "header": {
+      "ariaLabel": "Application header",
+      "toggleSidebar": "Toggle sidebar menu",
+      "skipToMain": "Skip to main content"
+    },
+    "mainContent": {
+      "ariaLabel": "Main content"
+    },
+    "languageSelector": {
+      "ariaLabel": "Select language",
+      "english": "English",
+      "dutch": "Dutch",
+      "spanish": "Spanish",
+      "currentLanguage": "Current language: {language}"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "noData": "No data available",

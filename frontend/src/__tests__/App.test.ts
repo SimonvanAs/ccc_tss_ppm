@@ -141,14 +141,20 @@ describe('App Navigation', () => {
   })
 
   describe('language switcher', () => {
-    it('should render language buttons', () => {
+    it('should render language buttons with flag icons', () => {
       vi.mocked(auth.getCurrentUser).mockReturnValue(null)
 
       const wrapper = createWrapper()
 
-      expect(wrapper.text()).toContain('EN')
-      expect(wrapper.text()).toContain('NL')
-      expect(wrapper.text()).toContain('ES')
+      // Language buttons use flag icons with aria-labels
+      const langButtons = wrapper.findAll('.lang-btn')
+      expect(langButtons.length).toBe(3)
+
+      // Verify aria-labels for accessibility
+      const ariaLabels = langButtons.map((btn) => btn.attributes('aria-label'))
+      expect(ariaLabels).toContain('English')
+      expect(ariaLabels).toContain('Nederlands')
+      expect(ariaLabels).toContain('Español')
     })
   })
 })

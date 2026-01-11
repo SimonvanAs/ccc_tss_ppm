@@ -3,6 +3,19 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import AppHeader from '../../../components/layout/AppHeader.vue'
 
+// Mock vue-i18n
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key: string) => {
+      const messages: Record<string, string> = {
+        'layout.header.ariaLabel': 'Application header',
+        'layout.header.toggleSidebar': 'Toggle sidebar menu',
+      }
+      return messages[key] || key
+    },
+  }),
+}))
+
 describe('AppHeader', () => {
   function createWrapper(props = {}) {
     return mount(AppHeader, {
@@ -39,6 +52,20 @@ describe('AppHeader', () => {
       const wrapper = createWrapper({ showHamburger: true })
       await wrapper.find('.hamburger-btn').trigger('click')
       expect(wrapper.emitted('toggle-sidebar')).toBeTruthy()
+    })
+  })
+
+  describe('accessibility', () => {
+    it('should have aria-label on header', () => {
+      const wrapper = createWrapper()
+      const header = wrapper.find('.app-header')
+      expect(header.attributes('aria-label')).toBe('Application header')
+    })
+
+    it('should have aria-label on hamburger button', () => {
+      const wrapper = createWrapper({ showHamburger: true })
+      const btn = wrapper.find('.hamburger-btn')
+      expect(btn.attributes('aria-label')).toBe('Toggle sidebar menu')
     })
   })
 })
