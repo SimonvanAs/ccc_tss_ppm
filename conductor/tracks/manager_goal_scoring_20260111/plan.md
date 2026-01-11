@@ -66,7 +66,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) `06595cb`
 
-## Phase 3: Frontend - Score Card Component & VETO Logic
+## Phase 3: Frontend - Score Card Component & VETO Logic [checkpoint: 7523c86]
 
 - [x] Task: Create scoring service with VETO calculations
   - [x] Write tests for weighted WHAT score calculation
@@ -82,13 +82,13 @@
   - [x] Write tests for click handler emitting score
   - [x] Implement `frontend/src/components/review/ScoreCard.vue`
 
-- [ ] Task: Create VetoWarning component
-  - [ ] Write tests for SCF VETO warning display
-  - [ ] Write tests for KAR VETO warning with compensation indicator
-  - [ ] Write tests for competency VETO warning display
-  - [ ] Implement `frontend/src/components/review/VetoWarning.vue`
+- [x] Task: Create VetoWarning component `0567343`
+  - [x] Write tests for SCF VETO warning display
+  - [x] Write tests for KAR VETO warning with compensation indicator
+  - [x] Write tests for competency VETO warning display
+  - [x] Implement `frontend/src/components/review/VetoWarning.vue`
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) `7523c86`
 
 ## Phase 4: Frontend - 9-Grid Visualization
 

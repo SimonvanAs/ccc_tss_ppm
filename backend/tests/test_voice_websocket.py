@@ -324,3 +324,121 @@ class TestTranscriptionPipeline:
                     call_args = mock_client.transcribe.call_args
                     audio_data = call_args.args[0]
                     assert audio_data == chunk1 + chunk2 + chunk3
+
+
+class TestErrorHandling:
+    """Tests for error handling and resilience."""
+
+    @pytest.fixture
+    def mock_current_user(self):
+        """Mock authenticated user."""
+        return CurrentUser(
+            keycloak_id='test-user-id',
+            email='test@example.com',
+            name='Test User',
+            roles=['employee'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def sample_audio_chunk(self):
+        """Sample audio data chunk."""
+        return b'\x1a\x45\xdf\xa3' + b'\x00' * 100
+
+    def test_graceful_handling_when_whisper_unavailable(self, mock_current_user, sample_audio_chunk):
+        """Error should be returned when whisper service is unavailable."""
+        from src.services.whisper_client import WhisperServiceError
+
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(
+                    side_effect=WhisperServiceError('Service unavailable')
+                )
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_json({'type': 'end_audio'})
+
+                    response = websocket.receive_json()
+                    assert response.get('type') == 'error'
+                    assert response.get('code') == 'TRANSCRIPTION_FAILED'
+
+    def test_error_message_format(self, mock_current_user, sample_audio_chunk):
+        """Error messages should have correct format with type, code, and message."""
+        from src.services.whisper_client import WhisperServiceError
+
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(
+                    side_effect=WhisperServiceError('Connection refused')
+                )
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_json({'type': 'end_audio'})
+
+                    response = websocket.receive_json()
+                    assert 'type' in response
+                    assert 'code' in response
+                    assert 'message' in response
+                    assert response['type'] == 'error'
+
+    def test_no_audio_error_when_ending_without_data(self, mock_current_user):
+        """Error should be returned when end_audio sent without audio data."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            client = TestClient(app)
+            with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                # Send end_audio without any audio data
+                websocket.send_json({'type': 'end_audio'})
+
+                response = websocket.receive_json()
+                assert response.get('type') == 'error'
+                assert response.get('code') == 'NO_AUDIO'
+
+    def test_buffer_cleared_after_transcription(self, mock_current_user, sample_audio_chunk):
+        """Audio buffer should be cleared after each transcription."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(return_value={'text': 'First'})
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    # First transcription
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_json({'type': 'end_audio'})
+                    response1 = websocket.receive_json()
+                    assert response1.get('type') == 'final'
+
+                    # Second transcription without new audio should fail
+                    websocket.send_json({'type': 'end_audio'})
+                    response2 = websocket.receive_json()
+                    assert response2.get('type') == 'error'
+                    assert response2.get('code') == 'NO_AUDIO'
+
+    def test_connection_cleanup_on_disconnect(self, mock_current_user, sample_audio_chunk):
+        """Resources should be cleaned up when client disconnects."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            client = TestClient(app)
+            # Connection should close cleanly without hanging
+            with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                websocket.send_bytes(sample_audio_chunk)
+                # Disconnect without end_audio - should not cause issues
+            # If we get here without hanging, cleanup worked

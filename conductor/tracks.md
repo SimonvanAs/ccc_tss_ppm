@@ -31,3 +31,9 @@ _Link: [./tracks/whisper_api_20260111/](./tracks/whisper_api_20260111/)_
 ## [~] Track: Competency Scoring
 
 _Link: [./conductor/tracks/competency_scoring_20260111/](./conductor/tracks/competency_scoring_20260111/)_
+
+---
+
+## [ ] Track: UI Layout and Styling
+
+_Link: [./tracks/ui_layout_20260111/](./tracks/ui_layout_20260111/)_

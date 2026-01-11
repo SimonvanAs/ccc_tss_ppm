@@ -57,7 +57,7 @@
   - [x] Parse transcription responses (JSON format)
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Whisper Service Client' (Protocol in workflow.md)
 
-## Phase 5: End-to-End Audio Pipeline [checkpoint: b548f65]
+## Phase 5: End-to-End Audio Pipeline [checkpoint: 8db48f2]
 
 - [x] Task: Write failing tests for full transcription pipeline
   - [x] Test: Audio from client reaches whisper service
