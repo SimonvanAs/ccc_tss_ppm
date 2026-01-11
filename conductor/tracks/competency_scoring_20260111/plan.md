@@ -35,20 +35,20 @@
   - [x] Implement `isComplete` computed property
 - [x] Task: Conductor - User Manual Verification 'Frontend Scoring Composable' (Protocol in workflow.md) `838fc68`
 
-## Phase 3: Frontend Score Card Component
+## Phase 3: Frontend Score Card Component [checkpoint: 11cd2d4]
 
-- [x] Task: Write tests for CompetencyScoreCard component
+- [x] Task: Write tests for CompetencyScoreCard component `4f8aaae`
   - [x] Test renders three score buttons (1, 2, 3)
   - [x] Test selected state visual feedback
   - [x] Test click emits score-change event
   - [x] Test disabled state
-- [x] Task: Implement CompetencyScoreCard.vue component
+- [x] Task: Implement CompetencyScoreCard.vue component `4f8aaae`
   - [x] Create score button layout with labels
   - [x] Add selected state styling (magenta highlight)
   - [x] Emit score-change event on click
   - [x] Support disabled prop
-- [x] Task: Add i18n translations for score labels (EN/NL/ES)
-- [ ] Task: Conductor - User Manual Verification 'Frontend Score Card Component' (Protocol in workflow.md)
+- [x] Task: Add i18n translations for score labels (EN/NL/ES) `4f8aaae`
+- [x] Task: Conductor - User Manual Verification 'Frontend Score Card Component' (Protocol in workflow.md) `11cd2d4`
 
 ## Phase 4: Frontend Competency List Component
 
