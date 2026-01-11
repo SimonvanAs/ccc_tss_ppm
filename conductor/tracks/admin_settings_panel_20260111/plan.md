@@ -14,11 +14,11 @@
   - [x] Implement AdminView.vue with tab structure
   - [x] Create route configuration with role guard
 
-- [ ] Task: Create Keycloak Admin API integration
-  - [ ] Write tests for Keycloak admin client (get users, get user, update user)
-  - [ ] Write tests for role assignment via Keycloak API
-  - [ ] Write tests for user enable/disable via Keycloak API
-  - [ ] Implement KeycloakAdminService with service account auth
+- [x] Task: Create Keycloak Admin API integration
+  - [x] Write tests for Keycloak admin client (get users, get user, update user)
+  - [x] Write tests for role assignment via Keycloak API
+  - [x] Write tests for user enable/disable via Keycloak API
+  - [x] Implement KeycloakAdminService with service account auth
 
 - [ ] Task: Create user management API endpoints
   - [ ] Write tests for GET /api/v1/admin/users (list with search/filter)

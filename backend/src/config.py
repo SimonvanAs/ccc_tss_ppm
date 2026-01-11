@@ -34,6 +34,10 @@ class Settings:
     voice_session_timeout: int = int(os.getenv('VOICE_SESSION_TIMEOUT', '30'))
     voice_rate_limit: int = int(os.getenv('VOICE_RATE_LIMIT', '10'))
 
+    # Keycloak Admin API (service account)
+    keycloak_admin_client_id: str = os.getenv('KEYCLOAK_ADMIN_CLIENT_ID', 'admin-cli')
+    keycloak_admin_client_secret: str = os.getenv('KEYCLOAK_ADMIN_CLIENT_SECRET', '')
+
     def __post_init__(self):
         """Parse comma-separated values after initialization."""
         if self.cors_origins is None:
@@ -49,6 +53,16 @@ class Settings:
     def keycloak_jwks_url(self) -> str:
         """Get the Keycloak JWKS URL for token verification (internal)."""
         return f'{self.keycloak_url}/realms/{self.keycloak_realm}/protocol/openid-connect/certs'
+
+    @property
+    def keycloak_token_url(self) -> str:
+        """Get the Keycloak token endpoint URL."""
+        return f'{self.keycloak_url}/realms/{self.keycloak_realm}/protocol/openid-connect/token'
+
+    @property
+    def keycloak_admin_api_url(self) -> str:
+        """Get the Keycloak Admin REST API base URL."""
+        return f'{self.keycloak_url}/admin/realms/{self.keycloak_realm}'
 
 
 # Global settings instance
