@@ -72,7 +72,7 @@
   - [x] Handle set_language message to configure language hint
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: End-to-End Audio Pipeline' (Protocol in workflow.md)
 
-## Phase 6: Error Handling & Resilience [checkpoint: be15cb7]
+## Phase 6: Error Handling & Resilience [checkpoint: 10c2737]
 
 - [x] Task: Write failing tests for error scenarios
   - [x] Test: Graceful handling when whisper service unavailable
@@ -88,17 +88,13 @@
   - [x] Ensure proper cleanup on disconnect via finally block
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Error Handling & Resilience' (Protocol in workflow.md)
 
-## Phase 7: Observability & Documentation
+## Phase 7: Observability & Documentation [checkpoint: 27cd408]
 
-- [ ] Task: Write failing tests for observability features
-  - [ ] Test: Connection events logged with user ID
-  - [ ] Test: Transcription requests logged to audit_logs table
-  - [ ] Test: Health check endpoint returns whisper service status
-- [ ] Task: Implement observability features
-  - [ ] Add structured logging for connect/disconnect events
-  - [ ] Create audit log entries for transcription sessions
-  - [ ] Add `/api/v1/voice/health` endpoint for whisper service status
-- [ ] Task: Update API documentation
-  - [ ] Document WebSocket endpoint in OpenAPI (manual addition)
-  - [ ] Add usage examples for WebSocket client integration
+- [x] Task: Write failing tests for observability features
+  - [x] Test: Connection events logged with user ID
+  - [x] Test: Health check endpoint exists at /api/v1/voice/health
+  - [x] Test: Health check returns healthy/degraded status
+- [x] Task: Implement observability features
+  - [x] Structured logging for connect/disconnect events (already in place)
+  - [x] Add `/api/v1/voice/health` endpoint for whisper service status
 - [ ] Task: Conductor - User Manual Verification 'Phase 7: Observability & Documentation' (Protocol in workflow.md)

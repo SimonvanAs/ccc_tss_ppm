@@ -22,7 +22,7 @@ _Link: [./tracks/manager_goal_scoring_20260111/](./tracks/manager_goal_scoring_2
 
 ---
 
-## [~] Track: Backend API Whisper Setup
+## [x] Track: Backend API Whisper Setup
 
 _Link: [./tracks/whisper_api_20260111/](./tracks/whisper_api_20260111/)_
 

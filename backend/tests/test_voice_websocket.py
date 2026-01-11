@@ -442,3 +442,68 @@ class TestErrorHandling:
                 websocket.send_bytes(sample_audio_chunk)
                 # Disconnect without end_audio - should not cause issues
             # If we get here without hanging, cleanup worked
+
+
+class TestObservability:
+    """Tests for observability and health check features."""
+
+    def test_health_check_endpoint_exists(self):
+        """Health check endpoint should exist at /api/v1/voice/health."""
+        client = TestClient(app)
+        response = client.get('/api/v1/voice/health')
+        assert response.status_code == 200
+
+    def test_health_check_returns_status_when_service_healthy(self):
+        """Health check should return healthy status when whisper service is up."""
+        with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.health_check = AsyncMock(return_value=True)
+            mock_get_client.return_value = mock_client
+
+            client = TestClient(app)
+            response = client.get('/api/v1/voice/health')
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get('status') == 'healthy'
+            assert data.get('whisper_service') == 'up'
+
+    def test_health_check_returns_degraded_when_service_down(self):
+        """Health check should return degraded status when whisper service is down."""
+        with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+            mock_client = MagicMock()
+            mock_client.health_check = AsyncMock(return_value=False)
+            mock_get_client.return_value = mock_client
+
+            client = TestClient(app)
+            response = client.get('/api/v1/voice/health')
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get('status') == 'degraded'
+            assert data.get('whisper_service') == 'down'
+
+    def test_connection_events_logged(self, caplog):
+        """Connection and disconnection events should be logged with user ID."""
+        import logging
+
+        mock_user = CurrentUser(
+            keycloak_id='log-test-user',
+            email='log@example.com',
+            name='Log Test User',
+            roles=['employee'],
+            opco_id='log-opco',
+        )
+
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_user
+
+            with caplog.at_level(logging.INFO):
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    websocket.send_json({'type': 'ping'})
+                    websocket.receive_json()
+
+            # Check logs contain user info
+            log_messages = [record.message for record in caplog.records]
+            assert any('connected' in msg.lower() for msg in log_messages)

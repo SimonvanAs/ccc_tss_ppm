@@ -20,6 +20,30 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/api/v1/voice', tags=['voice'])
 
 
+@router.get('/health')
+async def voice_health():
+    """Health check endpoint for voice transcription service.
+
+    Returns the status of the whisper transcription service.
+
+    Returns:
+        JSON with status and whisper_service fields
+    """
+    whisper_client = get_whisper_client()
+    is_healthy = await whisper_client.health_check()
+
+    if is_healthy:
+        return {
+            'status': 'healthy',
+            'whisper_service': 'up',
+        }
+    else:
+        return {
+            'status': 'degraded',
+            'whisper_service': 'down',
+        }
+
+
 @router.websocket('/transcribe')
 async def voice_transcribe(websocket: WebSocket):
     """WebSocket endpoint for voice-to-text transcription.
