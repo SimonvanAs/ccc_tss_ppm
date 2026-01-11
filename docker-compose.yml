@@ -88,7 +88,7 @@ services:
       CORS_ORIGINS: http://localhost:5173
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
-      - "8000:8000"
+      - "8003:8000"
     volumes:
       - ./backend/src:/app/src:ro
       - ./backend/tests:/app/tests:ro
@@ -118,7 +118,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: tss_ppm_web
     environment:
-      VITE_API_URL: http://localhost:8000/api/v1
+      VITE_API_URL: http://localhost:8003/api/v1
       VITE_KEYCLOAK_URL: http://localhost:8082
       VITE_KEYCLOAK_REALM: tss-ppm
       VITE_KEYCLOAK_CLIENT_ID: tss-ppm-web
