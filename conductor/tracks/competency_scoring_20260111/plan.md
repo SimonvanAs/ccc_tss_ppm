@@ -1,6 +1,6 @@
 # Plan: Competency Scoring
 
-## Phase 1: Backend Scoring Service
+## Phase 1: Backend Scoring Service [checkpoint: a067c6a]
 
 - [x] Task: Write tests for HOW score calculation service `00ddce6`
   - [x] Test average calculation when all scores present
@@ -18,7 +18,7 @@
 - [x] Task: Enhance scores repository to persist calculated HOW score `3f9c75e`
   - [x] Update `bulk_upsert_competency_scores` to recalculate review scores
   - [x] Add method to update review how_score fields
-- [ ] Task: Conductor - User Manual Verification 'Backend Scoring Service' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Scoring Service' (Protocol in workflow.md) `a067c6a`
 
 ## Phase 2: Frontend Scoring Composable
 
