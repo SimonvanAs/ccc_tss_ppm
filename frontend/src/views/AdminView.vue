@@ -28,8 +28,10 @@ import BusinessUnitList from '../components/admin/BusinessUnitList.vue'
 import SystemHealthPanel from '../components/admin/SystemHealthPanel.vue'
 import SystemConfigForm from '../components/admin/SystemConfigForm.vue'
 
-// Placeholder components for later phases
-const AuditLogList = { template: '<div class="stub-content">Audit Logs - Coming in Phase 5</div>' }
+// Audit log components
+import AuditLogList from '../components/admin/AuditLogList.vue'
+import AuditLogDetailModal from '../components/admin/AuditLogDetailModal.vue'
+import { type AuditLogEntry } from '../api/admin'
 
 type AdminTab = 'users' | 'opcoSettings' | 'businessUnits' | 'system' | 'auditLogs'
 
@@ -80,6 +82,10 @@ const editingUser = ref<AdminUser | null>(null)
 const deactivatingUser = ref<AdminUser | null>(null)
 const modalLoading = ref(false)
 const modalError = ref<string | null>(null)
+
+// Audit log modal state
+const showAuditDetailModal = ref(false)
+const selectedAuditLog = ref<AuditLogEntry | null>(null)
 
 // Computed for selected count
 const selectedCount = computed(() => selectedUserIds.value.length)
@@ -288,6 +294,17 @@ async function handleBulkAssignManager(managerId: string) {
     loading.value = false
   }
 }
+
+// Audit log detail handlers
+function handleViewAuditDetails(log: AuditLogEntry) {
+  selectedAuditLog.value = log
+  showAuditDetailModal.value = true
+}
+
+function handleCloseAuditDetail() {
+  showAuditDetailModal.value = false
+  selectedAuditLog.value = null
+}
 </script>
 
 <template>
@@ -384,10 +401,15 @@ async function handleBulkAssignManager(managerId: string) {
         <SystemConfigForm class="mt-4" />
       </div>
 
-      <!-- Audit Logs Tab (Placeholder) -->
-      <Card v-else>
-        <component :is="AuditLogList" />
-      </Card>
+      <!-- Audit Logs Tab -->
+      <template v-else-if="activeTab === 'auditLogs'">
+        <AuditLogList @view-details="handleViewAuditDetails" />
+        <AuditLogDetailModal
+          :show="showAuditDetailModal"
+          :log="selectedAuditLog"
+          @close="handleCloseAuditDetail"
+        />
+      </template>
     </div>
   </div>
 
@@ -463,10 +485,4 @@ async function handleBulkAssignManager(managerId: string) {
   color: var(--color-error);
 }
 
-.stub-content {
-  padding: 3rem;
-  text-align: center;
-  color: var(--color-gray-500);
-  font-size: 0.875rem;
-}
 </style>

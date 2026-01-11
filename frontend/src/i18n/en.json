@@ -678,6 +678,51 @@
         "loadError": "Failed to load review periods",
         "toggleError": "Failed to update period status"
       }
+    },
+    "auditLogs": {
+      "title": "Audit Logs",
+      "description": "View and export system activity logs",
+      "empty": "No audit logs found",
+      "loadError": "Failed to load audit logs",
+      "export": "Export CSV",
+      "systemAction": "System",
+      "viewDetails": "View",
+      "pageInfo": "Page {current} of {total}",
+      "totalCount": "{count} total entries",
+      "filters": {
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "action": "Action",
+        "entityType": "Entity Type",
+        "allActions": "All Actions",
+        "allEntities": "All Entities",
+        "apply": "Apply Filters",
+        "clear": "Clear"
+      },
+      "columns": {
+        "timestamp": "Timestamp",
+        "user": "User",
+        "action": "Action",
+        "entityType": "Entity Type",
+        "details": "Details"
+      },
+      "detail": {
+        "title": "Audit Log Details",
+        "timestamp": "Timestamp",
+        "action": "Action",
+        "entityType": "Entity Type",
+        "entityId": "Entity ID",
+        "performedBy": "Performed By",
+        "userEmail": "Email",
+        "userName": "Name",
+        "userId": "User ID",
+        "requestInfo": "Request Information",
+        "ipAddress": "IP Address",
+        "userAgent": "User Agent",
+        "changes": "Changes",
+        "before": "Before",
+        "after": "After"
+      }
     }
   },
   "teamGrid": {

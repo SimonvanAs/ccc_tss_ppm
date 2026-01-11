@@ -57,7 +57,7 @@ async def readiness_check():
 
 
 # Import and include routers
-from src.routers import goals, reviews, manager, competencies, voice, calibration, admin, opco, system
+from src.routers import goals, reviews, manager, competencies, voice, calibration, admin, opco, system, audit
 
 app.include_router(goals.router)
 app.include_router(reviews.router)
@@ -68,3 +68,4 @@ app.include_router(calibration.router)
 app.include_router(admin.router)
 app.include_router(opco.router)
 app.include_router(system.router)
+app.include_router(audit.router)

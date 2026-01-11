@@ -677,6 +677,51 @@
         "loadError": "Error al cargar períodos de evaluación",
         "toggleError": "Error al actualizar estado del período"
       }
+    },
+    "auditLogs": {
+      "title": "Registros de Auditoría",
+      "description": "Ver y exportar registros de actividad del sistema",
+      "empty": "No se encontraron registros de auditoría",
+      "loadError": "Error al cargar registros de auditoría",
+      "export": "Exportar CSV",
+      "systemAction": "Sistema",
+      "viewDetails": "Ver",
+      "pageInfo": "Página {current} de {total}",
+      "totalCount": "{count} entradas en total",
+      "filters": {
+        "startDate": "Fecha de Inicio",
+        "endDate": "Fecha de Fin",
+        "action": "Acción",
+        "entityType": "Tipo de Entidad",
+        "allActions": "Todas las Acciones",
+        "allEntities": "Todas las Entidades",
+        "apply": "Aplicar Filtros",
+        "clear": "Limpiar"
+      },
+      "columns": {
+        "timestamp": "Fecha y Hora",
+        "user": "Usuario",
+        "action": "Acción",
+        "entityType": "Tipo de Entidad",
+        "details": "Detalles"
+      },
+      "detail": {
+        "title": "Detalles del Registro",
+        "timestamp": "Fecha y Hora",
+        "action": "Acción",
+        "entityType": "Tipo de Entidad",
+        "entityId": "ID de Entidad",
+        "performedBy": "Realizado Por",
+        "userEmail": "Correo Electrónico",
+        "userName": "Nombre",
+        "userId": "ID de Usuario",
+        "requestInfo": "Información de Solicitud",
+        "ipAddress": "Dirección IP",
+        "userAgent": "Agente de Usuario",
+        "changes": "Cambios",
+        "before": "Antes",
+        "after": "Después"
+      }
     }
   },
   "teamGrid": {

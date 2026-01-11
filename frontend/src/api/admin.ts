@@ -278,3 +278,87 @@ export function updateReviewPeriods(periods: ReviewPeriod[]): Promise<ReviewPeri
 export function toggleReviewPeriod(periodId: string, isOpen: boolean): Promise<ReviewPeriod> {
   return post<ReviewPeriod>(`/admin/system/review-periods/${periodId}/toggle`, { is_open: isOpen })
 }
+
+// ===== Audit Logs =====
+
+export interface AuditLogEntry {
+  id: string
+  user_id: string | null
+  user_email: string | null
+  user_name: string | null
+  action: string
+  entity_type: string
+  entity_id: string | null
+  changes: Record<string, unknown> | null
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string
+}
+
+export interface AuditLogListResponse {
+  logs: AuditLogEntry[]
+  total: number
+  page: number
+  page_size: number
+}
+
+export interface AuditLogFiltersResponse {
+  actions: string[]
+  entity_types: string[]
+}
+
+export interface AuditLogListParams {
+  page?: number
+  page_size?: number
+  start_date?: string
+  end_date?: string
+  user_id?: string
+  action?: string
+  entity_type?: string
+}
+
+/**
+ * Fetch paginated list of audit logs with optional filters.
+ */
+export async function fetchAuditLogs(params: AuditLogListParams = {}): Promise<AuditLogListResponse> {
+  const queryParams = new URLSearchParams()
+  if (params.page !== undefined) queryParams.set('page', String(params.page))
+  if (params.page_size !== undefined) queryParams.set('page_size', String(params.page_size))
+  if (params.start_date) queryParams.set('start_date', params.start_date)
+  if (params.end_date) queryParams.set('end_date', params.end_date)
+  if (params.user_id) queryParams.set('user_id', params.user_id)
+  if (params.action) queryParams.set('action', params.action)
+  if (params.entity_type) queryParams.set('entity_type', params.entity_type)
+
+  const query = queryParams.toString()
+  return get<AuditLogListResponse>(`/admin/audit-logs${query ? `?${query}` : ''}`)
+}
+
+/**
+ * Fetch a single audit log entry by ID.
+ */
+export function fetchAuditLog(logId: string): Promise<AuditLogEntry> {
+  return get<AuditLogEntry>(`/admin/audit-logs/${logId}`)
+}
+
+/**
+ * Fetch available filter options for audit logs.
+ */
+export function fetchAuditLogFilters(): Promise<AuditLogFiltersResponse> {
+  return get<AuditLogFiltersResponse>('/admin/audit-logs/filters')
+}
+
+/**
+ * Export audit logs as CSV. Returns the download URL.
+ */
+export function getAuditLogExportUrl(params: AuditLogListParams = {}): string {
+  const queryParams = new URLSearchParams()
+  if (params.start_date) queryParams.set('start_date', params.start_date)
+  if (params.end_date) queryParams.set('end_date', params.end_date)
+  if (params.user_id) queryParams.set('user_id', params.user_id)
+  if (params.action) queryParams.set('action', params.action)
+  if (params.entity_type) queryParams.set('entity_type', params.entity_type)
+
+  const query = queryParams.toString()
+  return `/api/v1/admin/audit-logs/export${query ? `?${query}` : ''}`
+}

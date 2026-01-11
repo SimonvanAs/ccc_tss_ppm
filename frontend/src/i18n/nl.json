@@ -677,6 +677,51 @@
         "loadError": "Kan beoordelingsperiodes niet laden",
         "toggleError": "Kan periodestatus niet bijwerken"
       }
+    },
+    "auditLogs": {
+      "title": "Auditlogboek",
+      "description": "Bekijk en exporteer systeemactiviteitenlogboeken",
+      "empty": "Geen auditlogboeken gevonden",
+      "loadError": "Kan auditlogboeken niet laden",
+      "export": "Exporteer CSV",
+      "systemAction": "Systeem",
+      "viewDetails": "Bekijken",
+      "pageInfo": "Pagina {current} van {total}",
+      "totalCount": "{count} totaal items",
+      "filters": {
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "action": "Actie",
+        "entityType": "Entiteitstype",
+        "allActions": "Alle Acties",
+        "allEntities": "Alle Entiteiten",
+        "apply": "Filters Toepassen",
+        "clear": "Wissen"
+      },
+      "columns": {
+        "timestamp": "Tijdstempel",
+        "user": "Gebruiker",
+        "action": "Actie",
+        "entityType": "Entiteitstype",
+        "details": "Details"
+      },
+      "detail": {
+        "title": "Auditlog Details",
+        "timestamp": "Tijdstempel",
+        "action": "Actie",
+        "entityType": "Entiteitstype",
+        "entityId": "Entiteit ID",
+        "performedBy": "Uitgevoerd Door",
+        "userEmail": "E-mail",
+        "userName": "Naam",
+        "userId": "Gebruiker ID",
+        "requestInfo": "Verzoek Informatie",
+        "ipAddress": "IP-adres",
+        "userAgent": "User Agent",
+        "changes": "Wijzigingen",
+        "before": "Voor",
+        "after": "Na"
+      }
     }
   },
   "teamGrid": {
