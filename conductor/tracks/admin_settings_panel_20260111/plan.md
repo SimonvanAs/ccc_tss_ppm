@@ -20,16 +20,16 @@
   - [x] Write tests for user enable/disable via Keycloak API
   - [x] Implement KeycloakAdminService with service account auth
 
-- [ ] Task: Create user management API endpoints
-  - [ ] Write tests for GET /api/v1/admin/users (list with search/filter)
-  - [ ] Write tests for GET /api/v1/admin/users/{id} (user details)
-  - [ ] Write tests for PUT /api/v1/admin/users/{id}/roles (role assignment)
-  - [ ] Write tests for PUT /api/v1/admin/users/{id}/manager (manager assignment)
-  - [ ] Write tests for PUT /api/v1/admin/users/{id}/status (activate/deactivate)
-  - [ ] Write tests for POST /api/v1/admin/users/bulk (bulk operations)
-  - [ ] Write tests for admin role authorization on all endpoints
-  - [ ] Implement admin router with all endpoints
-  - [ ] Implement admin repository for local user data
+- [x] Task: Create user management API endpoints
+  - [x] Write tests for GET /api/v1/admin/users (list with search/filter)
+  - [x] Write tests for GET /api/v1/admin/users/{id} (user details)
+  - [x] Write tests for PUT /api/v1/admin/users/{id}/roles (role assignment)
+  - [x] Write tests for PUT /api/v1/admin/users/{id}/manager (manager assignment)
+  - [x] Write tests for PUT /api/v1/admin/users/{id}/status (activate/deactivate)
+  - [x] Write tests for POST /api/v1/admin/users/bulk (bulk operations)
+  - [x] Write tests for admin role authorization on all endpoints
+  - [x] Implement admin router with all endpoints
+  - [x] Implement admin repository for local user data
 
 - [ ] Task: Create audit logging for admin actions
   - [ ] Write tests for audit log creation on role change
