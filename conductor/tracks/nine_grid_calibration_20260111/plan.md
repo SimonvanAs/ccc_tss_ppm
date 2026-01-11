@@ -169,7 +169,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
 - [x] Task: Add i18n translations for calibration UI (EN/NL/ES)
 - [x] Task: Conductor - User Manual Verification 'Phase 6: Calibration Frontend - Session Management' (Protocol in workflow.md)
 
-## Phase 7: Calibration Frontend - Grid View & Score Adjustment
+## Phase 7: Calibration Frontend - Grid View & Score Adjustment [checkpoint: 943bb7e]
 
 - [x] Task: Write tests for CalibrationNineGrid component
   - [x] Test displays all session employees on grid
@@ -204,4 +204,4 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Handle component communication
   - [x] Refresh grid after score adjustment
 - [x] Task: Add i18n translations for calibration grid UI (EN/NL/ES)
-- [ ] Task: Conductor - User Manual Verification 'Phase 7: Calibration Frontend - Grid View & Score Adjustment' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 7: Calibration Frontend - Grid View & Score Adjustment' (Protocol in workflow.md)
