@@ -38,7 +38,6 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_PROXY_HEADERS: xforwarded
-      KC_HTTP_RELATIVE_PATH: /auth
       KC_HOSTNAME: https://ppm.tss-vms.co.uk
       KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
@@ -82,10 +81,10 @@ services:
     container_name: tss_ppm_api
     environment:
       DATABASE_URL: postgresql://${DB_USER:-ppm}:${DB_PASSWORD:-ppm_dev_password}@postgres:5432/${DB_NAME:-tss_ppm}
-      KEYCLOAK_URL: http://keycloak:8080/auth
+      KEYCLOAK_URL: http://keycloak:8080
       KEYCLOAK_REALM: tss-ppm
       KEYCLOAK_CLIENT_ID: tss-ppm-api
-      KEYCLOAK_ISSUER_URL: https://ppm.tss-vms.co.uk/auth
+      KEYCLOAK_ISSUER_URL: https://ppm.tss-vms.co.uk
       WHISPER_SERVICE_URL: http://whisper:8000
       CORS_ORIGINS: https://ppm.tss-vms.co.uk
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -121,7 +120,7 @@ services:
     container_name: tss_ppm_web
     environment:
       VITE_API_URL: /api/v1
-      VITE_KEYCLOAK_URL: /auth
+      VITE_KEYCLOAK_URL: ""
       VITE_KEYCLOAK_REALM: tss-ppm
       VITE_KEYCLOAK_CLIENT_ID: tss-ppm-web
     ports:
