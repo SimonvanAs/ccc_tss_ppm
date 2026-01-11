@@ -42,10 +42,10 @@
   - [x] Write tests for `fetchTeamMembers` function
   - [x] Implement `frontend/src/api/team.ts`
 
-- [ ] Task: Create TeamDashboard view
-  - [ ] Write component tests for team list rendering
-  - [ ] Implement `frontend/src/views/TeamDashboardView.vue`
-  - [ ] Add route `/team` to router
+- [x] Task: Create TeamDashboard view `c88c560`
+  - [x] Write component tests for team list rendering
+  - [x] Implement `frontend/src/views/TeamDashboardView.vue`
+  - [x] Add route `/team` to router
 
 - [ ] Task: Create TeamMemberCard component
   - [ ] Write tests for status badge rendering (Not Started/In Progress/Complete)

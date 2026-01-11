@@ -1,0 +1,8 @@
+{
+  "track_id": "competency_scoring_20260111",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-11T00:00:00Z",
+  "updated_at": "2026-01-11T00:00:00Z",
+  "description": "Competency Scoring - Backend API, Frontend UI, and VETO rule logic for HOW-axis scoring"
+}

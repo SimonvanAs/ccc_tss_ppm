@@ -25,3 +25,9 @@ _Link: [./tracks/manager_goal_scoring_20260111/](./tracks/manager_goal_scoring_2
 ## [~] Track: Backend API Whisper Setup
 
 _Link: [./tracks/whisper_api_20260111/](./tracks/whisper_api_20260111/)_
+
+---
+
+## [ ] Track: Competency Scoring
+
+_Link: [./conductor/tracks/competency_scoring_20260111/](./conductor/tracks/competency_scoring_20260111/)_
