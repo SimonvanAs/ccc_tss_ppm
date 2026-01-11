@@ -38,9 +38,9 @@
 
 ## Phase 2: Frontend - Team Dashboard
 
-- [ ] Task: Create team API client module
-  - [ ] Write tests for `fetchTeamMembers` function
-  - [ ] Implement `frontend/src/api/team.ts`
+- [x] Task: Create team API client module `d25f75a`
+  - [x] Write tests for `fetchTeamMembers` function
+  - [x] Implement `frontend/src/api/team.ts`
 
 - [ ] Task: Create TeamDashboard view
   - [ ] Write component tests for team list rendering

@@ -19,7 +19,7 @@
   - [x] Test: Connection with missing token rejected with close code 4001
   - [x] Test: Connection with malformed token rejected with close code 4001
   - [x] Test: User claims (user_id, opco_id) extracted from valid token
-- [ ] Task: Implement WebSocket JWT authentication middleware
+- [~] Task: Implement WebSocket JWT authentication middleware
   - [ ] Create `src/services/websocket_auth.py` with token validation
   - [ ] Support token via query parameter `?token=<jwt>`
   - [ ] Reuse existing Keycloak JWT validation logic from auth module

@@ -197,11 +197,21 @@
   },
   "team": {
     "title": "Team Overview",
+    "pageTitle": "My Team",
+    "pageSubtitle": "Review and score your team members",
     "directReports": "Direct Reports",
     "reviewStatus": "Review Status",
     "pendingActions": "Pending Actions",
     "nineGrid": "9-Grid Overview",
-    "approveGoals": "Approve Goals"
+    "approveGoals": "Approve Goals",
+    "emptyState": "No team members found",
+    "loading": "Loading team...",
+    "error": "Failed to load team",
+    "scoringStatus": {
+      "NOT_STARTED": "Not Started",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETE": "Complete"
+    }
   },
   "analytics": {
     "title": "Analytics",

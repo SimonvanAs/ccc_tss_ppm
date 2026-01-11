@@ -28,9 +28,20 @@ const router = createRouter({
       component: () => import('./views/DashboardView.vue'),
     },
     {
+      path: '/team',
+      name: 'TeamDashboard',
+      component: () => import('./views/TeamDashboardView.vue'),
+    },
+    {
       path: '/reviews/:reviewId/goals',
       name: 'GoalSetting',
       component: () => import('./views/GoalSettingView.vue'),
+      props: true,
+    },
+    {
+      path: '/reviews/:reviewId/score',
+      name: 'ReviewScoring',
+      component: () => import('./views/TeamDashboardView.vue'), // Placeholder until Phase 5
       props: true,
     },
   ]
