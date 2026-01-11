@@ -26,7 +26,7 @@
   - [x] Return appropriate WebSocket close codes for auth failures
 - [x] Task: Conductor - User Manual Verification 'Phase 2: WebSocket Authentication' (Protocol in workflow.md)
 
-## Phase 3: WebSocket Endpoint Foundation
+## Phase 3: WebSocket Endpoint Foundation [checkpoint: 6e2c261]
 
 - [x] Task: Write failing tests for WebSocket endpoint lifecycle (5570572)
   - [x] Test: Endpoint accepts connection at /api/v1/voice/transcribe
@@ -39,7 +39,7 @@
   - [x] Register router in main.py
   - [x] Implement connection lifecycle (accept, maintain, close)
   - [x] Add inactivity timeout handling
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: WebSocket Endpoint Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: WebSocket Endpoint Foundation' (Protocol in workflow.md)
 
 ## Phase 4: Whisper Service Client
 
