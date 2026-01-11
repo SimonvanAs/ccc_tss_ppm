@@ -29,6 +29,11 @@ class Settings:
     # Logging
     log_level: str = os.getenv('LOG_LEVEL', 'INFO')
 
+    # Voice Service (faster-whisper-server)
+    whisper_service_url: str = os.getenv('WHISPER_SERVICE_URL', 'http://whisper:8001')
+    voice_session_timeout: int = int(os.getenv('VOICE_SESSION_TIMEOUT', '30'))
+    voice_rate_limit: int = int(os.getenv('VOICE_RATE_LIMIT', '10'))
+
     def __post_init__(self):
         """Parse comma-separated values after initialization."""
         if self.cors_origins is None:
