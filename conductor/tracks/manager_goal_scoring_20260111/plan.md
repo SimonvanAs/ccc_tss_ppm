@@ -13,10 +13,10 @@
   - [x] Write tests for `upsert_scores` query (insert or update)
   - [x] Implement `ScoresRepository` class in `backend/src/repositories/scores.py`
 
-- [ ] Task: Create GET /api/v1/manager/team endpoint
-  - [ ] Write API tests for endpoint with auth (manager role required)
-  - [ ] Implement router in `backend/src/routers/manager.py`
-  - [ ] Add Pydantic schemas for team member response
+- [x] Task: Create GET /api/v1/manager/team endpoint `b2176dc`
+  - [x] Write API tests for endpoint with auth (manager role required)
+  - [x] Implement router in `backend/src/routers/manager.py`
+  - [x] Add Pydantic schemas for team member response
 
 - [ ] Task: Create GET /api/v1/reviews/{id}/scores endpoint
   - [ ] Write API tests for endpoint with auth and authorization
