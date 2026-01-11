@@ -1,13 +1,14 @@
 # TSS PPM v3.0 - Voice Router
-"""WebSocket endpoint for voice transcription."""
+"""Voice transcription endpoints (HTTP POST and WebSocket)."""
 
 import json
 import logging
-from typing import Optional, List
+from typing import Annotated, Optional, List
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, WebSocket, WebSocketDisconnect, status
+from pydantic import BaseModel
 
-from src.auth import CurrentUser
+from src.auth import CurrentUser, get_current_user
 from src.services.websocket_auth import (
     authenticate_websocket,
     WS_CLOSE_AUTH_REQUIRED,
@@ -18,6 +19,13 @@ from src.services.whisper_client import get_whisper_client, WhisperServiceError
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/api/v1/voice', tags=['voice'])
+
+
+class TranscriptionResponse(BaseModel):
+    """Response model for transcription result."""
+
+    text: str
+    language: Optional[str] = None
 
 
 @router.get('/health')
@@ -44,7 +52,68 @@ async def voice_health():
         }
 
 
-@router.websocket('/transcribe')
+@router.post('/transcribe', response_model=TranscriptionResponse)
+async def transcribe_audio(
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    audio: UploadFile = File(...),
+    language: Optional[str] = None,
+) -> TranscriptionResponse:
+    """Transcribe audio file to text.
+
+    Args:
+        audio: Audio file (WebM, WAV, MP3, etc.)
+        language: Optional language hint (en, nl, es)
+
+    Returns:
+        Transcription result with text
+
+    Raises:
+        HTTPException: If transcription fails
+    """
+    logger.info(
+        'Transcription request received',
+        extra={
+            'user_id': current_user.keycloak_id,
+            'filename': audio.filename,
+            'content_type': audio.content_type,
+            'language': language,
+        }
+    )
+
+    try:
+        # Read audio data
+        audio_data = await audio.read()
+
+        if len(audio_data) == 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Empty audio file',
+            )
+
+        # Transcribe using whisper service
+        whisper_client = get_whisper_client()
+        result = await whisper_client.transcribe(
+            audio_data,
+            language=language,
+        )
+
+        return TranscriptionResponse(
+            text=result.get('text', ''),
+            language=language,
+        )
+
+    except WhisperServiceError as e:
+        logger.error(
+            'Whisper transcription failed',
+            extra={'error': str(e), 'user_id': current_user.keycloak_id}
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail='Transcription service unavailable',
+        )
+
+
+@router.websocket('/transcribe/ws')
 async def voice_transcribe(websocket: WebSocket):
     """WebSocket endpoint for voice-to-text transcription.
 

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { getToken } from '../../api/auth'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
 const props = defineProps<{
   disabled?: boolean
@@ -126,13 +129,22 @@ async function processAudio() {
       const formData = new FormData()
       formData.append('audio', audioBlob, 'recording.webm')
 
-      const response = await fetch('/api/voice/transcribe', {
+      // Get auth token
+      const token = await getToken()
+      const headers: HeadersInit = {}
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+
+      const response = await fetch(`${API_BASE_URL}/voice/transcribe`, {
         method: 'POST',
+        headers,
         body: formData,
       })
 
       if (!response.ok) {
-        throw new Error('Transcription failed')
+        const errorText = await response.text()
+        throw new Error(`Transcription failed: ${errorText}`)
       }
 
       const result = await response.json()
