@@ -97,10 +97,10 @@ docker compose ps
 | Service | URL | Description |
 |---------|-----|-------------|
 | Frontend | http://localhost:5173 | Vue.js development server |
-| Backend API | http://localhost:8000 | FastAPI with Swagger docs at `/docs` |
-| Keycloak | http://localhost:8080 | Authentication server (admin: admin/admin) |
+| Backend API | http://localhost:8003 | FastAPI with Swagger docs at `/docs` |
+| Keycloak | http://localhost:8082 | Authentication server (admin: admin/admin) |
 | Voice Service | http://localhost:8001 | Speech-to-text transcription |
-| PostgreSQL | localhost:5432 | Database (user: ppm, password: ppm_dev_password) |
+| PostgreSQL | localhost:5433 | Database (user: ppm, password: ppm_dev_password) |
 
 ### Test User Credentials
 
@@ -138,7 +138,7 @@ docker compose up -d api
 
 **Services won't start**
 - Ensure Docker is running
-- Check if ports 5173, 8000, 8080, 8001, 5432 are available
+- Check if ports 5173, 8003, 8082, 8001, 5433 are available
 - Run `docker compose logs` to see errors
 
 **Database connection errors**
