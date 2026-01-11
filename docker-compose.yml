@@ -91,6 +91,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/src:/app/src:ro
+      - ./backend/tests:/app/tests:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 10s

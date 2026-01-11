@@ -52,21 +52,21 @@
 
 ## Phase 3: Frontend Signature Components [checkpoint: ]
 
-- [ ] Task: Create SignatureModal component
-  - [ ] Write tests for SignatureModal rendering and interactions
-  - [ ] Implement modal with summary display
-  - [ ] Add checkbox acknowledgment ("I have reviewed and agree...")
-  - [ ] Add Sign Review button (disabled until checkbox checked)
-  - [ ] Add Cancel button
-  - [ ] Style with brand colors
+- [x] Task: Create SignatureModal component `a65a313`
+  - [x] Write tests for SignatureModal rendering and interactions
+  - [x] Implement modal with summary display
+  - [x] Add checkbox acknowledgment ("I have reviewed and agree...")
+  - [x] Add Sign Review button (disabled until checkbox checked)
+  - [x] Add Cancel button
+  - [x] Style with brand colors
 
-- [ ] Task: Create RejectionModal component
-  - [ ] Write tests for RejectionModal rendering and validation
-  - [ ] Implement modal with feedback text area
-  - [ ] Add required validation for feedback
-  - [ ] Add Submit Feedback & Return button
-  - [ ] Add Cancel button
-  - [ ] Style with brand colors
+- [x] Task: Create RejectionModal component
+  - [x] Write tests for RejectionModal rendering and validation
+  - [x] Implement modal with feedback text area
+  - [x] Add required validation for feedback
+  - [x] Add Submit Feedback & Return button
+  - [x] Add Cancel button
+  - [x] Style with brand colors
 
 - [ ] Task: Create SignatureStatus component
   - [ ] Write tests for SignatureStatus display states
