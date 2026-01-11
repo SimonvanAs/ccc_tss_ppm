@@ -24,11 +24,11 @@
   - [x] Write tests for stage completion timestamps
   - [x] Update schema and endpoint implementation
 
-- [ ] Task: Update PUT /api/v1/reviews/{id} for job_title and tov_level
-  - [ ] Write tests for updating job_title in DRAFT status
-  - [ ] Write tests for updating tov_level in DRAFT status
-  - [ ] Write tests for rejection when not in DRAFT status
-  - [ ] Implement endpoint updates with validation
+- [x] Task: Update PUT /api/v1/reviews/{id} for job_title and tov_level `b9ced05`
+  - [x] Write tests for updating job_title in DRAFT status
+  - [x] Write tests for updating tov_level in DRAFT status
+  - [x] Write tests for rejection when not in DRAFT status
+  - [x] Implement endpoint updates with validation
 
 - [ ] Task: Update goal submission validation
   - [ ] Write tests for submission rejection when job_title missing
