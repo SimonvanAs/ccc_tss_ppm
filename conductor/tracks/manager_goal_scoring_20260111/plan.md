@@ -114,12 +114,12 @@
   - [x] Write tests for `saveScores` function with debouncing
   - [x] Implement `frontend/src/api/scores.ts`
 
-- [ ] Task: Create useScoring composable
-  - [ ] Write tests for score state management
-  - [ ] Write tests for auto-save with debounce (500ms)
-  - [ ] Write tests for save status tracking (Saving/Saved/Error)
-  - [ ] Write tests for loading existing scores
-  - [ ] Implement `frontend/src/composables/useScoring.ts`
+- [x] Task: Create useScoring composable `8b42a43`
+  - [x] Write tests for score state management
+  - [x] Write tests for auto-save with debounce (500ms)
+  - [x] Write tests for save status tracking (Saving/Saved/Error)
+  - [x] Write tests for loading existing scores
+  - [x] Implement `frontend/src/composables/useScoring.ts`
 
 - [ ] Task: Create GoalScoringSection component
   - [ ] Write tests for goal list with score cards
