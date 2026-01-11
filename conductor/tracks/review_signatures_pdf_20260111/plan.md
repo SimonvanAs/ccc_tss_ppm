@@ -85,7 +85,7 @@
 
 - [ ] Task: Conductor - User Manual Verification 'Frontend Signature Components' (Protocol in workflow.md)
 
-## Phase 4: PDF Generation Service [checkpoint: ]
+## Phase 4: PDF Generation Service [checkpoint: 22e358b]
 
 - [x] Task: Create PDF template with WeasyPrint
   - [x] Write tests for PDF template rendering
