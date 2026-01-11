@@ -1,37 +1,41 @@
 # Plan: 9-Grid Display & Calibration
 
-## Phase 1: 9-Grid Core Component
+## Phase 1: 9-Grid Core Component [checkpoint: 51587f1]
 
-- [ ] Task: Write tests for NineGrid component
-  - [ ] Test renders 3×3 grid with correct structure
-  - [ ] Test cell colors follow four-color scheme
-  - [ ] Test position marker placement based on WHAT/HOW scores
-  - [ ] Test axis labels display correctly
-  - [ ] Test VETO indicator appears when vetoActive is true
-  - [ ] Test incomplete state (null scores) handling
-- [ ] Task: Implement NineGrid.vue component
-  - [ ] Create 3×3 grid layout with CSS Grid
-  - [ ] Apply four-color scheme to cells
-  - [ ] Add position marker with dynamic positioning
-  - [ ] Display axis labels (Below/Meets/Exceeds)
-  - [ ] Add VETO warning indicator
-  - [ ] Handle incomplete scoring states
-- [ ] Task: Add i18n translations for grid labels (EN/NL/ES)
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: 9-Grid Core Component' (Protocol in workflow.md)
+_Note: Phase 1 was completed as part of Manager Goal Scoring track (Phase 4)_
 
-## Phase 2: Manager Scoring View Integration
+- [x] Task: Write tests for NineGrid component `579a419`
+  - [x] Test renders 3×3 grid with correct structure
+  - [x] Test cell colors follow four-color scheme
+  - [x] Test position marker placement based on WHAT/HOW scores
+  - [x] Test axis labels display correctly
+  - [x] Test VETO indicator appears when vetoActive is true
+  - [x] Test incomplete state (null scores) handling
+- [x] Task: Implement NineGrid.vue component `579a419`
+  - [x] Create 3×3 grid layout with CSS Grid
+  - [x] Apply four-color scheme to cells
+  - [x] Add position marker with dynamic positioning
+  - [x] Display axis labels (numeric 1/2/3)
+  - [x] Add VETO warning indicator
+  - [x] Handle incomplete scoring states
+- [x] Task: Add i18n translations for grid labels (EN/NL/ES) `bbc0563`
+- [x] Task: Conductor - User Manual Verification 'Phase 1: 9-Grid Core Component' (Protocol in workflow.md) `51587f1`
 
-- [ ] Task: Write tests for 9-Grid integration in scoring view
-  - [ ] Test NineGrid receives WHAT score from goal scoring
-  - [ ] Test NineGrid receives HOW score from competency scoring
-  - [ ] Test grid position updates on score changes
-  - [ ] Test VETO state propagates to grid
-- [ ] Task: Integrate NineGrid into manager review scoring page
-  - [ ] Add NineGrid section to scoring page layout
-  - [ ] Connect WHAT score from goal scoring component
-  - [ ] Connect HOW score from competency scoring component (use existing how-score-change event)
-  - [ ] Handle incomplete scoring (partial WHAT/HOW)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Manager Scoring View Integration' (Protocol in workflow.md)
+## Phase 2: Manager Scoring View Integration [checkpoint: 591b898]
+
+_Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
+
+- [x] Task: Write tests for 9-Grid integration in scoring view `158bf73`
+  - [x] Test NineGrid receives WHAT score from goal scoring
+  - [x] Test NineGrid receives HOW score from competency scoring
+  - [x] Test grid position updates on score changes
+  - [x] Test VETO state propagates to grid
+- [x] Task: Integrate NineGrid into manager review scoring page `158bf73`
+  - [x] Add NineGrid section to scoring page layout
+  - [x] Connect WHAT score from goal scoring component
+  - [x] Connect HOW score from competency scoring component (use existing how-score-change event)
+  - [x] Handle incomplete scoring (partial WHAT/HOW)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Manager Scoring View Integration' (Protocol in workflow.md) `591b898`
 
 ## Phase 3: Team Dashboard 9-Grid
 
