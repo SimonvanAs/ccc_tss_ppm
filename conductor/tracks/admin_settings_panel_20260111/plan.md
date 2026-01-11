@@ -8,11 +8,11 @@
   - [x] Implement isAdmin check and conditional menu rendering
   - [x] Add i18n translations for "Admin" label (EN/NL/ES)
 
-- [ ] Task: Create admin routes and layout
-  - [ ] Write tests for /admin route guard (admin role only)
-  - [ ] Write tests for AdminView tab navigation
-  - [ ] Implement AdminView.vue with tab structure
-  - [ ] Create route configuration with role guard
+- [x] Task: Create admin routes and layout
+  - [x] Write tests for /admin route guard (admin role only)
+  - [x] Write tests for AdminView tab navigation
+  - [x] Implement AdminView.vue with tab structure
+  - [x] Create route configuration with role guard
 
 - [ ] Task: Create Keycloak Admin API integration
   - [ ] Write tests for Keycloak admin client (get users, get user, update user)

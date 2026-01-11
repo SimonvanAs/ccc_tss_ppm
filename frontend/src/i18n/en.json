@@ -486,6 +486,19 @@
       "currentLanguage": "Current language: {language}"
     }
   },
+  "admin": {
+    "pageTitle": "Admin Settings",
+    "pageSubtitle": "Manage users, settings, and system configuration",
+    "tabs": {
+      "users": "Users",
+      "opcoSettings": "OpCo Settings",
+      "businessUnits": "Business Units",
+      "system": "System",
+      "auditLogs": "Audit Logs"
+    },
+    "unauthorized": "You are not authorized to access this page",
+    "loading": "Loading..."
+  },
   "teamGrid": {
     "title": "Team 9-Grid",
     "whatScore": "WHAT Score",

@@ -22,6 +22,7 @@
     "unauthorized": "No está autorizado para ver esta página."
   },
   "dashboard": {
+    "title": "Panel de Control",
     "welcome": "Bienvenido, {name}",
     "tasksTitle": "Sus Tareas",
     "noTasks": "No hay tareas pendientes",
@@ -359,7 +360,12 @@
     "approveGoals": "Aprobar Objetivos",
     "loading": "Cargando datos del equipo...",
     "error": "Error al cargar los datos del equipo",
-    "emptyState": "No se encontraron miembros del equipo"
+    "emptyState": "No se encontraron miembros del equipo",
+    "scoringStatus": {
+      "NOT_STARTED": "No Iniciado",
+      "IN_PROGRESS": "En Progreso",
+      "COMPLETE": "Completado"
+    }
   },
   "analytics": {
     "title": "Análisis",
@@ -468,6 +474,19 @@
       "spanish": "Español",
       "currentLanguage": "Idioma actual: {language}"
     }
+  },
+  "admin": {
+    "pageTitle": "Configuración de Administración",
+    "pageSubtitle": "Administrar usuarios, configuraciones y configuración del sistema",
+    "tabs": {
+      "users": "Usuarios",
+      "opcoSettings": "Configuración OpCo",
+      "businessUnits": "Unidades de Negocio",
+      "system": "Sistema",
+      "auditLogs": "Registro de Auditoría"
+    },
+    "unauthorized": "No está autorizado para acceder a esta página",
+    "loading": "Cargando..."
   },
   "teamGrid": {
     "title": "9-Grid del Equipo",

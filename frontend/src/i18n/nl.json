@@ -22,6 +22,7 @@
     "unauthorized": "U bent niet gemachtigd om deze pagina te bekijken."
   },
   "dashboard": {
+    "title": "Dashboard",
     "welcome": "Welkom, {name}",
     "tasksTitle": "Uw Taken",
     "noTasks": "Geen openstaande taken",
@@ -359,7 +360,12 @@
     "approveGoals": "Doelen Goedkeuren",
     "loading": "Teamgegevens laden...",
     "error": "Fout bij laden van teamgegevens",
-    "emptyState": "Geen teamleden gevonden"
+    "emptyState": "Geen teamleden gevonden",
+    "scoringStatus": {
+      "NOT_STARTED": "Niet Gestart",
+      "IN_PROGRESS": "In Uitvoering",
+      "COMPLETE": "Voltooid"
+    }
   },
   "analytics": {
     "title": "Analyses",
@@ -468,6 +474,19 @@
       "spanish": "Spaans",
       "currentLanguage": "Huidige taal: {language}"
     }
+  },
+  "admin": {
+    "pageTitle": "Beheerinstellingen",
+    "pageSubtitle": "Beheer gebruikers, instellingen en systeemconfiguratie",
+    "tabs": {
+      "users": "Gebruikers",
+      "opcoSettings": "OpCo Instellingen",
+      "businessUnits": "Business Units",
+      "system": "Systeem",
+      "auditLogs": "Auditlogboek"
+    },
+    "unauthorized": "U bent niet gemachtigd om deze pagina te openen",
+    "loading": "Laden..."
   },
   "teamGrid": {
     "title": "Team 9-Grid",

@@ -49,6 +49,11 @@ const router = createRouter({
       name: 'Calibration',
       component: () => import('./views/CalibrationView.vue'),
     },
+    {
+      path: '/admin',
+      name: 'Admin',
+      component: () => import('./views/AdminView.vue'),
+    },
   ]
 })
 
