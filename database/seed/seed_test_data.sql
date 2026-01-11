@@ -137,16 +137,174 @@ VALUES
      20, 3);
 
 -- ============================================================================
+-- ADDITIONAL TEAM MEMBERS WITH SCORED REVIEWS (for 9-Grid visualization)
+-- ============================================================================
+
+-- Employee 3: Sarah - High performer (Exceeds/Exceeds)
+INSERT INTO users (id, keycloak_id, opco_id, email, first_name, last_name, function_title, tov_level, roles, manager_id)
+VALUES (
+    '33333333-3333-3333-3333-333333333333',
+    'employee3-keycloak-id',
+    '11111111-1111-1111-1111-111111111111',
+    'sarah.high@tss.eu',
+    'Sarah',
+    'High',
+    'Principal Engineer',
+    'C',
+    ARRAY['employee'],
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+) ON CONFLICT (keycloak_id) DO NOTHING;
+
+-- Employee 4: Tom - Meets expectations (Meets/Meets)
+INSERT INTO users (id, keycloak_id, opco_id, email, first_name, last_name, function_title, tov_level, roles, manager_id)
+VALUES (
+    '44444444-4444-4444-4444-444444444444',
+    'employee4-keycloak-id',
+    '11111111-1111-1111-1111-111111111111',
+    'tom.meets@tss.eu',
+    'Tom',
+    'Meets',
+    'Developer',
+    'B',
+    ARRAY['employee'],
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+) ON CONFLICT (keycloak_id) DO NOTHING;
+
+-- Employee 5: Lisa - Mixed performer (Exceeds WHAT / Meets HOW)
+INSERT INTO users (id, keycloak_id, opco_id, email, first_name, last_name, function_title, tov_level, roles, manager_id)
+VALUES (
+    '55555555-5555-5555-5555-555555555555',
+    'employee5-keycloak-id',
+    '11111111-1111-1111-1111-111111111111',
+    'lisa.mixed@tss.eu',
+    'Lisa',
+    'Mixed',
+    'Tech Lead',
+    'C',
+    ARRAY['employee'],
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+) ON CONFLICT (keycloak_id) DO NOTHING;
+
+-- Employee 6: Bob - Needs improvement (Below/Meets) with WHAT VETO
+INSERT INTO users (id, keycloak_id, opco_id, email, first_name, last_name, function_title, tov_level, roles, manager_id)
+VALUES (
+    '66666666-6666-6666-6666-666666666666',
+    'employee6-keycloak-id',
+    '11111111-1111-1111-1111-111111111111',
+    'bob.improve@tss.eu',
+    'Bob',
+    'Improve',
+    'Junior Developer',
+    'A',
+    ARRAY['employee'],
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+) ON CONFLICT (keycloak_id) DO NOTHING;
+
+-- Review for Sarah - Scored, high performer
+INSERT INTO reviews (id, opco_id, employee_id, manager_id, review_year, stage, status, tov_level, what_score, how_score, grid_position_what, grid_position_how, what_veto_active, how_veto_active)
+VALUES (
+    'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
+    '11111111-1111-1111-1111-111111111111',
+    '33333333-3333-3333-3333-333333333333',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    2026,
+    'END_YEAR_REVIEW',
+    'DRAFT',
+    'C',
+    2.85,
+    2.90,
+    3,
+    3,
+    false,
+    false
+) ON CONFLICT (employee_id, review_year, stage) DO UPDATE SET
+    what_score = 2.85,
+    how_score = 2.90,
+    grid_position_what = 3,
+    grid_position_how = 3;
+
+-- Review for Tom - Scored, meets expectations
+INSERT INTO reviews (id, opco_id, employee_id, manager_id, review_year, stage, status, tov_level, what_score, how_score, grid_position_what, grid_position_how, what_veto_active, how_veto_active)
+VALUES (
+    'ffffffff-ffff-ffff-ffff-ffffffffffff',
+    '11111111-1111-1111-1111-111111111111',
+    '44444444-4444-4444-4444-444444444444',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    2026,
+    'END_YEAR_REVIEW',
+    'DRAFT',
+    'B',
+    2.10,
+    2.20,
+    2,
+    2,
+    false,
+    false
+) ON CONFLICT (employee_id, review_year, stage) DO UPDATE SET
+    what_score = 2.10,
+    how_score = 2.20,
+    grid_position_what = 2,
+    grid_position_how = 2;
+
+-- Review for Lisa - Scored, mixed performer
+INSERT INTO reviews (id, opco_id, employee_id, manager_id, review_year, stage, status, tov_level, what_score, how_score, grid_position_what, grid_position_how, what_veto_active, how_veto_active)
+VALUES (
+    '77777777-7777-7777-7777-777777777777',
+    '11111111-1111-1111-1111-111111111111',
+    '55555555-5555-5555-5555-555555555555',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    2026,
+    'END_YEAR_REVIEW',
+    'DRAFT',
+    'C',
+    2.75,
+    2.15,
+    3,
+    2,
+    false,
+    false
+) ON CONFLICT (employee_id, review_year, stage) DO UPDATE SET
+    what_score = 2.75,
+    how_score = 2.15,
+    grid_position_what = 3,
+    grid_position_how = 2;
+
+-- Review for Bob - Scored, needs improvement with WHAT VETO (SCF scored 1)
+INSERT INTO reviews (id, opco_id, employee_id, manager_id, review_year, stage, status, tov_level, what_score, how_score, grid_position_what, grid_position_how, what_veto_active, how_veto_active)
+VALUES (
+    '88888888-8888-8888-8888-888888888888',
+    '11111111-1111-1111-1111-111111111111',
+    '66666666-6666-6666-6666-666666666666',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    2026,
+    'END_YEAR_REVIEW',
+    'DRAFT',
+    'A',
+    1.00,
+    2.00,
+    1,
+    2,
+    true,
+    false
+) ON CONFLICT (employee_id, review_year, stage) DO UPDATE SET
+    what_score = 1.00,
+    how_score = 2.00,
+    grid_position_what = 1,
+    grid_position_how = 2,
+    what_veto_active = true;
+
+-- ============================================================================
 -- VERIFICATION
 -- ============================================================================
 
 SELECT 'Users:' as info, COUNT(*) as count FROM users;
-SELECT 'Reviews:' as info, COUNT(*) as count FROM reviews WHERE status = 'DRAFT';
+SELECT 'Reviews:' as info, COUNT(*) as count FROM reviews WHERE review_year = 2026;
+SELECT 'Scored Reviews:' as info, COUNT(*) as count FROM reviews WHERE what_score IS NOT NULL;
 SELECT 'Goals:' as info, COUNT(*) as count FROM goals;
 SELECT 'Competencies:' as info, COUNT(*) as count FROM competencies WHERE level = 'B';
 
--- Show team for manager
-SELECT u.first_name, u.last_name, u.email, r.stage, r.status
+-- Show team for manager with scores
+SELECT u.first_name, u.last_name, r.what_score, r.how_score, r.grid_position_what, r.grid_position_how, r.what_veto_active
 FROM users u
 LEFT JOIN reviews r ON r.employee_id = u.id AND r.review_year = 2026
 WHERE u.manager_id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
