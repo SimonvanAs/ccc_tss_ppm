@@ -16,7 +16,7 @@ _Link: [./tracks/local_dev_infrastructure_20260110/](./tracks/local_dev_infrastr
 
 ---
 
-## [~] Track: Manager Goal Scoring
+## [x] Track: Manager Goal Scoring
 
 _Link: [./tracks/manager_goal_scoring_20260111/](./tracks/manager_goal_scoring_20260111/)_
 
@@ -28,7 +28,7 @@ _Link: [./tracks/whisper_api_20260111/](./tracks/whisper_api_20260111/)_
 
 ---
 
-## [~] Track: Competency Scoring
+## [x] Track: Competency Scoring
 
 _Link: [./conductor/tracks/competency_scoring_20260111/](./conductor/tracks/competency_scoring_20260111/)_
 
@@ -55,3 +55,9 @@ _Link: [./tracks/keycloak_hostname_v2_20260111/](./tracks/keycloak_hostname_v2_2
 ## [ ] Track: Review Signatures & PDF Generation
 
 *Link: [./conductor/tracks/review_signatures_pdf_20260111/](./conductor/tracks/review_signatures_pdf_20260111/)*
+
+---
+
+## [~] Track: Goal Setting IDE/TOV Enhancement
+
+*Link: [./conductor/tracks/goal_setting_tov_enhancement_20260111/](./conductor/tracks/goal_setting_tov_enhancement_20260111/)*
