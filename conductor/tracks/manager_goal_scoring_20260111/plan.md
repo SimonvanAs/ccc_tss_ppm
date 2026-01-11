@@ -18,16 +18,16 @@
   - [x] Implement router in `backend/src/routers/manager.py`
   - [x] Add Pydantic schemas for team member response
 
-- [ ] Task: Create GET /api/v1/reviews/{id}/scores endpoint
-  - [ ] Write API tests for endpoint with auth and authorization
-  - [ ] Implement router handler in `backend/src/routers/reviews.py`
-  - [ ] Add Pydantic schemas for scores response
+- [x] Task: Create GET /api/v1/reviews/{id}/scores endpoint `cac9fc8`
+  - [x] Write API tests for endpoint with auth and authorization
+  - [x] Implement router handler in `backend/src/routers/reviews.py`
+  - [x] Add Pydantic schemas for scores response
 
-- [ ] Task: Create PUT /api/v1/reviews/{id}/scores endpoint
-  - [ ] Write API tests for score creation/update
-  - [ ] Write API tests for partial score saves
-  - [ ] Implement router handler with upsert logic
-  - [ ] Add Pydantic schemas for scores request
+- [x] Task: Create PUT /api/v1/reviews/{id}/scores endpoint `cac9fc8`
+  - [x] Write API tests for score creation/update
+  - [x] Write API tests for partial score saves
+  - [x] Implement router handler with upsert logic
+  - [x] Add Pydantic schemas for scores request
 
 - [ ] Task: Create GET /api/v1/competencies endpoint
   - [ ] Write API tests for competencies by TOV level
