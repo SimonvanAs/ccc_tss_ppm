@@ -72,25 +72,25 @@
 
 ## Phase 3: Responsive Sidebar Behavior
 
-- [ ] Task: Write tests for sidebar responsive behavior
-  - [ ] Test sidebar expanded on desktop (≥1024px)
-  - [ ] Test sidebar collapsed on tablet (768px-1023px)
-  - [ ] Test sidebar hidden on mobile (<768px)
-  - [ ] Test hamburger button visible on tablet/mobile
-  - [ ] Test hamburger click toggles sidebar
-- [ ] Task: Implement responsive sidebar logic
-  - [ ] Add useSidebar composable for state management
-  - [ ] Track viewport width with resize observer
-  - [ ] Implement collapse/expand state
-  - [ ] Add CSS transitions for smooth animation (200-300ms)
-- [ ] Task: Implement hamburger menu button
-  - [ ] Create HamburgerButton component
-  - [ ] Add to AppHeader when viewport < 1024px
-  - [ ] Wire click to toggle sidebar state
-- [ ] Task: Implement mobile sidebar overlay
-  - [ ] Add overlay backdrop when sidebar open on mobile
-  - [ ] Click outside closes sidebar
-  - [ ] Slide-in animation from left
+- [x] Task: Write tests for sidebar responsive behavior `0c7509f`
+  - [x] Test sidebar expanded on desktop (≥1024px)
+  - [x] Test sidebar collapsed on tablet (768px-1023px)
+  - [x] Test sidebar hidden on mobile (<768px)
+  - [x] Test hamburger button visible on tablet/mobile
+  - [x] Test hamburger click toggles sidebar
+- [x] Task: Implement responsive sidebar logic `0c7509f`
+  - [x] Add useSidebar composable for state management
+  - [x] Track viewport width with resize observer
+  - [x] Implement collapse/expand state
+  - [x] Add CSS transitions for smooth animation (200-300ms)
+- [x] Task: Implement hamburger menu button `0c7509f`
+  - [x] Create HamburgerButton component
+  - [x] Add to AppHeader when viewport < 1024px
+  - [x] Wire click to toggle sidebar state
+- [x] Task: Implement mobile sidebar overlay `0c7509f`
+  - [x] Add overlay backdrop when sidebar open on mobile
+  - [x] Click outside closes sidebar
+  - [x] Slide-in animation from left
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Responsive Sidebar Behavior' (Protocol in workflow.md)
 
 ## Phase 4: View Integration
