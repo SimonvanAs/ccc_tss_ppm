@@ -303,6 +303,45 @@
     "scope": {
       "COMPANY_WIDE": "Toda la Empresa",
       "BUSINESS_UNIT": "Unidad de Negocio"
+    },
+    "grid": {
+      "title": "Calibración 9-Cuadrículas",
+      "whatScore": "Puntuación QUÉ",
+      "howScore": "Puntuación CÓMO",
+      "manager": "Gerente",
+      "veto": "VETO Activo",
+      "noReviews": "No hay evaluaciones para mostrar",
+      "clickToSelect": "Clic para seleccionar"
+    },
+    "adjustment": {
+      "title": "Ajuste de Puntuación",
+      "employee": "Empleado",
+      "currentScores": "Puntuaciones Actuales",
+      "whatScore": "Puntuación QUÉ",
+      "howScore": "Puntuación CÓMO",
+      "newScores": "Nuevas Puntuaciones",
+      "rationale": "Justificación",
+      "rationalePlaceholder": "Explique la razón de este ajuste...",
+      "rationaleRequired": "La justificación es requerida",
+      "submit": "Enviar Ajuste",
+      "cancel": "Cancelar",
+      "submitting": "Enviando...",
+      "success": "Ajuste de puntuación guardado",
+      "error": "Error al guardar ajuste",
+      "noChanges": "No se realizaron cambios de puntuación"
+    },
+    "notes": {
+      "sessionNotes": "Notas de Sesión",
+      "reviewNotes": "Notas de Evaluación",
+      "addNote": "Agregar Nota",
+      "placeholder": "Ingrese su nota...",
+      "submit": "Agregar",
+      "cancel": "Cancelar",
+      "noNotes": "Aún no hay notas",
+      "loading": "Cargando notas...",
+      "error": "Error al cargar notas",
+      "addError": "Error al agregar nota",
+      "contentRequired": "El contenido de la nota es requerido"
     }
   },
   "team": {

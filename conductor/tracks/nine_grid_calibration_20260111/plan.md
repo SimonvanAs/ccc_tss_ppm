@@ -171,37 +171,37 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
 
 ## Phase 7: Calibration Frontend - Grid View & Score Adjustment
 
-- [ ] Task: Write tests for CalibrationNineGrid component
-  - [ ] Test displays all session employees on grid
-  - [ ] Test hover shows employee details
-  - [ ] Test click opens detail panel
-  - [ ] Test handles many employees gracefully
-- [ ] Task: Implement CalibrationNineGrid.vue component
-  - [ ] Extend TeamNineGrid for calibration context
-  - [ ] Add employee detail panel on click
-  - [ ] Handle dense cell populations
-- [ ] Task: Write tests for ScoreAdjustmentPanel component
-  - [ ] Test displays current scores
-  - [ ] Test allows score editing
-  - [ ] Test requires rationale
-  - [ ] Test submits adjustment
-- [ ] Task: Implement ScoreAdjustmentPanel.vue component
-  - [ ] Show current WHAT and HOW scores
-  - [ ] Add score edit controls
-  - [ ] Add rationale textarea (required)
-  - [ ] Submit adjustment to API
-  - [ ] Show success/error feedback
-- [ ] Task: Write tests for CalibrationNotesPanel component
-  - [ ] Test displays existing notes
-  - [ ] Test add new note
-  - [ ] Test session vs review level notes
-- [ ] Task: Implement CalibrationNotesPanel.vue component
-  - [ ] List existing notes with author and timestamp
-  - [ ] Add new note form
-  - [ ] Support session and review level
-- [ ] Task: Integrate components into CalibrationSessionView
-  - [ ] Combine grid, adjustment panel, and notes
-  - [ ] Handle component communication
-  - [ ] Refresh grid after score adjustment
-- [ ] Task: Add i18n translations for calibration grid UI (EN/NL/ES)
+- [x] Task: Write tests for CalibrationNineGrid component
+  - [x] Test displays all session employees on grid
+  - [x] Test hover shows employee details
+  - [x] Test click opens detail panel
+  - [x] Test handles many employees gracefully
+- [x] Task: Implement CalibrationNineGrid.vue component
+  - [x] Extend TeamNineGrid for calibration context
+  - [x] Add employee detail panel on click
+  - [x] Handle dense cell populations
+- [x] Task: Write tests for ScoreAdjustmentPanel component
+  - [x] Test displays current scores
+  - [x] Test allows score editing
+  - [x] Test requires rationale
+  - [x] Test submits adjustment
+- [x] Task: Implement ScoreAdjustmentPanel.vue component
+  - [x] Show current WHAT and HOW scores
+  - [x] Add score edit controls
+  - [x] Add rationale textarea (required)
+  - [x] Submit adjustment to API
+  - [x] Show success/error feedback
+- [x] Task: Write tests for CalibrationNotesPanel component
+  - [x] Test displays existing notes
+  - [x] Test add new note
+  - [x] Test session vs review level notes
+- [x] Task: Implement CalibrationNotesPanel.vue component
+  - [x] List existing notes with author and timestamp
+  - [x] Add new note form
+  - [x] Support session and review level
+- [x] Task: Integrate components into CalibrationSessionView
+  - [x] Combine grid, adjustment panel, and notes
+  - [x] Handle component communication
+  - [x] Refresh grid after score adjustment
+- [x] Task: Add i18n translations for calibration grid UI (EN/NL/ES)
 - [ ] Task: Conductor - User Manual Verification 'Phase 7: Calibration Frontend - Grid View & Score Adjustment' (Protocol in workflow.md)

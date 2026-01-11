@@ -13,6 +13,9 @@ import {
   type CalibrationReview,
   type CalibrationParticipant,
 } from '../../api/calibration'
+import CalibrationNineGrid from './CalibrationNineGrid.vue'
+import ScoreAdjustmentPanel from './ScoreAdjustmentPanel.vue'
+import CalibrationNotesPanel from './CalibrationNotesPanel.vue'
 
 const { t } = useI18n()
 
@@ -34,9 +37,11 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const showDeleteConfirm = ref(false)
 const actionLoading = ref(false)
+const selectedReview = ref<CalibrationReview | null>(null)
 
 const isPreparation = computed(() => session.value?.status === 'PREPARATION')
 const isInProgress = computed(() => session.value?.status === 'IN_PROGRESS')
+const showCalibrationGrid = computed(() => isInProgress.value && reviews.value.length > 0)
 
 function getStatusClass(status: string): string {
   return `status-${status.toLowerCase().replace('_', '-')}`
@@ -140,6 +145,31 @@ function handleBack() {
   emit('back')
 }
 
+// Grid and panel interaction handlers
+function handleReviewSelect(review: CalibrationReview) {
+  selectedReview.value = review
+}
+
+async function handleAdjustmentSuccess() {
+  // Refresh reviews to get updated scores
+  try {
+    reviews.value = await fetchSessionReviews(props.sessionId)
+    // Update the selected review with the new data
+    if (selectedReview.value) {
+      const updated = reviews.value.find((r) => r.review_id === selectedReview.value?.review_id)
+      if (updated) {
+        selectedReview.value = updated
+      }
+    }
+  } catch (e) {
+    console.error('Failed to refresh reviews:', e)
+  }
+}
+
+function handleAdjustmentCancel() {
+  selectedReview.value = null
+}
+
 onMounted(loadData)
 </script>
 
@@ -223,7 +253,38 @@ onMounted(loadData)
         </div>
       </div>
 
-      <div class="content-sections">
+      <!-- Calibration Grid View (shown when session is in progress) -->
+      <div v-if="showCalibrationGrid" class="calibration-grid-section">
+        <div class="grid-main">
+          <section class="grid-container">
+            <h3>{{ t('calibration.grid.title') }}</h3>
+            <CalibrationNineGrid
+              :reviews="reviews"
+              :selected-review-id="selectedReview?.review_id"
+              @select="handleReviewSelect"
+            />
+          </section>
+
+          <section class="notes-section">
+            <CalibrationNotesPanel
+              :session-id="sessionId"
+              :review-id="selectedReview?.review_id"
+            />
+          </section>
+        </div>
+
+        <div v-if="selectedReview" class="grid-sidebar">
+          <ScoreAdjustmentPanel
+            :session-id="sessionId"
+            :review="selectedReview"
+            @success="handleAdjustmentSuccess"
+            @cancel="handleAdjustmentCancel"
+          />
+        </div>
+      </div>
+
+      <!-- Standard Reviews List (shown when not in calibration mode) -->
+      <div v-else class="content-sections">
         <section class="reviews-section">
           <h3>{{ t('calibration.detail.reviews') }}</h3>
 
@@ -646,5 +707,45 @@ button:disabled {
 
 .confirm-delete-btn:hover:not(:disabled) {
   background: #a00;
+}
+
+/* Calibration Grid Section Styles */
+.calibration-grid-section {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 1.5rem;
+}
+
+.calibration-grid-section .grid-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.calibration-grid-section .grid-container {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.calibration-grid-section .grid-container h3 {
+  margin: 0 0 1rem;
+  color: var(--navy, #004a91);
+  font-family: Tahoma, sans-serif;
+}
+
+.calibration-grid-section .notes-section {
+  flex: 1;
+}
+
+.calibration-grid-section .grid-sidebar {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .calibration-grid-section {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

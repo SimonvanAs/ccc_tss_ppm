@@ -303,6 +303,45 @@
     "scope": {
       "COMPANY_WIDE": "Bedrijfsbreed",
       "BUSINESS_UNIT": "Business Unit"
+    },
+    "grid": {
+      "title": "9-Grid Kalibratie",
+      "whatScore": "WAT Score",
+      "howScore": "HOE Score",
+      "manager": "Manager",
+      "veto": "VETO Actief",
+      "noReviews": "Geen beoordelingen om weer te geven",
+      "clickToSelect": "Klik om te selecteren"
+    },
+    "adjustment": {
+      "title": "Score Aanpassing",
+      "employee": "Medewerker",
+      "currentScores": "Huidige Scores",
+      "whatScore": "WAT Score",
+      "howScore": "HOE Score",
+      "newScores": "Nieuwe Scores",
+      "rationale": "Motivatie",
+      "rationalePlaceholder": "Leg de reden voor deze aanpassing uit...",
+      "rationaleRequired": "Motivatie is verplicht",
+      "submit": "Aanpassing Indienen",
+      "cancel": "Annuleren",
+      "submitting": "Indienen...",
+      "success": "Score aanpassing opgeslagen",
+      "error": "Aanpassing opslaan mislukt",
+      "noChanges": "Geen score wijzigingen gemaakt"
+    },
+    "notes": {
+      "sessionNotes": "Sessie Notities",
+      "reviewNotes": "Beoordeling Notities",
+      "addNote": "Notitie Toevoegen",
+      "placeholder": "Voer uw notitie in...",
+      "submit": "Toevoegen",
+      "cancel": "Annuleren",
+      "noNotes": "Nog geen notities",
+      "loading": "Notities laden...",
+      "error": "Notities laden mislukt",
+      "addError": "Notitie toevoegen mislukt",
+      "contentRequired": "Notitie inhoud is verplicht"
     }
   },
   "team": {

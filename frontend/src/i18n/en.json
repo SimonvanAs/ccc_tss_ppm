@@ -317,6 +317,45 @@
     "scope": {
       "COMPANY_WIDE": "Company Wide",
       "BUSINESS_UNIT": "Business Unit"
+    },
+    "grid": {
+      "title": "9-Grid Calibration",
+      "whatScore": "WHAT Score",
+      "howScore": "HOW Score",
+      "manager": "Manager",
+      "veto": "VETO Active",
+      "noReviews": "No reviews to display on grid",
+      "clickToSelect": "Click to select"
+    },
+    "adjustment": {
+      "title": "Score Adjustment",
+      "employee": "Employee",
+      "currentScores": "Current Scores",
+      "whatScore": "WHAT Score",
+      "howScore": "HOW Score",
+      "newScores": "New Scores",
+      "rationale": "Rationale",
+      "rationalePlaceholder": "Explain the reason for this adjustment...",
+      "rationaleRequired": "Rationale is required",
+      "submit": "Submit Adjustment",
+      "cancel": "Cancel",
+      "submitting": "Submitting...",
+      "success": "Score adjustment saved",
+      "error": "Failed to save adjustment",
+      "noChanges": "No score changes made"
+    },
+    "notes": {
+      "sessionNotes": "Session Notes",
+      "reviewNotes": "Review Notes",
+      "addNote": "Add Note",
+      "placeholder": "Enter your note...",
+      "submit": "Add",
+      "cancel": "Cancel",
+      "noNotes": "No notes yet",
+      "loading": "Loading notes...",
+      "error": "Failed to load notes",
+      "addError": "Failed to add note",
+      "contentRequired": "Note content is required"
     }
   },
   "team": {
