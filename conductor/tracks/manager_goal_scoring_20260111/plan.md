@@ -165,7 +165,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md) `591b898`
 
-## Phase 6: Internationalization & Polish
+## Phase 6: Internationalization & Polish [checkpoint: b9ad107]
 
 - [x] Task: Add i18n translations for scoring UI
   - [x] Add English translations to `frontend/src/i18n/en.json`
