@@ -30,14 +30,14 @@
 
 ## Phase 2: Development Configuration Update
 
-- [ ] Task: Write integration test for Keycloak configuration (Red Phase)
-  - [ ] Create test file `backend/tests/test_keycloak_config.py`
-  - [ ] Write test to verify `.well-known/openid-configuration` endpoint responds
-  - [ ] Write test to verify issuer URL matches expected hostname
-  - [ ] Write test to verify token endpoint URL is correct
-  - [ ] Run tests and confirm they fail (Keycloak not yet configured)
+- [x] Task: Write integration test for Keycloak configuration (Red Phase)
+  - [x] Create test file `backend/tests/test_keycloak_config.py`
+  - [x] Write test to verify `.well-known/openid-configuration` endpoint responds
+  - [x] Write test to verify issuer URL matches expected hostname
+  - [x] Write test to verify token endpoint URL is correct
+  - [x] Run tests - Keycloak endpoints work but logs show ERROR for deprecated v1 options
 
-- [ ] Task: Update docker-compose Keycloak configuration (Green Phase)
+- [~] Task: Update docker-compose Keycloak configuration (Green Phase)
   - [ ] Remove deprecated `hostname-port` option
   - [ ] Remove or update `hostname-strict` option
   - [ ] Configure v2 `hostname` option for development
