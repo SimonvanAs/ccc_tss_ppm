@@ -32,20 +32,21 @@
   - [x] Implement endpoint with timestamp recording
   - [x] Verify RBAC enforcement
 
-- [~] Task: Implement reject review endpoint
-  - [~] Write tests for POST /api/v1/reviews/{id}/reject
-  - [ ] Test employee rejection (PENDING_EMPLOYEE_SIGNATURE → DRAFT)
-  - [ ] Test manager rejection (PENDING_MANAGER_SIGNATURE → PENDING_EMPLOYEE_SIGNATURE)
-  - [ ] Test feedback note requirement
-  - [ ] Implement endpoint with feedback storage
-  - [ ] Verify RBAC enforcement
+- [x] Task: Implement reject review endpoint `c44ac9d`
+  - [x] Write tests for POST /api/v1/reviews/{id}/reject
+  - [x] Test employee rejection (PENDING_EMPLOYEE_SIGNATURE → DRAFT)
+  - [x] Test manager rejection (PENDING_MANAGER_SIGNATURE → PENDING_EMPLOYEE_SIGNATURE)
+  - [x] Test feedback note requirement
+  - [x] Implement endpoint with feedback storage
+  - [x] Verify RBAC enforcement
 
-- [ ] Task: Implement goal setting approval flow
-  - [ ] Write tests for goal submission (DRAFT → PENDING_MANAGER_SIGNATURE)
-  - [ ] Write tests for manager approval (PENDING_MANAGER_SIGNATURE → SIGNED)
-  - [ ] Write tests for manager rejection with feedback
-  - [ ] Implement goal-specific submission logic
-  - [ ] Verify weight validation (must total 100%)
+- [x] Task: Implement goal setting approval flow `86a84a3`
+  - [x] Write tests for goal submission (DRAFT → PENDING_MANAGER_SIGNATURE)
+  - [x] Write tests for manager approval (PENDING_MANAGER_SIGNATURE → SIGNED)
+  - [x] Write tests for manager rejection with feedback
+  - [x] Implement goal-specific submission logic
+  - [x] Verify weight validation (must total 100%)
+  - Note: Uses existing submit_review/sign/reject endpoints with stage awareness
 
 - [ ] Task: Conductor - User Manual Verification 'Backend Signature API' (Protocol in workflow.md)
 
