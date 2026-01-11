@@ -34,6 +34,6 @@ _Link: [./conductor/tracks/competency_scoring_20260111/](./conductor/tracks/comp
 
 ---
 
-## [ ] Track: UI Layout and Styling
+## [~] Track: UI Layout and Styling
 
 _Link: [./tracks/ui_layout_20260111/](./tracks/ui_layout_20260111/)_
