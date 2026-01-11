@@ -66,46 +66,46 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Handle navigation to individual reviews
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Team Dashboard 9-Grid' (Protocol in workflow.md) `924e0b3`
 
-## Phase 4: Calibration Backend - Database & Core API
+## Phase 4: Calibration Backend - Database & Core API [checkpoint: pending]
 
-- [ ] Task: Create calibration_sessions database table
-  - [ ] Define schema: id, opco_id, name, description, review_cycle, status, created_by, created_at, updated_at
-  - [ ] Add status enum: draft, in_progress, completed
-- [ ] Task: Create calibration_session_reviews junction table
-  - [ ] Define schema: session_id, review_id, added_at
-- [ ] Task: Create calibration_session_participants table
-  - [ ] Define schema: session_id, user_id, role, added_at
-- [ ] Task: Create calibration_score_adjustments audit table
-  - [ ] Define schema: id, session_id, review_id, field (what_score/how_score), original_value, new_value, adjusted_by, rationale, adjusted_at
-- [ ] Task: Create calibration_notes table
-  - [ ] Define schema: id, session_id, review_id (nullable for session-level), content, created_by, created_at
-- [ ] Task: Write tests for calibration sessions repository
-  - [ ] Test create session
-  - [ ] Test get session by id
-  - [ ] Test list sessions with filters
-  - [ ] Test update session
-  - [ ] Test delete draft session
-  - [ ] Test add/remove reviews from session
-  - [ ] Test status transitions
-- [ ] Task: Implement calibration sessions repository
-  - [ ] Create CRUD functions for sessions
-  - [ ] Implement review management functions
-  - [ ] Implement status transition logic
-  - [ ] Enforce OpCo isolation
-- [ ] Task: Write tests for calibration session API endpoints
-  - [ ] Test POST /api/v1/calibration-sessions
-  - [ ] Test GET /api/v1/calibration-sessions
-  - [ ] Test GET /api/v1/calibration-sessions/{id}
-  - [ ] Test PUT /api/v1/calibration-sessions/{id}
-  - [ ] Test DELETE /api/v1/calibration-sessions/{id}
-  - [ ] Test POST /api/v1/calibration-sessions/{id}/start
-  - [ ] Test POST /api/v1/calibration-sessions/{id}/complete
-  - [ ] Test HR role authorization
-- [ ] Task: Implement calibration session API endpoints
-  - [ ] Create router with all endpoints
-  - [ ] Add HR role authorization
-  - [ ] Implement request/response schemas
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Calibration Backend - Database & Core API' (Protocol in workflow.md)
+- [x] Task: Create calibration_sessions database table (existed in 01-schema.sql)
+  - [x] Define schema: id, opco_id, name, description, review_cycle, status, created_by, created_at, updated_at
+  - [x] Add status enum: PREPARATION, IN_PROGRESS, PENDING_APPROVAL, COMPLETED, CANCELLED
+- [x] Task: Create calibration_session_reviews junction table `04-calibration-extended-tables.sql`
+  - [x] Define schema: session_id, review_id, added_at, added_by
+- [x] Task: Create calibration_session_participants table `04-calibration-extended-tables.sql`
+  - [x] Define schema: id, session_id, user_id, role, added_at, added_by
+- [x] Task: Create calibration_score_adjustments audit table (existed as calibration_adjustments in 01-schema.sql)
+  - [x] Define schema: id, session_id, review_id, original/adjusted scores, adjusted_by, adjustment_notes, created_at
+- [x] Task: Create calibration_notes table `04-calibration-extended-tables.sql`
+  - [x] Define schema: id, session_id, review_id (nullable for session-level), content, created_by, created_at
+- [x] Task: Write tests for calibration sessions repository `e6df378`
+  - [x] Test create session
+  - [x] Test get session by id
+  - [x] Test list sessions with filters
+  - [x] Test update session
+  - [x] Test delete draft session
+  - [x] Test add/remove reviews from session
+  - [x] Test status transitions
+- [x] Task: Implement calibration sessions repository `e6df378`
+  - [x] Create CRUD functions for sessions
+  - [x] Implement review management functions
+  - [x] Implement status transition logic
+  - [x] Enforce OpCo isolation
+- [x] Task: Write tests for calibration session API endpoints `7abab88`
+  - [x] Test POST /api/v1/calibration-sessions
+  - [x] Test GET /api/v1/calibration-sessions
+  - [x] Test GET /api/v1/calibration-sessions/{id}
+  - [x] Test PUT /api/v1/calibration-sessions/{id}
+  - [x] Test DELETE /api/v1/calibration-sessions/{id}
+  - [x] Test POST /api/v1/calibration-sessions/{id}/start
+  - [x] Test POST /api/v1/calibration-sessions/{id}/complete
+  - [x] Test HR role authorization
+- [x] Task: Implement calibration session API endpoints `7abab88`
+  - [x] Create router with all endpoints
+  - [x] Add HR role authorization
+  - [x] Implement request/response schemas
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Calibration Backend - Database & Core API' (Protocol in workflow.md)
 
 ## Phase 5: Calibration Backend - Reviews & Score Adjustments
 
