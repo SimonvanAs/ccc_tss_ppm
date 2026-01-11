@@ -270,3 +270,121 @@ class TestScoresRepository:
         await scores_repo.bulk_upsert_competency_scores(review_id, competency_scores)
 
         assert mock_conn.fetchrow.call_count == 2
+
+    # --- Review HOW Score Persistence Tests ---
+
+    async def test_update_review_how_score(self, scores_repo, mock_conn):
+        """Should update review how_score field."""
+        review_id = uuid4()
+        how_score = 2.50
+        mock_conn.fetchrow.return_value = {
+            'id': review_id,
+            'how_score': how_score,
+            'how_veto_active': False,
+            'grid_position_how': 3,
+        }
+
+        result = await scores_repo.update_review_how_score(
+            review_id=review_id,
+            how_score=how_score,
+            how_veto_active=False,
+            grid_position_how=3,
+        )
+
+        assert result['how_score'] == how_score
+        mock_conn.fetchrow.assert_called_once()
+
+    async def test_update_review_how_score_with_veto(self, scores_repo, mock_conn):
+        """Should update review with VETO flag when any score is 1."""
+        review_id = uuid4()
+        mock_conn.fetchrow.return_value = {
+            'id': review_id,
+            'how_score': 1.00,
+            'how_veto_active': True,
+            'grid_position_how': 1,
+        }
+
+        result = await scores_repo.update_review_how_score(
+            review_id=review_id,
+            how_score=1.00,
+            how_veto_active=True,
+            grid_position_how=1,
+        )
+
+        assert result['how_veto_active'] is True
+        assert result['how_score'] == 1.00
+
+    async def test_update_review_grid_position_how(self, scores_repo, mock_conn):
+        """Should update review grid_position_how field."""
+        review_id = uuid4()
+        mock_conn.fetchrow.return_value = {
+            'id': review_id,
+            'how_score': 2.00,
+            'how_veto_active': False,
+            'grid_position_how': 2,
+        }
+
+        result = await scores_repo.update_review_how_score(
+            review_id=review_id,
+            how_score=2.00,
+            how_veto_active=False,
+            grid_position_how=2,
+        )
+
+        assert result['grid_position_how'] == 2
+
+    async def test_recalculate_and_update_how_score(self, scores_repo, mock_conn):
+        """Should recalculate HOW score from competency scores and update review."""
+        review_id = uuid4()
+        # Mock competency scores fetch - 6 scores averaging to 2.50
+        mock_conn.fetch.return_value = [
+            {'score': 2}, {'score': 3}, {'score': 2},
+            {'score': 3}, {'score': 2}, {'score': 3},
+        ]
+        mock_conn.fetchrow.return_value = {
+            'id': review_id,
+            'how_score': 2.50,
+            'how_veto_active': False,
+            'grid_position_how': 3,
+        }
+
+        result = await scores_repo.recalculate_and_update_how_score(review_id)
+
+        assert result['how_score'] == 2.50
+        assert result['how_veto_active'] is False
+        assert result['grid_position_how'] == 3
+
+    async def test_recalculate_with_veto_triggered(self, scores_repo, mock_conn):
+        """Should set HOW score to 1.00 when VETO is triggered."""
+        review_id = uuid4()
+        # Mock competency scores with one score = 1 (triggers VETO)
+        mock_conn.fetch.return_value = [
+            {'score': 1}, {'score': 3}, {'score': 2},
+            {'score': 3}, {'score': 2}, {'score': 3},
+        ]
+        mock_conn.fetchrow.return_value = {
+            'id': review_id,
+            'how_score': 1.00,
+            'how_veto_active': True,
+            'grid_position_how': 1,
+        }
+
+        result = await scores_repo.recalculate_and_update_how_score(review_id)
+
+        assert result['how_score'] == 1.00
+        assert result['how_veto_active'] is True
+        assert result['grid_position_how'] == 1
+
+    async def test_recalculate_with_incomplete_scores(self, scores_repo, mock_conn):
+        """Should return None when fewer than 6 competency scores exist."""
+        review_id = uuid4()
+        # Mock only 3 competency scores
+        mock_conn.fetch.return_value = [
+            {'score': 2}, {'score': 3}, {'score': 2},
+        ]
+
+        result = await scores_repo.recalculate_and_update_how_score(review_id)
+
+        # Should not update review when incomplete
+        assert result is None
+        mock_conn.fetchrow.assert_not_called()

@@ -28,17 +28,17 @@
 
 ## Phase 3: WebSocket Endpoint Foundation
 
-- [ ] Task: Write failing tests for WebSocket endpoint lifecycle
-  - [ ] Test: Endpoint accepts connection at /api/v1/voice/transcribe
-  - [ ] Test: Connection stays open after successful auth
-  - [ ] Test: Connection closes after timeout period of inactivity
-  - [ ] Test: Binary messages are accepted (audio chunks)
-  - [ ] Test: Text messages are accepted (control messages with language hint)
-- [ ] Task: Implement WebSocket endpoint
-  - [ ] Create `src/routers/voice.py` with WebSocket route
-  - [ ] Register router in main.py
-  - [ ] Implement connection lifecycle (accept, maintain, close)
-  - [ ] Add inactivity timeout handling
+- [x] Task: Write failing tests for WebSocket endpoint lifecycle (5570572)
+  - [x] Test: Endpoint accepts connection at /api/v1/voice/transcribe
+  - [x] Test: Connection stays open after successful auth
+  - [x] Test: Connection closes after timeout period of inactivity
+  - [x] Test: Binary messages are accepted (audio chunks)
+  - [x] Test: Text messages are accepted (control messages with language hint)
+- [x] Task: Implement WebSocket endpoint (139d991)
+  - [x] Create `src/routers/voice.py` with WebSocket route
+  - [x] Register router in main.py
+  - [x] Implement connection lifecycle (accept, maintain, close)
+  - [x] Add inactivity timeout handling
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: WebSocket Endpoint Foundation' (Protocol in workflow.md)
 
 ## Phase 4: Whisper Service Client
