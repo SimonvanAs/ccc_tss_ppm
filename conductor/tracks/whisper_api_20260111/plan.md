@@ -11,7 +11,7 @@
   - [x] Add VOICE_RATE_LIMIT setting (default: 10 per minute)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Configuration' (Protocol in workflow.md)
 
-## Phase 2: WebSocket Authentication
+## Phase 2: WebSocket Authentication [checkpoint: 00ddce6]
 
 - [x] Task: Write failing tests for WebSocket JWT authentication (5199e46)
   - [x] Test: Connection with valid JWT succeeds
@@ -24,7 +24,7 @@
   - [x] Support token via query parameter `?token=<jwt>`
   - [x] Reuse existing Keycloak JWT validation logic from auth module
   - [x] Return appropriate WebSocket close codes for auth failures
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: WebSocket Authentication' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: WebSocket Authentication' (Protocol in workflow.md)
 
 ## Phase 3: WebSocket Endpoint Foundation
 
