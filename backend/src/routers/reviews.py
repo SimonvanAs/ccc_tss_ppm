@@ -9,10 +9,11 @@ from pydantic import BaseModel
 
 import asyncpg
 
-from src.auth import CurrentUser, get_current_user
+from src.auth import CurrentUser, get_current_user, require_manager
 from src.database import get_db
 from src.repositories.goals import GoalRepository
 from src.repositories.scores import ScoresRepository
+from src.repositories.audit import AuditRepository
 from src.schemas.scores import (
     AllScoresResponse,
     GoalScoreResponse,
