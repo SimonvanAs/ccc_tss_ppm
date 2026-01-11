@@ -39,8 +39,13 @@
     "stages": {
       "GOAL_SETTING": "Establecimiento de Objetivos",
       "MID_YEAR_REVIEW": "Evaluación de Medio Año",
-      "END_YEAR_REVIEW": "Evaluación de Fin de Año"
+      "END_YEAR_REVIEW": "Evaluación de Fin de Año",
+      "goalSetting": "Establecimiento de Objetivos",
+      "midYear": "Evaluación de Medio Año",
+      "endYear": "Evaluación de Fin de Año"
     },
+    "whatScore": "Puntuación QUÉ",
+    "howScore": "Puntuación CÓMO",
     "statuses": {
       "DRAFT": "Borrador",
       "PENDING_EMPLOYEE_SIGNATURE": "Esperando Firma del Empleado",
@@ -208,7 +213,25 @@
     "notSigned": "Aún no firmado",
     "signConfirm": "Confirmo que he revisado este documento",
     "signButton": "Firmar Ahora",
-    "rejectReason": "Razón del rechazo"
+    "rejectReason": "Razón del rechazo",
+    "signReview": "Firmar Evaluación",
+    "rejectReview": "Solicitar Cambios",
+    "reviewSummary": "Resumen de Evaluación",
+    "acknowledgment": "He revisado y estoy de acuerdo con el contenido de esta evaluación de desempeño",
+    "feedbackRequired": "Por favor proporcione comentarios explicando los cambios requeridos:",
+    "feedbackPlaceholder": "Describa lo que necesita ser revisado...",
+    "feedbackMinLength": "Los comentarios deben tener al menos {min} caracteres",
+    "submitFeedback": "Enviar Comentarios y Volver",
+    "employeeSigned": "Empleado:",
+    "managerSigned": "Gerente:",
+    "status": {
+      "title": "Estado de Firma",
+      "draft": "Borrador",
+      "awaitingEmployee": "Esperando Firma del Empleado",
+      "awaitingManager": "Esperando Firma del Gerente",
+      "signed": "Firmado",
+      "archived": "Archivado"
+    }
   },
   "calibration": {
     "title": "Sesiones de Calibración",

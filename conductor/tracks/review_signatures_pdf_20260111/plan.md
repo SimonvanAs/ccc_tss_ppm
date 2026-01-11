@@ -75,13 +75,13 @@
   - [x] Show signer information
   - [x] Style with brand colors
 
-- [ ] Task: Integrate signature UI into ReviewView
-  - [ ] Write tests for signature button visibility by role and status
-  - [ ] Add Submit for Signature button (manager, DRAFT status)
-  - [ ] Add Sign Review button (appropriate role/status)
-  - [ ] Add Reject button (appropriate role/status)
-  - [ ] Connect to API endpoints
-  - [ ] Handle loading and error states
+- [x] Task: Integrate signature UI into ReviewView
+  - [x] Write tests for signature button visibility by role and status
+  - [x] Add Submit for Signature button (manager, DRAFT status)
+  - [x] Add Sign Review button (appropriate role/status)
+  - [x] Add Reject button (appropriate role/status)
+  - [x] Connect to API endpoints
+  - [x] Handle loading and error states
 
 - [ ] Task: Conductor - User Manual Verification 'Frontend Signature Components' (Protocol in workflow.md)
 

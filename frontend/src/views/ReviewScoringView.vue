@@ -1,18 +1,28 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useScoring } from '../composables/useScoring'
 import { submitScores as submitScoresApi } from '../api/scores'
-import { fetchReview } from '../api/reviews'
+import {
+  fetchReview,
+  signReview as signReviewApi,
+  rejectReview as rejectReviewApi,
+} from '../api/reviews'
+import type { ReviewDetails, ReviewStatus, ReviewStage } from '../api/reviews'
 import { fetchGoals } from '../api/goals'
 import { getCompetencies } from '../api/competencies'
 import { calculateWhatScore, calculateHowScore } from '../services/scoring'
+import { getCurrentUser } from '../api/auth'
 import GoalScoringSection from '../components/review/GoalScoringSection.vue'
 import CompetencyScoringSection from '../components/review/CompetencyScoringSection.vue'
 import NineGrid from '../components/review/NineGrid.vue'
 import ScoreSummary from '../components/review/ScoreSummary.vue'
 import SaveIndicator from '../components/common/SaveIndicator.vue'
 import SubmitScoresButton from '../components/review/SubmitScoresButton.vue'
+import SignatureStatus from '../components/review/SignatureStatus.vue'
+import SignatureModal from '../components/review/SignatureModal.vue'
+import RejectionModal from '../components/review/RejectionModal.vue'
 import { Card, SectionHeader } from '../components/layout'
 import type { Goal } from '../components/review/GoalScoringSection.vue'
 import type { Competency } from '../components/review/CompetencyScoringSection.vue'
@@ -23,6 +33,7 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const { t } = useI18n()
 
 // Data state
 const goals = ref<Goal[]>([])
@@ -32,9 +43,19 @@ const isDataLoading = ref(true)
 const dataError = ref<string | null>(null)
 const readOnly = ref(false)
 
+// Review data for signature flow
+const reviewData = ref<ReviewDetails | null>(null)
+const currentUserId = ref<string | null>(null)
+
 // Submit state
 const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
+
+// Signature modal state
+const showSignatureModal = ref(false)
+const showRejectionModal = ref(false)
+const isSigningOrRejecting = ref(false)
+const signatureError = ref<string | null>(null)
 
 const {
   goalScores,
@@ -87,6 +108,68 @@ const whatVetoActive = computed(() => whatScoreResult.value?.vetoActive ?? false
 const whatVetoType = computed(() => whatScoreResult.value?.vetoReason ?? null)
 const howVetoActive = computed(() => howScoreResult.value?.vetoActive ?? false)
 
+// Signature computed properties
+const reviewStatus = computed<ReviewStatus>(() => reviewData.value?.status ?? 'DRAFT')
+const reviewStage = computed<ReviewStage>(() => reviewData.value?.stage ?? 'GOAL_SETTING')
+
+const isCurrentUserEmployee = computed(() => {
+  return currentUserId.value === reviewData.value?.employee_id
+})
+
+const isCurrentUserManager = computed(() => {
+  return currentUserId.value === reviewData.value?.manager_id
+})
+
+// Signature visibility rules
+const canEmployeeSign = computed(() => {
+  return isCurrentUserEmployee.value && reviewStatus.value === 'PENDING_EMPLOYEE_SIGNATURE'
+})
+
+const canManagerSign = computed(() => {
+  return isCurrentUserManager.value && reviewStatus.value === 'PENDING_MANAGER_SIGNATURE'
+})
+
+const canSign = computed(() => canEmployeeSign.value || canManagerSign.value)
+
+const canReject = computed(() => {
+  // Employee can reject when pending their signature
+  if (isCurrentUserEmployee.value && reviewStatus.value === 'PENDING_EMPLOYEE_SIGNATURE') {
+    return true
+  }
+  // Manager can reject when pending their signature
+  if (isCurrentUserManager.value && reviewStatus.value === 'PENDING_MANAGER_SIGNATURE') {
+    return true
+  }
+  return false
+})
+
+const employeeSignature = computed(() => {
+  if (reviewData.value?.employee_signature_date && reviewData.value?.employee_signature_by) {
+    return {
+      signedBy: reviewData.value.employee_signature_by,
+      signedAt: new Date(reviewData.value.employee_signature_date),
+    }
+  }
+  return undefined
+})
+
+const managerSignature = computed(() => {
+  if (reviewData.value?.manager_signature_date && reviewData.value?.manager_signature_by) {
+    return {
+      signedBy: reviewData.value.manager_signature_by,
+      signedAt: new Date(reviewData.value.manager_signature_date),
+    }
+  }
+  return undefined
+})
+
+const reviewSummary = computed(() => ({
+  employeeName: reviewData.value?.employee_name ?? '',
+  stage: reviewStage.value,
+  whatScore: whatScore.value ?? undefined,
+  howScore: howScore.value ?? undefined,
+}))
+
 // Event handlers
 function handleGoalScoreChange(goalId: string, score: number) {
   setGoalScore(goalId, score)
@@ -108,12 +191,59 @@ async function handleSubmit() {
 
   try {
     await submitScoresApi(props.reviewId)
-    // Redirect to team dashboard on success
-    router.push('/team')
+    // Reload review data to get updated status
+    await loadReviewData()
   } catch (error) {
     submitError.value = error instanceof Error ? error.message : 'Submission failed'
   } finally {
     isSubmitting.value = false
+  }
+}
+
+// Signature handlers
+function openSignatureModal() {
+  signatureError.value = null
+  showSignatureModal.value = true
+}
+
+function openRejectionModal() {
+  signatureError.value = null
+  showRejectionModal.value = true
+}
+
+async function handleSign() {
+  if (isSigningOrRejecting.value) return
+
+  isSigningOrRejecting.value = true
+  signatureError.value = null
+
+  try {
+    await signReviewApi(props.reviewId)
+    showSignatureModal.value = false
+    // Reload review data to get updated status
+    await loadReviewData()
+  } catch (error) {
+    signatureError.value = error instanceof Error ? error.message : 'Signing failed'
+  } finally {
+    isSigningOrRejecting.value = false
+  }
+}
+
+async function handleReject(feedback: string) {
+  if (isSigningOrRejecting.value) return
+
+  isSigningOrRejecting.value = true
+  signatureError.value = null
+
+  try {
+    await rejectReviewApi(props.reviewId, feedback)
+    showRejectionModal.value = false
+    // Reload review data to get updated status
+    await loadReviewData()
+  } catch (error) {
+    signatureError.value = error instanceof Error ? error.message : 'Rejection failed'
+  } finally {
+    isSigningOrRejecting.value = false
   }
 }
 
@@ -126,7 +256,10 @@ async function loadReviewData() {
     // Fetch review to get TOV level and status
     const review = await fetchReview(props.reviewId)
 
-    // Check if read-only based on status
+    // Store review data for signature flow
+    reviewData.value = review
+
+    // Check if read-only based on status (scoring is read-only unless DRAFT)
     readOnly.value = review.status !== 'DRAFT'
 
     // Set TOV level
@@ -156,6 +289,10 @@ async function loadReviewData() {
 
 // Initialize
 onMounted(() => {
+  // Get current user ID for signature visibility
+  const user = getCurrentUser()
+  currentUserId.value = user?.id ?? null
+
   loadReviewData()
 })
 </script>
@@ -200,6 +337,7 @@ onMounted(() => {
           @score-change="handleCompetencyScoreChange"
         />
 
+        <!-- Submit for Signature (manager only, DRAFT status) -->
         <Card v-if="!readOnly" class="submit-card">
           <div class="submit-section">
             <SubmitScoresButton
@@ -209,6 +347,31 @@ onMounted(() => {
               :error-message="submitError || ''"
               @submit="handleSubmit"
             />
+          </div>
+        </Card>
+
+        <!-- Signature Actions (when pending signature) -->
+        <Card v-if="canSign || canReject" class="signature-actions-card">
+          <div class="signature-actions">
+            <p v-if="signatureError" class="signature-error">{{ signatureError }}</p>
+            <div class="signature-buttons">
+              <button
+                v-if="canReject"
+                type="button"
+                class="reject-button"
+                @click="openRejectionModal"
+              >
+                {{ t('signature.rejectReview') }}
+              </button>
+              <button
+                v-if="canSign"
+                type="button"
+                class="sign-button"
+                @click="openSignatureModal"
+              >
+                {{ t('signature.signReview') }}
+              </button>
+            </div>
           </div>
         </Card>
       </main>
@@ -236,8 +399,35 @@ onMounted(() => {
             compact
           />
         </Card>
+
+        <!-- Signature Status -->
+        <Card class="sidebar-card" padding="md">
+          <h3 class="sidebar-title">{{ t('signature.status.title') }}</h3>
+          <SignatureStatus
+            :status="reviewStatus"
+            :employee-signature="employeeSignature"
+            :manager-signature="managerSignature"
+            :was-rejected="!!reviewData?.rejection_feedback"
+          />
+        </Card>
       </aside>
     </div>
+
+    <!-- Signature Modal -->
+    <SignatureModal
+      v-model="showSignatureModal"
+      :review-summary="reviewSummary"
+      :loading="isSigningOrRejecting"
+      @sign="handleSign"
+    />
+
+    <!-- Rejection Modal -->
+    <RejectionModal
+      v-model="showRejectionModal"
+      :review-summary="reviewSummary"
+      :loading="isSigningOrRejecting"
+      @reject="handleReject"
+    />
   </div>
 </template>
 
@@ -341,5 +531,73 @@ onMounted(() => {
   margin: 0 0 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* Signature Actions */
+.signature-actions-card {
+  margin-top: 1rem;
+}
+
+.signature-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.signature-error {
+  margin: 0;
+  padding: 0.75rem;
+  background: rgba(220, 38, 38, 0.1);
+  border-radius: 6px;
+  color: var(--color-error, #dc2626);
+  font-size: 0.875rem;
+}
+
+.signature-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.sign-button,
+.reject-button {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sign-button {
+  background: var(--color-magenta, #CC0E70);
+  border: none;
+  color: white;
+}
+
+.sign-button:hover {
+  background: #a30b5a;
+}
+
+.reject-button {
+  background: var(--color-white, #fff);
+  border: 1px solid var(--color-gray-300, #d1d5db);
+  color: var(--color-gray-700, #374151);
+}
+
+.reject-button:hover {
+  background: var(--color-gray-50, #f9fafb);
+  border-color: var(--color-gray-400, #9ca3af);
+}
+
+@media (max-width: 480px) {
+  .signature-buttons {
+    flex-direction: column;
+  }
+
+  .sign-button,
+  .reject-button {
+    width: 100%;
+  }
 }
 </style>

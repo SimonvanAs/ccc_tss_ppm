@@ -39,8 +39,13 @@
     "stages": {
       "GOAL_SETTING": "Doelen Stellen",
       "MID_YEAR_REVIEW": "Halfjaarlijkse Beoordeling",
-      "END_YEAR_REVIEW": "Eindejaars Beoordeling"
+      "END_YEAR_REVIEW": "Eindejaars Beoordeling",
+      "goalSetting": "Doelen Stellen",
+      "midYear": "Halfjaarlijkse Beoordeling",
+      "endYear": "Eindejaars Beoordeling"
     },
+    "whatScore": "WAT Score",
+    "howScore": "HOE Score",
     "statuses": {
       "DRAFT": "Concept",
       "PENDING_EMPLOYEE_SIGNATURE": "Wacht op Medewerker Handtekening",
@@ -208,7 +213,25 @@
     "notSigned": "Nog niet ondertekend",
     "signConfirm": "Ik bevestig dat ik dit document heb beoordeeld",
     "signButton": "Nu Ondertekenen",
-    "rejectReason": "Reden voor afwijzing"
+    "rejectReason": "Reden voor afwijzing",
+    "signReview": "Beoordeling Ondertekenen",
+    "rejectReview": "Wijzigingen Aanvragen",
+    "reviewSummary": "Beoordelingsoverzicht",
+    "acknowledgment": "Ik heb de inhoud van deze prestatiebeoordeling bekeken en ga ermee akkoord",
+    "feedbackRequired": "Geef feedback over de vereiste wijzigingen:",
+    "feedbackPlaceholder": "Beschrijf wat moet worden herzien...",
+    "feedbackMinLength": "Feedback moet minimaal {min} tekens bevatten",
+    "submitFeedback": "Feedback Verzenden & Terug",
+    "employeeSigned": "Medewerker:",
+    "managerSigned": "Manager:",
+    "status": {
+      "title": "Handtekeningstatus",
+      "draft": "Concept",
+      "awaitingEmployee": "Wacht op Medewerker Handtekening",
+      "awaitingManager": "Wacht op Manager Handtekening",
+      "signed": "Ondertekend",
+      "archived": "Gearchiveerd"
+    }
   },
   "calibration": {
     "title": "Kalibratiesessies",

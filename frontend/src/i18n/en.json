@@ -40,8 +40,13 @@
     "stages": {
       "GOAL_SETTING": "Goal Setting",
       "MID_YEAR_REVIEW": "Mid-Year Review",
-      "END_YEAR_REVIEW": "End-Year Review"
+      "END_YEAR_REVIEW": "End-Year Review",
+      "goalSetting": "Goal Setting",
+      "midYear": "Mid-Year Review",
+      "endYear": "End-Year Review"
     },
+    "whatScore": "WHAT Score",
+    "howScore": "HOW Score",
     "statuses": {
       "DRAFT": "Draft",
       "PENDING_EMPLOYEE_SIGNATURE": "Awaiting Employee Signature",
@@ -222,7 +227,25 @@
     "notSigned": "Not yet signed",
     "signConfirm": "I confirm that I have reviewed this document",
     "signButton": "Sign Now",
-    "rejectReason": "Reason for rejection"
+    "rejectReason": "Reason for rejection",
+    "signReview": "Sign Review",
+    "rejectReview": "Request Changes",
+    "reviewSummary": "Review Summary",
+    "acknowledgment": "I have reviewed and agree with the content of this performance review",
+    "feedbackRequired": "Please provide feedback explaining the required changes:",
+    "feedbackPlaceholder": "Describe what needs to be revised...",
+    "feedbackMinLength": "Feedback must be at least {min} characters",
+    "submitFeedback": "Submit Feedback & Return",
+    "employeeSigned": "Employee:",
+    "managerSigned": "Manager:",
+    "status": {
+      "title": "Signature Status",
+      "draft": "Draft",
+      "awaitingEmployee": "Awaiting Employee Signature",
+      "awaitingManager": "Awaiting Manager Signature",
+      "signed": "Signed",
+      "archived": "Archived"
+    }
   },
   "calibration": {
     "title": "Calibration Sessions",
