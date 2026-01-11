@@ -104,7 +104,10 @@
       "titlePlaceholder": "Voer doeltitel in",
       "descriptionPlaceholder": "Voer doelbeschrijving in (optioneel)",
       "weightStep": "Gewicht moet een veelvoud van 5 zijn"
-    }
+    },
+    "submit": "Doelen Indienen",
+    "submitHint": "Doelgewichten moeten optellen tot 100% om in te dienen",
+    "headerFieldsRequired": "Functietitel en TOV niveau zijn verplicht"
   },
   "competencies": {
     "title": "Competenties",
@@ -486,7 +489,8 @@
     "date": "Datum",
     "name": "Naam",
     "email": "E-mail",
-    "role": "Rol"
+    "role": "Rol",
+    "back": "Terug"
   },
   "reviewHeader": {
     "employee": "Medewerker",

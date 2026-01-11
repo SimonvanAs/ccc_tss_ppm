@@ -100,6 +100,7 @@
     "emptyDescription": "Add your first goal to get started",
     "submit": "Submit Goals",
     "submitHint": "Goal weights must total 100% before submitting",
+    "headerFieldsRequired": "Job title and TOV level are required",
     "scores": {
       "1": "Below Expectations",
       "2": "Meets Expectations",
@@ -505,7 +506,8 @@
     "date": "Date",
     "name": "Name",
     "email": "Email",
-    "role": "Role"
+    "role": "Role",
+    "back": "Back"
   },
   "reviewHeader": {
     "employee": "Employee",

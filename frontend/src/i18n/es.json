@@ -104,7 +104,10 @@
       "titlePlaceholder": "Ingrese el título del objetivo",
       "descriptionPlaceholder": "Ingrese la descripción del objetivo (opcional)",
       "weightStep": "El peso debe ser múltiplo de 5"
-    }
+    },
+    "submit": "Enviar Objetivos",
+    "submitHint": "Los pesos deben sumar 100% antes de enviar",
+    "headerFieldsRequired": "El título del puesto y el nivel TOV son obligatorios"
   },
   "competencies": {
     "title": "Competencias",
@@ -486,7 +489,8 @@
     "date": "Fecha",
     "name": "Nombre",
     "email": "Correo electrónico",
-    "role": "Rol"
+    "role": "Rol",
+    "back": "Volver"
   },
   "reviewHeader": {
     "employee": "Empleado",
