@@ -52,9 +52,9 @@
   - [x] Write tests for click navigation
   - [x] Implement `frontend/src/components/dashboard/TeamMemberCard.vue`
 
-- [ ] Task: Add team dashboard to navigation
-  - [ ] Update App.vue or navigation component for manager role
-  - [ ] Write tests for role-based navigation visibility
+- [x] Task: Add team dashboard to navigation `8412901`
+  - [x] Update App.vue or navigation component for manager role
+  - [x] Write tests for role-based navigation visibility
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 

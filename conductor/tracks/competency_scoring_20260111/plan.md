@@ -2,7 +2,7 @@
 
 ## Phase 1: Backend Scoring Service
 
-- [ ] Task: Write tests for HOW score calculation service
+- [~] Task: Write tests for HOW score calculation service
   - [ ] Test average calculation when all scores present
   - [ ] Test VETO rule when any score equals 1
   - [ ] Test grid position mapping (1.00-1.66→1, 1.67-2.33→2, 2.34-3.00→3)
