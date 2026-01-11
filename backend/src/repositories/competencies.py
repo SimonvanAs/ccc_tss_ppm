@@ -1,6 +1,7 @@
 # TSS PPM v3.0 - Competencies Repository
 """Database operations for competencies."""
 
+import json
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
@@ -56,4 +57,17 @@ class CompetenciesRepository:
             ORDER BY category, display_order
         """
         rows = await self.conn.fetch(query, level, opco_id)
-        return [dict(row) for row in rows]
+
+        # Parse JSON string columns to lists
+        result = []
+        for row in rows:
+            record = dict(row)
+            # Parse indicators_en if it's a string
+            if isinstance(record.get('indicators_en'), str):
+                try:
+                    record['indicators_en'] = json.loads(record['indicators_en'])
+                except (json.JSONDecodeError, TypeError):
+                    record['indicators_en'] = None
+            result.append(record)
+
+        return result

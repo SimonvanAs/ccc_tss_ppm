@@ -27,6 +27,7 @@ const router = useRouter()
 // Data state
 const goals = ref<Goal[]>([])
 const competencies = ref<Competency[]>([])
+const tovLevel = ref<TovLevel>('B')
 const isDataLoading = ref(true)
 const dataError = ref<string | null>(null)
 const readOnly = ref(false)
@@ -95,8 +96,8 @@ function handleGoalFeedbackChange(goalId: string, feedback: string) {
   setGoalFeedback(goalId, feedback)
 }
 
-function handleCompetencyScoreChange(compId: string, score: number) {
-  setCompetencyScore(compId, score)
+function handleCompetencyScoreChange(payload: { competencyId: string; score: number }) {
+  setCompetencyScore(payload.competencyId, payload.score)
 }
 
 async function handleSubmit() {
@@ -127,6 +128,9 @@ async function loadReviewData() {
 
     // Check if read-only based on status
     readOnly.value = review.status !== 'DRAFT'
+
+    // Set TOV level
+    tovLevel.value = (review.tov_level as TovLevel) || 'B'
 
     // Fetch goals and competencies in parallel
     const [goalsData, compsData] = await Promise.all([
@@ -190,8 +194,8 @@ onMounted(() => {
         />
 
         <CompetencyScoringSection
-          :competencies="competencies"
-          :scores="competencyScores"
+          :review-id="props.reviewId"
+          :tov-level="tovLevel"
           :disabled="readOnly"
           @score-change="handleCompetencyScoreChange"
         />

@@ -421,3 +421,258 @@ class TestSignReviewEndpoint:
 
         assert response.status_code == 200
         assert response.json()['status'] == 'SIGNED'
+
+
+@pytest.mark.asyncio
+class TestRejectReviewEndpoint:
+    """Tests for review rejection endpoint."""
+
+    @pytest.fixture
+    def employee_user_id(self):
+        """Employee's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def manager_user_id(self):
+        """Manager's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def mock_employee_user(self, employee_user_id):
+        """Mock authenticated employee."""
+        return CurrentUser(
+            keycloak_id='employee-keycloak-id',
+            email='employee@example.com',
+            name='John Employee',
+            roles=['employee'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def mock_manager_user(self, manager_user_id):
+        """Mock authenticated manager."""
+        return CurrentUser(
+            keycloak_id='manager-keycloak-id',
+            email='manager@example.com',
+            name='Jane Manager',
+            roles=['manager'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def sample_review_pending_employee(self, employee_user_id, manager_user_id):
+        """Sample review awaiting employee signature."""
+        return {
+            'id': uuid4(),
+            'employee_id': employee_user_id,
+            'manager_id': manager_user_id,
+            'opco_id': uuid4(),
+            'status': 'PENDING_EMPLOYEE_SIGNATURE',
+            'stage': 'END_YEAR_REVIEW',
+            'review_year': 2026,
+        }
+
+    @pytest.fixture
+    def sample_review_pending_manager(self, employee_user_id, manager_user_id):
+        """Sample review awaiting manager signature."""
+        return {
+            'id': uuid4(),
+            'employee_id': employee_user_id,
+            'manager_id': manager_user_id,
+            'opco_id': uuid4(),
+            'status': 'PENDING_MANAGER_SIGNATURE',
+            'stage': 'END_YEAR_REVIEW',
+            'review_year': 2026,
+            'employee_signature_by': employee_user_id,
+        }
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        conn = AsyncMock()
+        return conn
+
+    @pytest_asyncio.fixture
+    async def employee_client(self, mock_employee_user, mock_db_conn, employee_user_id):
+        """HTTP client authenticated as employee."""
+        app.dependency_overrides[get_current_user] = lambda: mock_employee_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+        mock_db_conn.fetchrow.return_value = {'id': employee_user_id}
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    @pytest_asyncio.fixture
+    async def manager_client(self, mock_manager_user, mock_db_conn, manager_user_id):
+        """HTTP client authenticated as manager."""
+        app.dependency_overrides[get_current_user] = lambda: mock_manager_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+        mock_db_conn.fetchrow.return_value = {'id': manager_user_id}
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    # --- POST /api/v1/reviews/:id/reject tests ---
+
+    async def test_reject_requires_auth(self):
+        """POST /reviews/:id/reject should require authentication."""
+        app.dependency_overrides.clear()
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as client:
+            review_id = uuid4()
+            response = await client.post(
+                f'/api/v1/reviews/{review_id}/reject',
+                json={'feedback': 'Please revise goals'},
+            )
+            assert response.status_code in [401, 403]
+
+    async def test_employee_reject_success(
+        self, employee_client, mock_db_conn, sample_review_pending_employee, employee_user_id
+    ):
+        """Employee can reject review and return to DRAFT."""
+        review_id = sample_review_pending_employee['id']
+        rejected_review = {
+            **sample_review_pending_employee,
+            'status': 'DRAFT',
+            'rejection_feedback': 'Please revise goals',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': employee_user_id},  # User lookup
+            sample_review_pending_employee,  # Get review
+            {'id': uuid4()},  # Audit log entry
+            rejected_review,  # Get updated review
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await employee_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': 'Please revise goals'},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['status'] == 'DRAFT'
+
+    async def test_manager_reject_success(
+        self, manager_client, mock_db_conn, sample_review_pending_manager, manager_user_id
+    ):
+        """Manager can reject review and return to PENDING_EMPLOYEE_SIGNATURE."""
+        review_id = sample_review_pending_manager['id']
+        rejected_review = {
+            **sample_review_pending_manager,
+            'status': 'PENDING_EMPLOYEE_SIGNATURE',
+            'rejection_feedback': 'Need more detail',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': manager_user_id},  # User lookup
+            sample_review_pending_manager,  # Get review
+            {'id': uuid4()},  # Audit log entry
+            rejected_review,  # Get updated review
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await manager_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': 'Need more detail'},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['status'] == 'PENDING_EMPLOYEE_SIGNATURE'
+
+    async def test_reject_requires_feedback(
+        self, employee_client, mock_db_conn, sample_review_pending_employee, employee_user_id
+    ):
+        """Rejection requires feedback note."""
+        review_id = sample_review_pending_employee['id']
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': employee_user_id},
+            sample_review_pending_employee,
+        ]
+
+        # No feedback provided
+        response = await employee_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={},
+        )
+
+        assert response.status_code == 422  # Validation error
+
+    async def test_reject_empty_feedback(
+        self, employee_client, mock_db_conn, sample_review_pending_employee, employee_user_id
+    ):
+        """Rejection requires non-empty feedback."""
+        review_id = sample_review_pending_employee['id']
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': employee_user_id},
+            sample_review_pending_employee,
+        ]
+
+        response = await employee_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': ''},
+        )
+
+        assert response.status_code == 400
+        assert 'feedback' in response.json()['detail'].lower()
+
+    async def test_reject_review_not_found(self, employee_client, mock_db_conn, employee_user_id):
+        """POST /reviews/:id/reject should return 404 for non-existent review."""
+        review_id = uuid4()
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': employee_user_id},
+            None,  # Review not found
+        ]
+
+        response = await employee_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': 'Some feedback'},
+        )
+
+        assert response.status_code == 404
+
+    async def test_reject_wrong_status(
+        self, employee_client, mock_db_conn, sample_review_pending_employee, employee_user_id
+    ):
+        """Cannot reject a review that's not awaiting your signature."""
+        review_id = sample_review_pending_employee['id']
+        draft_review = {**sample_review_pending_employee, 'status': 'DRAFT'}
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': employee_user_id},
+            draft_review,
+        ]
+
+        response = await employee_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': 'Some feedback'},
+        )
+
+        assert response.status_code == 400
+
+    async def test_reject_creates_audit_log(
+        self, employee_client, mock_db_conn, sample_review_pending_employee, employee_user_id
+    ):
+        """Rejecting a review should create an audit log entry."""
+        review_id = sample_review_pending_employee['id']
+        rejected_review = {**sample_review_pending_employee, 'status': 'DRAFT'}
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': employee_user_id},
+            sample_review_pending_employee,
+            {'id': uuid4(), 'action': 'REVIEW_REJECTED'},  # Audit log
+            rejected_review,
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await employee_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': 'Please revise'},
+        )
+
+        assert response.status_code == 200
+        assert mock_db_conn.fetchrow.call_count >= 3

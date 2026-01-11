@@ -17,22 +17,23 @@
 
 ## Phase 2: Backend Signature API [checkpoint: ]
 
-- [ ] Task: Implement review submission endpoint
-  - [ ] Write tests for POST /api/v1/reviews/{id}/submit
-  - [ ] Test guard conditions (goals scored, competencies scored, weights = 100%)
-  - [ ] Implement endpoint with status transitions
-  - [ ] Verify RBAC enforcement (manager can submit team reviews)
+- [x] Task: Implement review submission endpoint `existing`
+  - [x] Write tests for POST /api/v1/reviews/{id}/submit
+  - [x] Test guard conditions (goals scored, competencies scored, weights = 100%)
+  - [x] Implement endpoint with status transitions
+  - [x] Verify RBAC enforcement (manager can submit team reviews)
+  - Note: submit-scores endpoint already exists with audit logging
 
-- [ ] Task: Implement sign review endpoint
-  - [ ] Write tests for POST /api/v1/reviews/{id}/sign
-  - [ ] Test employee signature flow (PENDING_EMPLOYEE_SIGNATURE → EMPLOYEE_SIGNED)
-  - [ ] Test manager signature flow (PENDING_MANAGER_SIGNATURE → MANAGER_SIGNED)
-  - [ ] Test auto-transition to SIGNED when both signatures present
-  - [ ] Implement endpoint with timestamp recording
-  - [ ] Verify RBAC enforcement
+- [x] Task: Implement sign review endpoint `16ee0a0`
+  - [x] Write tests for POST /api/v1/reviews/{id}/sign
+  - [x] Test employee signature flow (PENDING_EMPLOYEE_SIGNATURE → PENDING_MANAGER_SIGNATURE)
+  - [x] Test manager signature flow (PENDING_MANAGER_SIGNATURE → SIGNED)
+  - [x] Test auto-transition to SIGNED when both signatures present
+  - [x] Implement endpoint with timestamp recording
+  - [x] Verify RBAC enforcement
 
-- [ ] Task: Implement reject review endpoint
-  - [ ] Write tests for POST /api/v1/reviews/{id}/reject
+- [~] Task: Implement reject review endpoint
+  - [~] Write tests for POST /api/v1/reviews/{id}/reject
   - [ ] Test employee rejection (PENDING_EMPLOYEE_SIGNATURE → DRAFT)
   - [ ] Test manager rejection (PENDING_MANAGER_SIGNATURE → PENDING_EMPLOYEE_SIGNATURE)
   - [ ] Test feedback note requirement

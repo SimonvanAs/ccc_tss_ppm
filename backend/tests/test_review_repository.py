@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 
 import pytest
 
+pytestmark = pytest.mark.asyncio
+
 
 class TestReviewRepositoryGetReview:
     """Tests for ReviewRepository.get_review with header fields."""
