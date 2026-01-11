@@ -117,30 +117,30 @@
 
 ## Phase 6: Frontend - HR Manager Reassignment [checkpoint: ]
 
-- [ ] Task: Create ManagerReassignModal component
-  - [ ] Write tests for modal rendering with manager dropdown
-  - [ ] Write tests for optional reason field
-  - [ ] Write tests for submit and cancel actions
-  - [ ] Write tests for loading and error states
-  - [ ] Implement ManagerReassignModal.vue
+- [x] Task: Create ManagerReassignModal component `7a00ca9`
+  - [x] Write tests for modal rendering with manager dropdown
+  - [x] Write tests for optional reason field
+  - [x] Write tests for submit and cancel actions
+  - [x] Write tests for loading and error states
+  - [x] Implement ManagerReassignModal.vue
 
-- [ ] Task: Add reassign button to ReviewHeader for HR role
-  - [ ] Write tests for button visibility only for HR role
-  - [ ] Write tests for modal opening on click
-  - [ ] Write tests for header update after successful reassignment
-  - [ ] Implement conditional button and modal integration
+- [x] Task: Add reassign button to ReviewHeader for HR role `7a00ca9`
+  - [x] Write tests for button visibility only for HR role
+  - [x] Write tests for modal opening on click
+  - [x] Write tests for header update after successful reassignment
+  - [x] Implement conditional button and modal integration
 
-- [ ] Task: Create manager reassignment API client
-  - [ ] Write tests for reassignManager function
-  - [ ] Write tests for error handling
-  - [ ] Implement in frontend/src/api/reviews.ts
+- [x] Task: Create manager reassignment API client `7a00ca9`
+  - [x] Write tests for reassignManager function
+  - [x] Write tests for error handling
+  - [x] Implement in frontend/src/api/reviews.ts
 
-- [ ] Task: Add i18n translations for reassignment UI
-  - [ ] Add English translations
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for reassignment UI `7a00ca9`
+  - [x] Add English translations
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Conductor - User Manual Verification 'Frontend - HR Manager Reassignment' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend - HR Manager Reassignment' (Protocol in workflow.md)
 
 ## Phase 7: Validation & Submission Updates [checkpoint: ]
 
