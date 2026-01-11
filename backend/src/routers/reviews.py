@@ -47,12 +47,28 @@ class ReviewRepository:
         self.conn = conn
 
     async def get_review(self, review_id: UUID) -> Optional[dict]:
-        """Get a single review by ID."""
+        """Get a single review by ID with employee and manager names.
+
+        Joins with users table to resolve employee and manager names.
+        Returns all header fields including job_title, tov_level, and
+        stage completion timestamps.
+        """
         query = """
-            SELECT id, employee_id, manager_id, status, stage, review_year,
-                   what_score, how_score
-            FROM reviews
-            WHERE id = $1 AND deleted_at IS NULL
+            SELECT
+                r.id, r.employee_id, r.manager_id, r.opco_id,
+                r.status, r.stage, r.review_year,
+                r.what_score, r.how_score,
+                r.job_title, r.tov_level,
+                r.goal_setting_completed_at,
+                r.mid_year_completed_at,
+                r.end_year_completed_at,
+                r.created_at, r.updated_at,
+                CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+                CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+            FROM reviews r
+            LEFT JOIN users e ON r.employee_id = e.id
+            LEFT JOIN users m ON r.manager_id = m.id
+            WHERE r.id = $1 AND r.deleted_at IS NULL
         """
         row = await self.conn.fetchrow(query, review_id)
         return dict(row) if row else None
@@ -67,6 +83,73 @@ class ReviewRepository:
                       what_score, how_score
         """
         row = await self.conn.fetchrow(query, new_status, review_id)
+        return dict(row) if row else None
+
+    async def update_review(
+        self,
+        review_id: UUID,
+        job_title: Optional[str] = None,
+        tov_level: Optional[str] = None,
+    ) -> Optional[dict]:
+        """Update a review's job_title and/or tov_level.
+
+        Only updates provided fields. Returns the updated review.
+
+        Args:
+            review_id: The review UUID
+            job_title: New job title (optional)
+            tov_level: New TOV level A/B/C/D (optional)
+
+        Returns:
+            Updated review dict or None if not found
+        """
+        # Build dynamic SET clause
+        set_parts = ['updated_at = NOW()']
+        params = []
+        param_idx = 1
+
+        if job_title is not None:
+            set_parts.append(f'job_title = ${param_idx}')
+            params.append(job_title)
+            param_idx += 1
+
+        if tov_level is not None:
+            set_parts.append(f'tov_level = ${param_idx}')
+            params.append(tov_level)
+            param_idx += 1
+
+        params.append(review_id)
+
+        query = f"""
+            UPDATE reviews
+            SET {', '.join(set_parts)}
+            WHERE id = ${param_idx} AND deleted_at IS NULL
+            RETURNING id, employee_id, manager_id, status, stage, review_year,
+                      what_score, how_score, job_title, tov_level
+        """
+        row = await self.conn.fetchrow(query, *params)
+        return dict(row) if row else None
+
+    async def reassign_manager(
+        self, review_id: UUID, new_manager_id: UUID
+    ) -> Optional[dict]:
+        """Reassign a review to a different manager.
+
+        Args:
+            review_id: The review UUID
+            new_manager_id: The new manager's user UUID
+
+        Returns:
+            Updated review dict or None if not found
+        """
+        query = """
+            UPDATE reviews
+            SET manager_id = $1, updated_at = NOW()
+            WHERE id = $2 AND deleted_at IS NULL
+            RETURNING id, employee_id, manager_id, opco_id, status, stage,
+                      review_year, what_score, how_score, job_title, tov_level
+        """
+        row = await self.conn.fetchrow(query, new_manager_id, review_id)
         return dict(row) if row else None
 
 
