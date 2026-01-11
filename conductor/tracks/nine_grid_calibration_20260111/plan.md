@@ -37,7 +37,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Handle incomplete scoring (partial WHAT/HOW)
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Manager Scoring View Integration' (Protocol in workflow.md) `591b898`
 
-## Phase 3: Team Dashboard 9-Grid
+## Phase 3: Team Dashboard 9-Grid [checkpoint: 924e0b3]
 
 - [x] Task: Write tests for GET /api/v1/manager/team/grid endpoint
   - [x] Test returns team members with WHAT/HOW scores
@@ -64,7 +64,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Fetch team data from API
   - [x] Display TeamNineGrid component
   - [x] Handle navigation to individual reviews
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Team Dashboard 9-Grid' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Team Dashboard 9-Grid' (Protocol in workflow.md) `924e0b3`
 
 ## Phase 4: Calibration Backend - Database & Core API
 
