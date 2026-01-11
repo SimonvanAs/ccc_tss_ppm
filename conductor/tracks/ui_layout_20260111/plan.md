@@ -37,37 +37,37 @@
 
 ## Phase 2: Card and Content Styling Components
 
-- [ ] Task: Write tests for Card component
-  - [ ] Test renders slot content
-  - [ ] Test applies white background and shadow
-  - [ ] Test accepts optional padding prop
-- [ ] Task: Implement Card.vue component
-  - [ ] Create card container with white background
-  - [ ] Add subtle box-shadow
-  - [ ] Apply consistent border-radius
-  - [ ] Support padding variants via prop
-- [ ] Task: Write tests for SectionHeader component
-  - [ ] Test renders title text
-  - [ ] Test applies Navy color and Tahoma bold font
-  - [ ] Test supports optional subtitle
-- [ ] Task: Implement SectionHeader.vue component
-  - [ ] Create header with Navy (#004A91) color
-  - [ ] Apply Tahoma font-family, bold weight
-  - [ ] Support optional subtitle slot
-- [ ] Task: Write tests for FormField component
-  - [ ] Test renders label and input
-  - [ ] Test shows required asterisk when required prop true
-  - [ ] Test renders voice input icon when voiceEnabled prop true
-  - [ ] Test two-column layout in grid context
-- [ ] Task: Implement FormField.vue component
-  - [ ] Create wrapper with label and input slot
-  - [ ] Add required indicator styling
-  - [ ] Position voice input icon inside field (right side)
-  - [ ] Apply consistent input styling (border, height, focus state)
-- [ ] Task: Create base form input styles
-  - [ ] Add global CSS/SCSS for input, select, textarea elements
-  - [ ] Apply Tahoma font, consistent sizing
-  - [ ] Add focus states with Magenta outline
+- [x] Task: Write tests for Card component `03028d8`
+  - [x] Test renders slot content
+  - [x] Test applies white background and shadow
+  - [x] Test accepts optional padding prop
+- [x] Task: Implement Card.vue component `03028d8`
+  - [x] Create card container with white background
+  - [x] Add subtle box-shadow
+  - [x] Apply consistent border-radius
+  - [x] Support padding variants via prop
+- [x] Task: Write tests for SectionHeader component `03028d8`
+  - [x] Test renders title text
+  - [x] Test applies Navy color and Tahoma bold font
+  - [x] Test supports optional subtitle
+- [x] Task: Implement SectionHeader.vue component `03028d8`
+  - [x] Create header with Navy (#004A91) color
+  - [x] Apply Tahoma font-family, bold weight
+  - [x] Support optional subtitle slot
+- [x] Task: Write tests for FormField component `03028d8`
+  - [x] Test renders label and input
+  - [x] Test shows required asterisk when required prop true
+  - [x] Test renders voice input icon when voiceEnabled prop true
+  - [x] Test two-column layout in grid context
+- [x] Task: Implement FormField.vue component `03028d8`
+  - [x] Create wrapper with label and input slot
+  - [x] Add required indicator styling
+  - [x] Position voice input icon inside field (right side)
+  - [x] Apply consistent input styling (border, height, focus state)
+- [x] Task: Create base form input styles `03028d8`
+  - [x] Add global CSS/SCSS for input, select, textarea elements
+  - [x] Apply Tahoma font, consistent sizing
+  - [x] Add focus states with Magenta outline
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Card and Content Styling Components' (Protocol in workflow.md)
 
 ## Phase 3: Responsive Sidebar Behavior
