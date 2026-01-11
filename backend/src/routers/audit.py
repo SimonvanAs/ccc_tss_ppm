@@ -13,7 +13,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from src.dependencies import get_db, require_admin, CurrentUser
+from src.auth import CurrentUser, require_admin
+from src.database import get_db
 
 
 router = APIRouter(prefix='/api/v1/admin/audit-logs', tags=['Admin - Audit Logs'])
