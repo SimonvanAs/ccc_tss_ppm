@@ -153,7 +153,7 @@
 
 - [ ] Task: Conductor - User Manual Verification 'Multi-language PDF Support' (Protocol in workflow.md)
 
-## Phase 7: Integration Testing & Polish [checkpoint: ]
+## Phase 7: Integration Testing & Polish [checkpoint: 8e8580e]
 
 - [x] Task: End-to-end signature flow testing
   - [x] Test complete goal setting approval flow
