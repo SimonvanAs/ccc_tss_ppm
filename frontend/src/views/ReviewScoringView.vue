@@ -23,6 +23,7 @@ import SubmitScoresButton from '../components/review/SubmitScoresButton.vue'
 import SignatureStatus from '../components/review/SignatureStatus.vue'
 import SignatureModal from '../components/review/SignatureModal.vue'
 import RejectionModal from '../components/review/RejectionModal.vue'
+import PDFDownloadButton from '../components/review/PDFDownloadButton.vue'
 import { Card, SectionHeader } from '../components/layout'
 import type { Goal } from '../components/review/GoalScoringSection.vue'
 import type { Competency } from '../components/review/CompetencyScoringSection.vue'
@@ -247,6 +248,11 @@ async function handleReject(feedback: string) {
   }
 }
 
+function handlePdfError(error: Error) {
+  console.error('PDF download failed:', error.message)
+  // Could show a toast or notification here
+}
+
 // Load review data
 async function loadReviewData() {
   isDataLoading.value = true
@@ -408,6 +414,17 @@ onMounted(() => {
             :employee-signature="employeeSignature"
             :manager-signature="managerSignature"
             :was-rejected="!!reviewData?.rejection_feedback"
+          />
+        </Card>
+
+        <!-- PDF Download -->
+        <Card class="sidebar-card" padding="md">
+          <PDFDownloadButton
+            :review-id="props.reviewId"
+            :status="reviewStatus"
+            :employee-name="reviewData?.employee_name ?? undefined"
+            :review-year="reviewData?.review_year"
+            @error="handlePdfError"
           />
         </Card>
       </aside>

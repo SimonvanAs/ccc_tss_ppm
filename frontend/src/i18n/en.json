@@ -247,12 +247,6 @@
       "archived": "Archived"
     }
   },
-  "pdf": {
-    "downloadDraft": "Download Draft PDF",
-    "downloadFinal": "Download Final Report",
-    "downloading": "Downloading...",
-    "error": "Failed to download PDF"
-  },
   "calibration": {
     "title": "Calibration Sessions",
     "session": "Session",
@@ -366,7 +360,10 @@
     "generating": "Generating PDF...",
     "download": "Download PDF",
     "preview": "Preview",
-    "error": "Failed to generate PDF"
+    "error": "Failed to generate PDF",
+    "downloadDraft": "Download Draft PDF",
+    "downloadFinal": "Download Final Report",
+    "downloading": "Downloading..."
   },
   "validation": {
     "required": "This field is required",

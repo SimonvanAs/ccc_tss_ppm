@@ -341,7 +341,10 @@
     "generating": "Generando PDF...",
     "download": "Descargar PDF",
     "preview": "Vista Previa",
-    "error": "Error al generar PDF"
+    "error": "Error al generar PDF",
+    "downloadDraft": "Descargar PDF Borrador",
+    "downloadFinal": "Descargar Informe Final",
+    "downloading": "Descargando..."
   },
   "validation": {
     "required": "Este campo es requerido",

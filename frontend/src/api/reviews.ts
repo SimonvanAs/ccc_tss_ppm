@@ -1,5 +1,5 @@
 // TSS PPM v3.0 - Reviews API
-import { get, post, put } from './client'
+import { get, post, put, getBlob } from './client'
 
 export type ReviewStatus =
   | 'DRAFT'
@@ -84,4 +84,14 @@ export function updateReviewHeader(
   data: ReviewHeaderUpdate
 ): Promise<ReviewDetails> {
   return put<ReviewDetails>(`/reviews/${reviewId}`, data)
+}
+
+/**
+ * Download review as PDF.
+ * @param reviewId - The review ID
+ * @param lang - Language code (en, nl, es)
+ * @returns PDF file as Blob
+ */
+export function downloadReviewPdf(reviewId: string, lang: string = 'en'): Promise<Blob> {
+  return getBlob(`/reviews/${reviewId}/pdf?lang=${lang}`)
 }

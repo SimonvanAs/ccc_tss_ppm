@@ -127,18 +127,18 @@
 
 ## Phase 5: Frontend PDF Download [checkpoint: ]
 
-- [ ] Task: Create PDFDownloadButton component
-  - [ ] Write tests for button label by review status
-  - [ ] Implement "Download Draft PDF" for non-SIGNED
-  - [ ] Implement "Download Final Report" for SIGNED
-  - [ ] Add loading state during generation
-  - [ ] Handle download response
+- [x] Task: Create PDFDownloadButton component
+  - [x] Write tests for button label by review status
+  - [x] Implement "Download Draft PDF" for non-SIGNED
+  - [x] Implement "Download Final Report" for SIGNED
+  - [x] Add loading state during generation
+  - [x] Handle download response
 
-- [ ] Task: Integrate PDF download into ReviewView
-  - [ ] Write tests for PDF button visibility
-  - [ ] Add PDFDownloadButton to review UI
-  - [ ] Position appropriately in layout
-  - [ ] Test download flow end-to-end
+- [x] Task: Integrate PDF download into ReviewView
+  - [x] Write tests for PDF button visibility
+  - [x] Add PDFDownloadButton to review UI
+  - [x] Position appropriately in layout
+  - [x] Test download flow end-to-end
 
 - [ ] Task: Conductor - User Manual Verification 'Frontend PDF Download' (Protocol in workflow.md)
 

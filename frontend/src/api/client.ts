@@ -96,3 +96,35 @@ export function put<T>(endpoint: string, data?: unknown): Promise<T> {
 export function del<T>(endpoint: string): Promise<T> {
   return apiRequest<T>(endpoint, { method: 'DELETE' })
 }
+
+/**
+ * GET request helper that returns a Blob (for file downloads).
+ */
+export async function getBlob(endpoint: string): Promise<Blob> {
+  const token = await getToken()
+
+  const headers: HeadersInit = {}
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const url = `${API_BASE_URL}${endpoint}`
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers,
+  })
+
+  if (!response.ok) {
+    let detail = `HTTP ${response.status}: ${response.statusText}`
+    try {
+      const errorData = await response.json()
+      detail = errorData.detail || detail
+    } catch {
+      // Ignore JSON parse errors
+    }
+    throw new ApiRequestError(response.status, detail)
+  }
+
+  return response.blob()
+}
