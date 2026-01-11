@@ -29,10 +29,10 @@
   - [x] Implement router handler with upsert logic
   - [x] Add Pydantic schemas for scores request
 
-- [ ] Task: Create GET /api/v1/competencies endpoint
-  - [ ] Write API tests for competencies by TOV level
-  - [ ] Implement router in `backend/src/routers/competencies.py`
-  - [ ] Add Pydantic schemas for competency response
+- [x] Task: Create GET /api/v1/competencies endpoint `6743b95`
+  - [x] Write API tests for competencies by TOV level
+  - [x] Implement router in `backend/src/routers/competencies.py`
+  - [x] Add Pydantic schemas for competency response
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
