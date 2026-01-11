@@ -30,13 +30,20 @@ export function fetchScores(reviewId: string): Promise<ScoresData> {
 
 /**
  * Save scores for a review (partial or full)
- * Filters out any scores with null values since the backend requires scores 1-3
+ * Filters out entries that have nothing to save (no score and no feedback)
  */
 export function saveScores(reviewId: string, scores: ScoresData): Promise<ScoresData> {
-  // Filter out null scores - backend only accepts scores 1-3
+  // Filter to only include entries that have something to save
+  // Goals: need either a score OR feedback
+  // Competencies: need a score (notes alone aren't saved without score)
   const filteredScores = {
-    goal_scores: scores.goal_scores.filter(gs => gs.score !== null && gs.score !== undefined),
-    competency_scores: scores.competency_scores.filter(cs => cs.score !== null && cs.score !== undefined),
+    goal_scores: scores.goal_scores.filter(gs =>
+      gs.score !== null && gs.score !== undefined ||
+      gs.feedback !== null && gs.feedback !== undefined && gs.feedback !== ''
+    ),
+    competency_scores: scores.competency_scores.filter(cs =>
+      cs.score !== null && cs.score !== undefined
+    ),
   }
 
   // Don't make the request if there's nothing to save

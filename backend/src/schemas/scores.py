@@ -50,7 +50,7 @@ class GoalScoreUpdate(BaseModel):
     """Schema for updating a single goal score."""
 
     goal_id: UUID
-    score: int = Field(..., ge=1, le=3)
+    score: Optional[int] = Field(None, ge=1, le=3)
     feedback: Optional[str] = None
 
 
@@ -58,7 +58,7 @@ class CompetencyScoreUpdate(BaseModel):
     """Schema for updating a single competency score."""
 
     competency_id: UUID
-    score: int = Field(..., ge=1, le=3)
+    score: Optional[int] = Field(None, ge=1, le=3)
     notes: Optional[str] = None
 
 

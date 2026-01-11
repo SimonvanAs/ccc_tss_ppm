@@ -120,32 +120,57 @@ class ScoresRepository:
     async def upsert_goal_score(
         self,
         goal_id: UUID,
-        score: int,
+        score: Optional[int] = None,
         feedback: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Update a goal's score and feedback.
+        """Update a goal's score and/or feedback.
 
         Args:
             goal_id: The goal UUID
-            score: Score value (1-3)
+            score: Optional score value (1-3)
             feedback: Optional feedback text
 
         Returns:
             Updated goal record
 
         Raises:
-            ValueError: If score is not between 1 and 3
+            ValueError: If score is provided and not between 1 and 3
         """
-        self._validate_score(score)
+        if score is not None:
+            self._validate_score(score)
 
-        query = """
-            UPDATE goals
-            SET score = $1, change_reason = $2, updated_at = NOW()
-            WHERE id = $3 AND deleted_at IS NULL
-            RETURNING id, review_id, title, description, goal_type,
-                      weight, score, change_reason AS feedback, display_order
-        """
-        row = await self.conn.fetchrow(query, score, feedback, goal_id)
+        # Build dynamic update based on what's provided
+        if score is not None and feedback is not None:
+            query = """
+                UPDATE goals
+                SET score = $1, change_reason = $2, updated_at = NOW()
+                WHERE id = $3 AND deleted_at IS NULL
+                RETURNING id, review_id, title, description, goal_type,
+                          weight, score, change_reason AS feedback, display_order
+            """
+            row = await self.conn.fetchrow(query, score, feedback, goal_id)
+        elif score is not None:
+            query = """
+                UPDATE goals
+                SET score = $1, updated_at = NOW()
+                WHERE id = $2 AND deleted_at IS NULL
+                RETURNING id, review_id, title, description, goal_type,
+                          weight, score, change_reason AS feedback, display_order
+            """
+            row = await self.conn.fetchrow(query, score, goal_id)
+        elif feedback is not None:
+            query = """
+                UPDATE goals
+                SET change_reason = $1, updated_at = NOW()
+                WHERE id = $2 AND deleted_at IS NULL
+                RETURNING id, review_id, title, description, goal_type,
+                          weight, score, change_reason AS feedback, display_order
+            """
+            row = await self.conn.fetchrow(query, feedback, goal_id)
+        else:
+            # Nothing to update
+            return None
+
         return dict(row) if row else None
 
     async def upsert_competency_score(
