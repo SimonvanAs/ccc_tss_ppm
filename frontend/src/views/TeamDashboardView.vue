@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { fetchTeamMembers } from '../api/team'
 import type { TeamMember } from '../types'
 import TeamMemberCard from '../components/dashboard/TeamMemberCard.vue'
+import { Card, SectionHeader } from '../components/layout'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -38,23 +39,35 @@ onMounted(() => {
 
 <template>
   <div class="team-dashboard">
-    <header class="page-header">
-      <h1>{{ t('team.pageTitle') }}</h1>
-      <p class="subtitle">{{ t('team.pageSubtitle') }}</p>
-    </header>
+    <!-- Page Header -->
+    <SectionHeader :title="t('team.pageTitle')">
+      <template #subtitle>
+        {{ t('team.pageSubtitle') }}
+      </template>
+    </SectionHeader>
 
-    <div v-if="loading" class="loading-state">
-      {{ t('team.loading') }}
-    </div>
+    <!-- Loading state -->
+    <Card v-if="loading" class="state-card">
+      <div class="loading-state">
+        {{ t('team.loading') }}
+      </div>
+    </Card>
 
-    <div v-else-if="error" class="error-state">
-      {{ error }}
-    </div>
+    <!-- Error state -->
+    <Card v-else-if="error" class="state-card">
+      <div class="error-state">
+        {{ error }}
+      </div>
+    </Card>
 
-    <div v-else-if="teamMembers.length === 0" class="empty-state">
-      {{ t('team.emptyState') }}
-    </div>
+    <!-- Empty state -->
+    <Card v-else-if="teamMembers.length === 0" class="state-card">
+      <div class="empty-state">
+        {{ t('team.emptyState') }}
+      </div>
+    </Card>
 
+    <!-- Team grid -->
     <div v-else class="team-grid">
       <TeamMemberCard
         v-for="member in teamMembers"
@@ -70,38 +83,28 @@ onMounted(() => {
 .team-dashboard {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  color: var(--color-navy);
-  margin: 0 0 0.5rem 0;
-}
-
-.subtitle {
-  color: #666;
-  margin: 0;
+.state-card {
+  margin-top: 1rem;
 }
 
 .loading-state,
 .error-state,
 .empty-state {
   text-align: center;
-  padding: 3rem;
-  color: #666;
+  padding: 2rem;
+  color: var(--color-gray-600);
 }
 
 .error-state {
-  color: #dc3545;
+  color: var(--color-error);
 }
 
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+  margin-top: 1rem;
 }
 </style>

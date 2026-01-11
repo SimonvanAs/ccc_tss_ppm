@@ -137,12 +137,12 @@ describe('ReviewScoringView', () => {
       // Wait for Vue reactivity to update DOM (but not for fetchScores to resolve)
       await nextTick()
 
-      expect(wrapper.find('.loading-indicator').exists()).toBe(true)
+      expect(wrapper.find('.loading-state').exists()).toBe(true)
 
       resolvePromise!({ goal_scores: [], competency_scores: [] })
       await flushPromises()
 
-      expect(wrapper.find('.loading-indicator').exists()).toBe(false)
+      expect(wrapper.find('.loading-state').exists()).toBe(false)
     })
   })
 
@@ -155,7 +155,7 @@ describe('ReviewScoringView', () => {
       })
       await flushPromises()
 
-      expect(wrapper.find('.error-message').exists()).toBe(true)
+      expect(wrapper.find('.error-state').exists()).toBe(true)
       expect(wrapper.text()).toContain('Failed to load')
     })
   })

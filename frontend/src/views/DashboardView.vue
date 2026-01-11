@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { getCurrentUser, logout } from '../api/auth'
 import { RouterLink } from 'vue-router'
+import { Card, SectionHeader } from '../components/layout'
 
 const { t } = useI18n()
 const user = getCurrentUser()
@@ -9,23 +10,29 @@ const user = getCurrentUser()
 
 <template>
   <div class="dashboard">
-    <h2>{{ t('dashboard.title') }}</h2>
-    <p>{{ t('dashboard.welcome') }}</p>
+    <!-- Page Header -->
+    <SectionHeader :title="t('dashboard.title')">
+      <template #subtitle>
+        {{ t('dashboard.welcome') }}
+      </template>
+    </SectionHeader>
 
-    <div class="user-info" v-if="user">
-      <h3>Logged in as:</h3>
+    <!-- User Info Card -->
+    <Card v-if="user" class="user-card">
+      <h3 class="card-title">Logged in as:</h3>
       <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>Name:</strong> {{ user.name }}</p>
       <p><strong>Roles:</strong> {{ user.roles.join(', ') }}</p>
       <button @click="logout" class="logout-btn">Logout</button>
-    </div>
+    </Card>
 
-    <div class="quick-links">
-      <h3>Quick Links</h3>
+    <!-- Quick Links Card -->
+    <Card class="quick-links-card">
+      <h3 class="card-title">Quick Links</h3>
       <RouterLink to="/reviews/33333333-3333-3333-3333-333333333333/goals" class="link-btn">
         Go to Goal Setting (Demo)
       </RouterLink>
-    </div>
+    </Card>
   </div>
 </template>
 
@@ -33,29 +40,20 @@ const user = getCurrentUser()
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
-h2 {
-  color: var(--color-navy);
-  margin-bottom: 1rem;
-}
-
-h3 {
-  color: var(--color-navy);
-  margin-top: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.user-info {
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
+.user-card,
+.quick-links-card {
   margin-top: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.user-info p {
+.card-title {
+  color: var(--color-navy);
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.user-card p {
   margin: 0.5rem 0;
 }
 
@@ -72,10 +70,6 @@ h3 {
 
 .logout-btn:hover {
   opacity: 0.9;
-}
-
-.quick-links {
-  margin-top: 2rem;
 }
 
 .link-btn {

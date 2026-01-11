@@ -95,26 +95,26 @@
 
 ## Phase 4: View Integration
 
-- [ ] Task: Integrate AppLayout into App.vue
-  - [ ] Wrap router-view with AppLayout
-  - [ ] Pass user role to sidebar
-  - [ ] Connect progress bar to review completion data
-- [ ] Task: Refactor GoalSettingView with new layout
-  - [ ] Wrap content sections in Card components
-  - [ ] Use SectionHeader for section titles
-  - [ ] Apply two-column FormField grid for goal form
-  - [ ] Ensure existing functionality preserved
-- [ ] Task: Refactor TeamDashboardView with new layout
-  - [ ] Wrap team list in Card component
-  - [ ] Use SectionHeader for page title
-  - [ ] Style TeamMemberCard to match design system
-- [ ] Task: Refactor ReviewScoringView with new layout (if exists)
-  - [ ] Apply Card components to scoring sections
-  - [ ] Use SectionHeader for WHAT/HOW axis sections
-  - [ ] Maintain existing scoring functionality
-- [ ] Task: Update any remaining views with layout
-  - [ ] Audit all views in src/views/
-  - [ ] Apply consistent Card and SectionHeader usage
+- [x] Task: Integrate AppLayout into App.vue
+  - [x] Wrap router-view with AppLayout
+  - [x] Pass user role to sidebar
+  - [x] Connect progress bar to review completion data
+- [x] Task: Refactor GoalSettingView with new layout
+  - [x] Wrap content sections in Card components
+  - [x] Use SectionHeader for section titles
+  - [x] Apply two-column FormField grid for goal form
+  - [x] Ensure existing functionality preserved
+- [x] Task: Refactor TeamDashboardView with new layout
+  - [x] Wrap team list in Card component
+  - [x] Use SectionHeader for page title
+  - [x] Style TeamMemberCard to match design system
+- [x] Task: Refactor ReviewScoringView with new layout (if exists)
+  - [x] Apply Card components to scoring sections
+  - [x] Use SectionHeader for WHAT/HOW axis sections
+  - [x] Maintain existing scoring functionality
+- [x] Task: Update any remaining views with layout
+  - [x] Audit all views in src/views/
+  - [x] Apply consistent Card and SectionHeader usage
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: View Integration' (Protocol in workflow.md)
 
 ## Phase 5: Polish and Internationalization

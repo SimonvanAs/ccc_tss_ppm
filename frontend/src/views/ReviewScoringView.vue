@@ -10,6 +10,7 @@ import NineGrid from '../components/review/NineGrid.vue'
 import ScoreSummary from '../components/review/ScoreSummary.vue'
 import SaveIndicator from '../components/common/SaveIndicator.vue'
 import SubmitScoresButton from '../components/review/SubmitScoresButton.vue'
+import { Card, SectionHeader } from '../components/layout'
 import type { Goal } from '../components/review/GoalScoringSection.vue'
 import type { Competency } from '../components/review/CompetencyScoringSection.vue'
 
@@ -122,18 +123,26 @@ onMounted(async () => {
 
 <template>
   <div class="review-scoring-view">
-    <header class="page-header">
-      <h1 class="page-title">Score Review</h1>
-      <SaveIndicator :status="saveStatus" />
-    </header>
+    <!-- Page Header -->
+    <SectionHeader title="Score Review">
+      <template #actions>
+        <SaveIndicator :status="saveStatus" />
+      </template>
+    </SectionHeader>
 
-    <div v-if="isLoading" class="loading-indicator">
-      Loading scores...
-    </div>
+    <!-- Loading state -->
+    <Card v-if="isLoading" class="state-card">
+      <div class="loading-state">
+        Loading scores...
+      </div>
+    </Card>
 
-    <div v-else-if="loadError" class="error-message">
-      {{ loadError }}
-    </div>
+    <!-- Error state -->
+    <Card v-else-if="loadError" class="state-card">
+      <div class="error-state">
+        {{ loadError }}
+      </div>
+    </Card>
 
     <div v-else class="scoring-layout">
       <main class="scoring-main">
@@ -152,19 +161,21 @@ onMounted(async () => {
           @score-change="handleCompetencyScoreChange"
         />
 
-        <div v-if="!readOnly" class="submit-section">
-          <SubmitScoresButton
-            :all-scores-complete="allScoresComplete"
-            :is-submitting="isSubmitting"
-            :has-error="!!submitError"
-            :error-message="submitError || ''"
-            @submit="handleSubmit"
-          />
-        </div>
+        <Card v-if="!readOnly" class="submit-card">
+          <div class="submit-section">
+            <SubmitScoresButton
+              :all-scores-complete="allScoresComplete"
+              :is-submitting="isSubmitting"
+              :has-error="!!submitError"
+              :error-message="submitError || ''"
+              @submit="handleSubmit"
+            />
+          </div>
+        </Card>
       </main>
 
       <aside class="scoring-sidebar">
-        <div class="sidebar-card">
+        <Card class="sidebar-card" padding="md">
           <h3 class="sidebar-title">Performance Grid</h3>
           <NineGrid
             :what-score="whatScore"
@@ -173,9 +184,9 @@ onMounted(async () => {
             :veto-type="whatVetoType"
             compact
           />
-        </div>
+        </Card>
 
-        <div class="sidebar-card">
+        <Card class="sidebar-card" padding="md">
           <h3 class="sidebar-title">Score Summary</h3>
           <ScoreSummary
             :what-score="whatScore"
@@ -185,7 +196,7 @@ onMounted(async () => {
             :how-veto-active="howVetoActive"
             compact
           />
-        </div>
+        </Card>
       </aside>
     </div>
   </div>
@@ -195,44 +206,29 @@ onMounted(async () => {
 .review-scoring-view {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem;
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-gray-200);
+.state-card {
+  margin-top: 1rem;
 }
 
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-navy);
-  margin: 0;
-}
-
-.loading-indicator {
-  padding: 3rem;
+.loading-state {
   text-align: center;
+  padding: 2rem;
   color: var(--color-gray-600);
-  font-size: 1rem;
 }
 
-.error-message {
-  padding: 1rem;
-  background: #FEF2F2;
-  border: 1px solid var(--color-grid-red);
-  border-radius: 8px;
-  color: #991B1B;
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-error);
 }
 
 .scoring-layout {
   display: grid;
   grid-template-columns: 1fr 280px;
   gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 @media (max-width: 1024px) {
@@ -252,20 +248,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .review-scoring-view {
-    padding: 0.75rem;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .page-title {
-    font-size: 1.25rem;
-  }
-
   .scoring-sidebar {
     flex-direction: column;
   }
@@ -284,14 +266,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 480px) {
-  .review-scoring-view {
-    padding: 0.5rem;
-  }
-
-  .page-title {
-    font-size: 1.125rem;
-  }
-
   .scoring-layout {
     gap: 1rem;
   }
@@ -303,11 +277,13 @@ onMounted(async () => {
   gap: 2rem;
 }
 
+.submit-card {
+  margin-top: 1rem;
+}
+
 .submit-section {
   display: flex;
   justify-content: flex-end;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-gray-200);
 }
 
 .scoring-sidebar {
@@ -317,13 +293,6 @@ onMounted(async () => {
   position: sticky;
   top: 1rem;
   align-self: start;
-}
-
-.sidebar-card {
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-200);
-  border-radius: 8px;
-  padding: 1rem;
 }
 
 .sidebar-title {

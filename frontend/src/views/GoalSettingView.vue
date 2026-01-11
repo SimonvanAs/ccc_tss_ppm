@@ -10,6 +10,7 @@ import GoalForm from '../components/review/GoalForm.vue'
 import WeightIndicator from '../components/review/WeightIndicator.vue'
 import Modal from '../components/common/Modal.vue'
 import ConfirmDialog from '../components/common/ConfirmDialog.vue'
+import { Card, SectionHeader } from '../components/layout'
 
 const props = defineProps<{
   reviewId: string
@@ -165,12 +166,12 @@ async function handleSubmit() {
 
 <template>
   <div class="goal-setting-view">
-    <header class="page-header">
-      <div class="header-content">
-        <h1>{{ t('goals.pageTitle') }}</h1>
-        <p class="subtitle">{{ t('goals.pageSubtitle') }}</p>
-      </div>
-      <div class="header-actions">
+    <!-- Page Header -->
+    <SectionHeader :title="t('goals.pageTitle')">
+      <template #subtitle>
+        {{ t('goals.pageSubtitle') }}
+      </template>
+      <template #actions>
         <button
           class="btn btn-primary"
           :disabled="isMaxGoalsReached"
@@ -178,8 +179,8 @@ async function handleSubmit() {
         >
           {{ t('goals.addGoal') }}
         </button>
-      </div>
-    </header>
+      </template>
+    </SectionHeader>
 
     <!-- Error message -->
     <div v-if="error" class="error-banner">
@@ -187,10 +188,12 @@ async function handleSubmit() {
     </div>
 
     <!-- Weight indicator -->
-    <WeightIndicator :total="totalWeight" />
+    <Card padding="sm" class="weight-card">
+      <WeightIndicator :total="totalWeight" />
+    </Card>
 
     <!-- Goals list -->
-    <section class="goals-section">
+    <Card class="goals-card">
       <GoalList
         :goals="goals"
         :loading="loading"
@@ -198,10 +201,10 @@ async function handleSubmit() {
         @delete="handleDeleteGoal"
         @reorder="handleReorder"
       />
-    </section>
+    </Card>
 
     <!-- Submit section -->
-    <footer class="page-footer">
+    <Card class="submit-card">
       <!-- Success message -->
       <div v-if="submitSuccess" class="submit-success">
         {{ t('goals.submitSuccess') }}
@@ -212,17 +215,19 @@ async function handleSubmit() {
         {{ submitError }}
       </div>
 
-      <button
-        class="btn btn-submit"
-        :disabled="!isWeightValid || isSubmitting || submitSuccess"
-        @click="handleSubmit"
-      >
-        {{ isSubmitting ? t('goals.submitting') : t('goals.submit') }}
-      </button>
-      <p v-if="!isWeightValid && !submitSuccess" class="submit-hint">
-        {{ t('goals.submitHint') }}
-      </p>
-    </footer>
+      <div class="submit-actions">
+        <button
+          class="btn btn-submit"
+          :disabled="!isWeightValid || isSubmitting || submitSuccess"
+          @click="handleSubmit"
+        >
+          {{ isSubmitting ? t('goals.submitting') : t('goals.submit') }}
+        </button>
+        <p v-if="!isWeightValid && !submitSuccess" class="submit-hint">
+          {{ t('goals.submitHint') }}
+        </p>
+      </div>
+    </Card>
 
     <!-- Add Goal Modal -->
     <Modal
@@ -271,26 +276,18 @@ async function handleSubmit() {
 .goal-setting-view {
   max-width: 800px;
   margin: 0 auto;
-  padding: 1.5rem;
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.weight-card {
+  margin-bottom: 1rem;
+}
+
+.goals-card {
   margin-bottom: 1.5rem;
 }
 
-.header-content h1 {
-  margin: 0 0 0.25rem;
-  font-size: 1.5rem;
-  color: var(--color-navy);
-}
-
-.subtitle {
-  margin: 0;
-  color: var(--color-gray-600);
-  font-size: 0.875rem;
+.submit-card {
+  text-align: center;
 }
 
 .btn {
@@ -336,18 +333,11 @@ async function handleSubmit() {
   margin-bottom: 1rem;
 }
 
-.goals-section {
-  margin: 1.5rem 0;
-}
-
-.page-footer {
+.submit-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-gray-200);
 }
 
 .submit-hint {
@@ -363,6 +353,7 @@ async function handleSubmit() {
   border-radius: 8px;
   font-weight: 600;
   margin-bottom: 1rem;
+  display: inline-block;
 }
 
 .submit-error {
@@ -372,5 +363,6 @@ async function handleSubmit() {
   border-radius: 8px;
   font-weight: 500;
   margin-bottom: 1rem;
+  display: inline-block;
 }
 </style>
