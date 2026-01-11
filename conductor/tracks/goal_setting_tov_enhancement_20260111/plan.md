@@ -44,7 +44,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Backend API - Review Header' (Protocol in workflow.md) `100d668`
 
-## Phase 3: Backend API - Manager Reassignment [checkpoint: ]
+## Phase 3: Backend API - Manager Reassignment [checkpoint: 9000488]
 
 - [x] Task: Implement PUT /api/v1/reviews/{id}/manager endpoint `182b4d3`
   - [x] Write tests for HR role authorization

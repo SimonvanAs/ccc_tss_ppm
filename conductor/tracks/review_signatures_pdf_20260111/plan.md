@@ -15,7 +15,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Database Schema & Models' (Protocol in workflow.md)
 
-## Phase 2: Backend Signature API [checkpoint: ]
+## Phase 2: Backend Signature API [checkpoint: bba7ba0]
 
 - [x] Task: Implement review submission endpoint `existing`
   - [x] Write tests for POST /api/v1/reviews/{id}/submit
@@ -48,7 +48,7 @@
   - [x] Verify weight validation (must total 100%)
   - Note: Uses existing submit_review/sign/reject endpoints with stage awareness
 
-- [ ] Task: Conductor - User Manual Verification 'Backend Signature API' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Signature API' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Signature Components [checkpoint: ]
 
