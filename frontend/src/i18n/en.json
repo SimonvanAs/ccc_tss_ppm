@@ -24,12 +24,44 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome to TSS PPM",
+    "welcomeUser": "Welcome, {name}",
     "tasksTitle": "Your Tasks",
     "noTasks": "No pending tasks",
     "pendingSignatures": "Pending Signatures",
     "reviewsToComplete": "Reviews to Complete",
     "goalChanges": "Goal Change Requests",
-    "quickActions": "Quick Actions"
+    "quickActions": "Quick Actions",
+    "loggedInAs": "Logged in as",
+    "email": "Email",
+    "name": "Name",
+    "roles": "Roles",
+    "yearWorkflow": "{year} Workflow",
+    "workflow": {
+      "goals": "Goals",
+      "midYear": "Mid-year review",
+      "endYear": "End-year review",
+      "statusMessages": {
+        "goals": {
+          "notStarted": "Set your goals for the year",
+          "inProgress": "Complete your goal setting",
+          "pendingApproval": "Awaiting manager approval",
+          "completed": "Goals approved"
+        },
+        "midYear": {
+          "notStarted": "Complete goals phase first",
+          "inProgress": "Mid-year review in progress",
+          "pendingApproval": "Awaiting signatures",
+          "completed": "Mid-year review completed"
+        },
+        "endYear": {
+          "notStarted": "Complete mid-year review first",
+          "inProgress": "End-year review in progress",
+          "pendingApproval": "Awaiting signatures",
+          "completed": "Review cycle completed"
+        }
+      },
+      "clickToOpen": "Click to open"
+    }
   },
   "review": {
     "title": "Performance Review",
@@ -73,8 +105,11 @@
     "title": "Goals",
     "pageTitle": "Goal Setting",
     "pageSubtitle": "Define your performance goals for this review period",
+    "whatAxisTitle": "WHAT-axis Goals",
+    "whatAxisSubtitle": "Define up to 9 performance goals. Total weight must equal 100%.",
     "what": "WHAT (Goals)",
     "addGoal": "Add Goal",
+    "submitReview": "Submit Review",
     "goalTitle": "Goal Title",
     "description": "Description",
     "weight": "Weight",
@@ -120,11 +155,16 @@
       "titlePlaceholder": "Enter goal title",
       "descriptionPlaceholder": "Enter goal description (optional)",
       "weightStep": "Weight must be a multiple of 5"
-    }
+    },
+    "submitting": "Submitting goals...",
+    "submitSuccess": "Goals submitted successfully"
   },
   "competencies": {
     "title": "Competencies",
     "how": "HOW (Competencies)",
+    "howAxisTitle": "HOW-Axis: Competencies",
+    "selectedLevel": "Selected Level",
+    "explanationPlaceholder": "Explanation (optional)...",
     "tovLevel": "TOV Level",
     "levels": {
       "A": "Level A - Entry",
@@ -420,7 +460,16 @@
     "notFound": "The requested resource was not found.",
     "forbidden": "You do not have permission to perform this action.",
     "conflict": "The resource was modified. Please refresh and try again.",
-    "serverError": "Server error. Please try again later."
+    "serverError": "Server error. Please try again later.",
+    "submitFailed": "Failed to submit. Please try again.",
+    "reassignFailed": "Failed to reassign manager. Please try again.",
+    "submit": {
+      "notDraft": "This review has already been submitted. You cannot submit it again.",
+      "missingFields": "Please fill in the Function Title and select an IDE-Level before submitting.",
+      "invalidWeight": "Goal weights must total 100%. Current total is {current}%.",
+      "invalidWeightGeneric": "Goal weights must total exactly 100% before you can submit.",
+      "notFound": "Review not found. Please refresh the page and try again."
+    }
   },
   "actions": {
     "save": "Save",
@@ -497,7 +546,56 @@
       "auditLogs": "Audit Logs"
     },
     "unauthorized": "You are not authorized to access this page",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "users": {
+      "title": "User Management",
+      "search": "Search users...",
+      "filterByRole": "Filter by role",
+      "filterByStatus": "Filter by status",
+      "allRoles": "All roles",
+      "allStatuses": "All statuses",
+      "active": "Active",
+      "inactive": "Inactive",
+      "name": "Name",
+      "email": "Email",
+      "roles": "Roles",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "noUsers": "No users found",
+      "loading": "Loading users...",
+      "previousPage": "Previous",
+      "nextPage": "Next",
+      "pageInfo": "Page {page}",
+      "editUser": "Edit User",
+      "functionTitle": "Function Title",
+      "tovLevel": "TOV Level",
+      "manager": "Manager",
+      "selectManager": "Select a manager",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "deactivateUser": "Deactivate User",
+      "activateUser": "Activate User",
+      "deactivateConfirm": "Are you sure you want to deactivate {name}?",
+      "activateConfirm": "Are you sure you want to activate {name}?",
+      "deactivateWarning": "This user will no longer be able to log in.",
+      "activateWarning": "This user will be able to log in again.",
+      "confirm": "Confirm",
+      "processing": "Processing...",
+      "selectedCount": "{count} user(s) selected",
+      "bulkAssignRole": "Assign Role",
+      "bulkRemoveRole": "Remove Role",
+      "bulkAssignManager": "Assign Manager",
+      "clearSelection": "Clear Selection",
+      "selectRole": "Select role",
+      "apply": "Apply",
+      "loadError": "Failed to load users",
+      "saveError": "Failed to save user",
+      "bulkError": "Failed to complete bulk operation"
+    }
   },
   "teamGrid": {
     "title": "Team 9-Grid",
@@ -507,6 +605,12 @@
     "noEmployees": "No employees have scores to display",
     "clickToView": "Click to view review",
     "employeesInCell": "{count} employees"
+  },
+  "nineGrid": {
+    "exceptional": "Exceptional",
+    "goodPerformance": "Good Performance",
+    "developmentArea": "Development Area",
+    "immediateAttention": "Immediate Attention"
   },
   "common": {
     "loading": "Loading...",
@@ -523,7 +627,25 @@
     "role": "Role",
     "back": "Back"
   },
+  "roles": {
+    "employee": "Employee",
+    "manager": "Manager",
+    "hr": "HR",
+    "admin": "Admin"
+  },
   "reviewHeader": {
+    "employeeInformation": "Employee Information",
+    "employeeName": "Employee Name",
+    "employeeNamePlaceholder": "Enter employee name",
+    "functionTitle": "Function Title / Role",
+    "functionTitlePlaceholder": "Enter function title",
+    "businessUnit": "Business Unit",
+    "businessUnitPlaceholder": "Enter business unit",
+    "ideLevel": "IDE-Level",
+    "selectLevel": "Select level",
+    "reviewDate": "Review Date",
+    "managerName": "Manager Name",
+    "managerNamePlaceholder": "Enter manager name",
     "employee": "Employee",
     "manager": "Manager",
     "reviewYear": "Review Year",

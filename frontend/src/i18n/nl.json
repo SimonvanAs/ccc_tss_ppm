@@ -24,12 +24,44 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welkom, {name}",
+    "welcomeUser": "Welkom, {name}",
     "tasksTitle": "Uw Taken",
     "noTasks": "Geen openstaande taken",
     "pendingSignatures": "Wachtende Handtekeningen",
     "reviewsToComplete": "Af te ronden Beoordelingen",
     "goalChanges": "Doelwijzigingsverzoeken",
-    "quickActions": "Snelle Acties"
+    "quickActions": "Snelle Acties",
+    "loggedInAs": "Ingelogd als",
+    "email": "E-mail",
+    "name": "Naam",
+    "roles": "Rollen",
+    "yearWorkflow": "{year} Workflow",
+    "workflow": {
+      "goals": "Doelen",
+      "midYear": "Halfjaar evaluatie",
+      "endYear": "Eindjaar evaluatie",
+      "statusMessages": {
+        "goals": {
+          "notStarted": "Stel je doelen voor het jaar",
+          "inProgress": "Rond je doelstelling af",
+          "pendingApproval": "Wacht op goedkeuring manager",
+          "completed": "Doelen goedgekeurd"
+        },
+        "midYear": {
+          "notStarted": "Voltooi eerst de doelenfase",
+          "inProgress": "Halfjaar evaluatie bezig",
+          "pendingApproval": "Wacht op handtekeningen",
+          "completed": "Halfjaar evaluatie afgerond"
+        },
+        "endYear": {
+          "notStarted": "Voltooi eerst de halfjaar evaluatie",
+          "inProgress": "Eindjaar evaluatie bezig",
+          "pendingApproval": "Wacht op handtekeningen",
+          "completed": "Beoordelingscyclus afgerond"
+        }
+      },
+      "clickToOpen": "Klik om te openen"
+    }
   },
   "review": {
     "title": "Prestatiebeoordeling",
@@ -71,23 +103,36 @@
   },
   "goals": {
     "title": "Doelen",
+    "pageTitle": "Doelen Instellen",
+    "pageSubtitle": "Definieer uw prestatiedoelen voor deze beoordelingsperiode",
+    "whatAxisTitle": "WAT-as Doelen",
+    "whatAxisSubtitle": "Definieer maximaal 9 prestatiedoelen. Totaal gewicht moet 100% zijn.",
     "what": "WAT (Doelen)",
     "addGoal": "Doel Toevoegen",
+    "submitReview": "Beoordeling Indienen",
     "goalTitle": "Doeltitel",
     "description": "Beschrijving",
     "weight": "Gewicht",
     "score": "Score",
     "type": "Type",
+    "typeStandard": "Standaard",
     "types": {
       "STANDARD": "Standaard",
       "KAR": "Key Action Required",
       "SCF": "Strategic Critical Factor"
     },
     "weightTotal": "Totaal Gewicht",
+    "weightValid": "Gewichten zijn geldig",
+    "weightUnder": "{amount}% resterend",
     "weightMustBe100": "Doelgewichten moeten optellen tot 100%",
     "dragToReorder": "Sleep om te herordenen",
+    "edit": "Doel bewerken",
+    "delete": "Doel verwijderen",
     "deleteGoal": "Doel Verwijderen",
     "confirmDelete": "Weet u zeker dat u dit doel wilt verwijderen?",
+    "loading": "Doelen laden...",
+    "emptyTitle": "Nog geen doelen",
+    "emptyDescription": "Voeg uw eerste doel toe om te beginnen",
     "scores": {
       "1": "Onder Verwachtingen",
       "2": "Voldoet aan Verwachtingen",
@@ -109,11 +154,16 @@
     },
     "submit": "Doelen Indienen",
     "submitHint": "Doelgewichten moeten optellen tot 100% om in te dienen",
-    "headerFieldsRequired": "Functietitel en TOV niveau zijn verplicht"
+    "headerFieldsRequired": "Functietitel en TOV niveau zijn verplicht",
+    "submitting": "Doelen indienen...",
+    "submitSuccess": "Doelen succesvol ingediend"
   },
   "competencies": {
     "title": "Competenties",
     "how": "HOE (Competenties)",
+    "howAxisTitle": "HOE-As: Competenties",
+    "selectedLevel": "Geselecteerd Niveau",
+    "explanationPlaceholder": "Toelichting (optioneel)...",
     "tovLevel": "TOV Niveau",
     "levels": {
       "A": "Niveau A - Instap",
@@ -409,7 +459,16 @@
     "notFound": "De opgevraagde bron is niet gevonden.",
     "forbidden": "U heeft geen toestemming om deze actie uit te voeren.",
     "conflict": "De bron is gewijzigd. Vernieuw de pagina en probeer opnieuw.",
-    "serverError": "Serverfout. Probeer het later opnieuw."
+    "serverError": "Serverfout. Probeer het later opnieuw.",
+    "submitFailed": "Verzenden mislukt. Probeer het opnieuw.",
+    "reassignFailed": "Manager toewijzen mislukt. Probeer het opnieuw.",
+    "submit": {
+      "notDraft": "Deze beoordeling is al ingediend. U kunt deze niet opnieuw indienen.",
+      "missingFields": "Vul de Functietitel in en selecteer een IDE-Niveau voordat u indient.",
+      "invalidWeight": "Doelgewichten moeten optellen tot 100%. Huidige totaal is {current}%.",
+      "invalidWeightGeneric": "Doelgewichten moeten exact 100% zijn voordat u kunt indienen.",
+      "notFound": "Beoordeling niet gevonden. Vernieuw de pagina en probeer opnieuw."
+    }
   },
   "actions": {
     "save": "Opslaan",
@@ -486,7 +545,56 @@
       "auditLogs": "Auditlogboek"
     },
     "unauthorized": "U bent niet gemachtigd om deze pagina te openen",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "users": {
+      "title": "Gebruikersbeheer",
+      "search": "Zoek gebruikers...",
+      "filterByRole": "Filter op rol",
+      "filterByStatus": "Filter op status",
+      "allRoles": "Alle rollen",
+      "allStatuses": "Alle statussen",
+      "active": "Actief",
+      "inactive": "Inactief",
+      "name": "Naam",
+      "email": "E-mail",
+      "roles": "Rollen",
+      "status": "Status",
+      "actions": "Acties",
+      "edit": "Bewerken",
+      "deactivate": "Deactiveren",
+      "activate": "Activeren",
+      "noUsers": "Geen gebruikers gevonden",
+      "loading": "Gebruikers laden...",
+      "previousPage": "Vorige",
+      "nextPage": "Volgende",
+      "pageInfo": "Pagina {page}",
+      "editUser": "Gebruiker Bewerken",
+      "functionTitle": "Functietitel",
+      "tovLevel": "TOV Niveau",
+      "manager": "Manager",
+      "selectManager": "Selecteer een manager",
+      "save": "Opslaan",
+      "cancel": "Annuleren",
+      "saving": "Opslaan...",
+      "deactivateUser": "Gebruiker Deactiveren",
+      "activateUser": "Gebruiker Activeren",
+      "deactivateConfirm": "Weet u zeker dat u {name} wilt deactiveren?",
+      "activateConfirm": "Weet u zeker dat u {name} wilt activeren?",
+      "deactivateWarning": "Deze gebruiker kan niet meer inloggen.",
+      "activateWarning": "Deze gebruiker kan weer inloggen.",
+      "confirm": "Bevestigen",
+      "processing": "Verwerken...",
+      "selectedCount": "{count} gebruiker(s) geselecteerd",
+      "bulkAssignRole": "Rol Toewijzen",
+      "bulkRemoveRole": "Rol Verwijderen",
+      "bulkAssignManager": "Manager Toewijzen",
+      "clearSelection": "Selectie Wissen",
+      "selectRole": "Selecteer rol",
+      "apply": "Toepassen",
+      "loadError": "Kan gebruikers niet laden",
+      "saveError": "Kan gebruiker niet opslaan",
+      "bulkError": "Bulkbewerking mislukt"
+    }
   },
   "teamGrid": {
     "title": "Team 9-Grid",
@@ -496,6 +604,12 @@
     "noEmployees": "Geen medewerkers met scores om weer te geven",
     "clickToView": "Klik om beoordeling te bekijken",
     "employeesInCell": "{count} medewerkers"
+  },
+  "nineGrid": {
+    "exceptional": "Uitzonderlijk",
+    "goodPerformance": "Goede Prestatie",
+    "developmentArea": "Ontwikkelgebied",
+    "immediateAttention": "Directe Aandacht"
   },
   "common": {
     "loading": "Laden...",
@@ -512,7 +626,25 @@
     "role": "Rol",
     "back": "Terug"
   },
+  "roles": {
+    "employee": "Medewerker",
+    "manager": "Manager",
+    "hr": "HR",
+    "admin": "Beheerder"
+  },
   "reviewHeader": {
+    "employeeInformation": "Medewerkersinformatie",
+    "employeeName": "Naam Medewerker",
+    "employeeNamePlaceholder": "Voer naam medewerker in",
+    "functionTitle": "Functietitel / Rol",
+    "functionTitlePlaceholder": "Voer functietitel in",
+    "businessUnit": "Business Unit",
+    "businessUnitPlaceholder": "Voer business unit in",
+    "ideLevel": "IDE-Niveau",
+    "selectLevel": "Selecteer niveau",
+    "reviewDate": "Beoordelingsdatum",
+    "managerName": "Naam Manager",
+    "managerNamePlaceholder": "Voer naam manager in",
     "employee": "Medewerker",
     "manager": "Manager",
     "reviewYear": "Beoordelingsjaar",

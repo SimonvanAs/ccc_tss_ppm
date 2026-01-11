@@ -24,12 +24,44 @@
   "dashboard": {
     "title": "Panel de Control",
     "welcome": "Bienvenido, {name}",
+    "welcomeUser": "Bienvenido, {name}",
     "tasksTitle": "Sus Tareas",
     "noTasks": "No hay tareas pendientes",
     "pendingSignatures": "Firmas Pendientes",
     "reviewsToComplete": "Evaluaciones por Completar",
     "goalChanges": "Solicitudes de Cambio de Objetivos",
-    "quickActions": "Acciones Rápidas"
+    "quickActions": "Acciones Rápidas",
+    "loggedInAs": "Conectado como",
+    "email": "Correo electrónico",
+    "name": "Nombre",
+    "roles": "Roles",
+    "yearWorkflow": "Flujo de trabajo {year}",
+    "workflow": {
+      "goals": "Objetivos",
+      "midYear": "Evaluación de medio año",
+      "endYear": "Evaluación de fin de año",
+      "statusMessages": {
+        "goals": {
+          "notStarted": "Establece tus objetivos del año",
+          "inProgress": "Completa tu configuración de objetivos",
+          "pendingApproval": "Esperando aprobación del gerente",
+          "completed": "Objetivos aprobados"
+        },
+        "midYear": {
+          "notStarted": "Completa primero la fase de objetivos",
+          "inProgress": "Evaluación de medio año en progreso",
+          "pendingApproval": "Esperando firmas",
+          "completed": "Evaluación de medio año completada"
+        },
+        "endYear": {
+          "notStarted": "Completa primero la evaluación de medio año",
+          "inProgress": "Evaluación de fin de año en progreso",
+          "pendingApproval": "Esperando firmas",
+          "completed": "Ciclo de evaluación completado"
+        }
+      },
+      "clickToOpen": "Haz clic para abrir"
+    }
   },
   "review": {
     "title": "Evaluación de Desempeño",
@@ -71,23 +103,36 @@
   },
   "goals": {
     "title": "Objetivos",
+    "pageTitle": "Establecer Objetivos",
+    "pageSubtitle": "Defina sus objetivos de desempeño para este período de evaluación",
+    "whatAxisTitle": "Objetivos del Eje QUÉ",
+    "whatAxisSubtitle": "Defina hasta 9 objetivos de desempeño. El peso total debe ser 100%.",
     "what": "QUÉ (Objetivos)",
     "addGoal": "Agregar Objetivo",
+    "submitReview": "Enviar Evaluación",
     "goalTitle": "Título del Objetivo",
     "description": "Descripción",
     "weight": "Peso",
     "score": "Puntuación",
     "type": "Tipo",
+    "typeStandard": "Estándar",
     "types": {
       "STANDARD": "Estándar",
       "KAR": "Key Action Required",
       "SCF": "Strategic Critical Factor"
     },
     "weightTotal": "Peso Total",
+    "weightValid": "Los pesos son válidos",
+    "weightUnder": "{amount}% restante",
     "weightMustBe100": "Los pesos de los objetivos deben sumar 100%",
     "dragToReorder": "Arrastrar para reordenar",
+    "edit": "Editar objetivo",
+    "delete": "Eliminar objetivo",
     "deleteGoal": "Eliminar Objetivo",
     "confirmDelete": "¿Está seguro de que desea eliminar este objetivo?",
+    "loading": "Cargando objetivos...",
+    "emptyTitle": "Sin objetivos aún",
+    "emptyDescription": "Agregue su primer objetivo para comenzar",
     "scores": {
       "1": "Por Debajo de las Expectativas",
       "2": "Cumple las Expectativas",
@@ -109,11 +154,16 @@
     },
     "submit": "Enviar Objetivos",
     "submitHint": "Los pesos deben sumar 100% antes de enviar",
-    "headerFieldsRequired": "El título del puesto y el nivel TOV son obligatorios"
+    "headerFieldsRequired": "El título del puesto y el nivel TOV son obligatorios",
+    "submitting": "Enviando objetivos...",
+    "submitSuccess": "Objetivos enviados exitosamente"
   },
   "competencies": {
     "title": "Competencias",
     "how": "CÓMO (Competencias)",
+    "howAxisTitle": "Eje CÓMO: Competencias",
+    "selectedLevel": "Nivel Seleccionado",
+    "explanationPlaceholder": "Explicación (opcional)...",
     "tovLevel": "Nivel TOV",
     "levels": {
       "A": "Nivel A - Entrada",
@@ -409,7 +459,16 @@
     "notFound": "El recurso solicitado no fue encontrado.",
     "forbidden": "No tiene permiso para realizar esta acción.",
     "conflict": "El recurso fue modificado. Por favor actualice e intente de nuevo.",
-    "serverError": "Error del servidor. Por favor intente más tarde."
+    "serverError": "Error del servidor. Por favor intente más tarde.",
+    "submitFailed": "Error al enviar. Por favor intente de nuevo.",
+    "reassignFailed": "Error al reasignar gerente. Por favor intente de nuevo.",
+    "submit": {
+      "notDraft": "Esta evaluación ya ha sido enviada. No puede enviarla de nuevo.",
+      "missingFields": "Por favor complete el Título de Función y seleccione un Nivel IDE antes de enviar.",
+      "invalidWeight": "Los pesos de los objetivos deben sumar 100%. El total actual es {current}%.",
+      "invalidWeightGeneric": "Los pesos de los objetivos deben sumar exactamente 100% antes de enviar.",
+      "notFound": "Evaluación no encontrada. Por favor actualice la página e intente de nuevo."
+    }
   },
   "actions": {
     "save": "Guardar",
@@ -486,7 +545,56 @@
       "auditLogs": "Registro de Auditoría"
     },
     "unauthorized": "No está autorizado para acceder a esta página",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "users": {
+      "title": "Gestión de Usuarios",
+      "search": "Buscar usuarios...",
+      "filterByRole": "Filtrar por rol",
+      "filterByStatus": "Filtrar por estado",
+      "allRoles": "Todos los roles",
+      "allStatuses": "Todos los estados",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "roles": "Roles",
+      "status": "Estado",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "noUsers": "No se encontraron usuarios",
+      "loading": "Cargando usuarios...",
+      "previousPage": "Anterior",
+      "nextPage": "Siguiente",
+      "pageInfo": "Página {page}",
+      "editUser": "Editar Usuario",
+      "functionTitle": "Título del Cargo",
+      "tovLevel": "Nivel TOV",
+      "manager": "Gerente",
+      "selectManager": "Seleccionar un gerente",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "deactivateUser": "Desactivar Usuario",
+      "activateUser": "Activar Usuario",
+      "deactivateConfirm": "¿Está seguro de que desea desactivar a {name}?",
+      "activateConfirm": "¿Está seguro de que desea activar a {name}?",
+      "deactivateWarning": "Este usuario ya no podrá iniciar sesión.",
+      "activateWarning": "Este usuario podrá iniciar sesión nuevamente.",
+      "confirm": "Confirmar",
+      "processing": "Procesando...",
+      "selectedCount": "{count} usuario(s) seleccionado(s)",
+      "bulkAssignRole": "Asignar Rol",
+      "bulkRemoveRole": "Quitar Rol",
+      "bulkAssignManager": "Asignar Gerente",
+      "clearSelection": "Limpiar Selección",
+      "selectRole": "Seleccionar rol",
+      "apply": "Aplicar",
+      "loadError": "Error al cargar usuarios",
+      "saveError": "Error al guardar usuario",
+      "bulkError": "Error en la operación masiva"
+    }
   },
   "teamGrid": {
     "title": "9-Grid del Equipo",
@@ -496,6 +604,12 @@
     "noEmployees": "No hay empleados con puntuaciones para mostrar",
     "clickToView": "Haga clic para ver la revisión",
     "employeesInCell": "{count} empleados"
+  },
+  "nineGrid": {
+    "exceptional": "Excepcional",
+    "goodPerformance": "Buen Desempeño",
+    "developmentArea": "Área de Desarrollo",
+    "immediateAttention": "Atención Inmediata"
   },
   "common": {
     "loading": "Cargando...",
@@ -512,7 +626,25 @@
     "role": "Rol",
     "back": "Volver"
   },
+  "roles": {
+    "employee": "Empleado",
+    "manager": "Gerente",
+    "hr": "RRHH",
+    "admin": "Administrador"
+  },
   "reviewHeader": {
+    "employeeInformation": "Información del Empleado",
+    "employeeName": "Nombre del Empleado",
+    "employeeNamePlaceholder": "Ingrese nombre del empleado",
+    "functionTitle": "Título de Función / Rol",
+    "functionTitlePlaceholder": "Ingrese título de función",
+    "businessUnit": "Unidad de Negocio",
+    "businessUnitPlaceholder": "Ingrese unidad de negocio",
+    "ideLevel": "Nivel IDE",
+    "selectLevel": "Seleccione nivel",
+    "reviewDate": "Fecha de Evaluación",
+    "managerName": "Nombre del Gerente",
+    "managerNamePlaceholder": "Ingrese nombre del gerente",
     "employee": "Empleado",
     "manager": "Gerente",
     "reviewYear": "Año de Evaluación",
