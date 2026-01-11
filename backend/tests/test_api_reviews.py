@@ -1393,3 +1393,227 @@ class TestCreateReviewEndpoint:
         data = response.json()
         assert data['job_title'] is None
         assert data['tov_level'] is None
+
+
+@pytest.mark.asyncio
+class TestManagerReassignmentEndpoint:
+    """Tests for PUT /api/v1/reviews/{id}/manager endpoint."""
+
+    @pytest.fixture
+    def employee_user_id(self):
+        """Employee's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def old_manager_id(self):
+        """Old manager's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def new_manager_id(self):
+        """New manager's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def opco_id(self):
+        """OpCo ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def mock_hr_user(self, opco_id):
+        """Mock authenticated HR user."""
+        return CurrentUser(
+            keycloak_id='hr-keycloak-id',
+            email='hr@example.com',
+            name='HR User',
+            roles=['hr'],
+            opco_id=str(opco_id),
+        )
+
+    @pytest.fixture
+    def mock_employee_user(self, opco_id):
+        """Mock authenticated employee (non-HR)."""
+        return CurrentUser(
+            keycloak_id='employee-keycloak-id',
+            email='employee@example.com',
+            name='Regular Employee',
+            roles=['employee'],
+            opco_id=str(opco_id),
+        )
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        return AsyncMock()
+
+    @pytest.fixture
+    def sample_review(self, employee_user_id, old_manager_id, opco_id):
+        """Sample review for reassignment."""
+        return {
+            'id': uuid4(),
+            'employee_id': employee_user_id,
+            'manager_id': old_manager_id,
+            'opco_id': opco_id,
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Developer',
+            'tov_level': 'B',
+        }
+
+    @pytest.fixture
+    def new_manager_record(self, new_manager_id, opco_id):
+        """New manager user record."""
+        return {
+            'id': new_manager_id,
+            'opco_id': opco_id,
+            'email': 'newmanager@example.com',
+        }
+
+    @pytest_asyncio.fixture
+    async def hr_client(self, mock_hr_user, mock_db_conn):
+        """HTTP client authenticated as HR."""
+        app.dependency_overrides[get_current_user] = lambda: mock_hr_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    @pytest_asyncio.fixture
+    async def employee_client(self, mock_employee_user, mock_db_conn):
+        """HTTP client authenticated as employee (non-HR)."""
+        app.dependency_overrides[get_current_user] = lambda: mock_employee_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    async def test_reassign_manager_requires_hr_role(
+        self, employee_client, mock_db_conn, sample_review, new_manager_id
+    ):
+        """PUT /reviews/:id/manager should require HR role."""
+        review_id = sample_review['id']
+
+        response = await employee_client.put(
+            f'/api/v1/reviews/{review_id}/manager',
+            json={'new_manager_id': str(new_manager_id)},
+        )
+
+        assert response.status_code == 403
+
+    async def test_reassign_manager_success(
+        self, hr_client, mock_db_conn, sample_review, new_manager_id, new_manager_record, opco_id
+    ):
+        """PUT /reviews/:id/manager should reassign manager successfully."""
+        review_id = sample_review['id']
+        updated_review = {**sample_review, 'manager_id': new_manager_id}
+
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review,  # 1. Get review (get_review)
+            new_manager_record,  # 2. Validate new manager exists
+            updated_review,  # 3. reassign_manager returns updated
+            {'id': uuid4()},  # 4. Get HR user ID for audit
+            {'id': uuid4()},  # 5. Audit log entry
+            updated_review,  # 6. Get updated review (final)
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.put(
+            f'/api/v1/reviews/{review_id}/manager',
+            json={'new_manager_id': str(new_manager_id)},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['manager_id'] == str(new_manager_id)
+
+    async def test_reassign_manager_review_not_found(
+        self, hr_client, mock_db_conn, new_manager_id
+    ):
+        """PUT /reviews/:id/manager should return 404 for non-existent review."""
+        review_id = uuid4()
+        mock_db_conn.fetchrow.return_value = None
+
+        response = await hr_client.put(
+            f'/api/v1/reviews/{review_id}/manager',
+            json={'new_manager_id': str(new_manager_id)},
+        )
+
+        assert response.status_code == 404
+
+    async def test_reassign_manager_invalid_manager_id(
+        self, hr_client, mock_db_conn, sample_review, new_manager_id
+    ):
+        """PUT /reviews/:id/manager should reject invalid manager_id."""
+        review_id = sample_review['id']
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review,  # Get review
+            None,  # New manager not found
+        ]
+
+        response = await hr_client.put(
+            f'/api/v1/reviews/{review_id}/manager',
+            json={'new_manager_id': str(new_manager_id)},
+        )
+
+        assert response.status_code == 400
+        assert 'manager' in response.json()['detail'].lower()
+
+    async def test_reassign_manager_creates_audit_log(
+        self, hr_client, mock_db_conn, sample_review, new_manager_id, new_manager_record, old_manager_id
+    ):
+        """PUT /reviews/:id/manager should create audit log with old/new manager."""
+        review_id = sample_review['id']
+        updated_review = {**sample_review, 'manager_id': new_manager_id}
+
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review,  # 1. Get review
+            new_manager_record,  # 2. Validate new manager
+            updated_review,  # 3. reassign_manager returns
+            {'id': uuid4()},  # 4. Get HR user ID
+            {'id': uuid4(), 'action': 'MANAGER_REASSIGNED'},  # 5. Audit log
+            updated_review,  # 6. Get updated review
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.put(
+            f'/api/v1/reviews/{review_id}/manager',
+            json={'new_manager_id': str(new_manager_id)},
+        )
+
+        assert response.status_code == 200
+        # Verify audit log was created (call count includes all fetchrow calls)
+        assert mock_db_conn.fetchrow.call_count >= 5
+
+    async def test_reassign_manager_with_reason(
+        self, hr_client, mock_db_conn, sample_review, new_manager_id, new_manager_record
+    ):
+        """PUT /reviews/:id/manager should accept optional reason field."""
+        review_id = sample_review['id']
+        updated_review = {**sample_review, 'manager_id': new_manager_id}
+
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review,  # 1. Get review
+            new_manager_record,  # 2. Validate new manager
+            updated_review,  # 3. reassign_manager returns
+            {'id': uuid4()},  # 4. Get HR user ID
+            {'id': uuid4()},  # 5. Audit log with reason
+            updated_review,  # 6. Get updated review
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.put(
+            f'/api/v1/reviews/{review_id}/manager',
+            json={
+                'new_manager_id': str(new_manager_id),
+                'reason': 'Manager left the company',
+            },
+        )
+
+        assert response.status_code == 200

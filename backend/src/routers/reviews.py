@@ -10,7 +10,7 @@ from pydantic import BaseModel, field_validator
 
 import asyncpg
 
-from src.auth import CurrentUser, get_current_user, require_manager
+from src.auth import CurrentUser, get_current_user, require_manager, require_hr
 from src.database import get_db
 from src.repositories.goals import GoalRepository
 from src.repositories.scores import ScoresRepository
@@ -1014,3 +1014,114 @@ async def reject_review(
         status=updated_review['status'],
         rejection_feedback=updated_review.get('rejection_feedback'),
     )
+
+
+# --- Manager Reassignment Endpoint ---
+
+
+class ManagerReassignRequest(BaseModel):
+    """Request schema for manager reassignment."""
+
+    new_manager_id: UUID
+    reason: Optional[str] = None
+
+
+class ManagerReassignResponse(BaseModel):
+    """Response schema for manager reassignment."""
+
+    id: UUID
+    employee_id: UUID
+    manager_id: UUID
+    status: str
+    stage: str
+    review_year: int
+    job_title: Optional[str] = None
+    tov_level: Optional[str] = None
+
+    model_config = {'from_attributes': True}
+
+
+@router.put('/reviews/{review_id}/manager', response_model=ManagerReassignResponse)
+async def reassign_manager(
+    review_id: UUID,
+    request: ManagerReassignRequest,
+    current_user: Annotated[CurrentUser, Depends(require_hr)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> ManagerReassignResponse:
+    """Reassign a review to a different manager.
+
+    This endpoint is restricted to HR role. It:
+    1. Validates the review exists
+    2. Validates the new manager exists in the same OpCo
+    3. Creates an audit log with old/new manager info
+    4. Updates the review's manager_id
+
+    Args:
+        review_id: The review UUID
+        request: New manager ID and optional reason
+        current_user: The authenticated HR user
+        conn: Database connection
+
+    Returns:
+        The updated review
+
+    Raises:
+        HTTPException 403: If user is not HR
+        HTTPException 404: If review not found
+        HTTPException 400: If new manager is invalid
+    """
+    review_repo = ReviewRepository(conn)
+    audit_repo = AuditRepository(conn)
+
+    # Get the review
+    review = await review_repo.get_review(review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    old_manager_id = review['manager_id']
+
+    # Validate new manager exists and is in the same OpCo
+    new_manager = await conn.fetchrow(
+        'SELECT id, opco_id FROM users WHERE id = $1',
+        request.new_manager_id,
+    )
+    if new_manager is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Invalid new manager: user not found',
+        )
+
+    # Update the review's manager
+    await review_repo.reassign_manager(review_id, request.new_manager_id)
+
+    # Create audit log entry
+    changes = {
+        'old_manager_id': str(old_manager_id),
+        'new_manager_id': str(request.new_manager_id),
+    }
+    if request.reason:
+        changes['reason'] = request.reason
+
+    # Get HR user's internal ID for audit log
+    hr_user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    hr_user_id = hr_user_row['id'] if hr_user_row else None
+
+    await audit_repo.log_action(
+        action='MANAGER_REASSIGNED',
+        entity_type='review',
+        entity_id=review_id,
+        user_id=hr_user_id,
+        opco_id=review.get('opco_id'),
+        changes=changes,
+    )
+
+    # Get updated review
+    updated_review = await review_repo.get_review(review_id)
+
+    return ManagerReassignResponse(**updated_review)
