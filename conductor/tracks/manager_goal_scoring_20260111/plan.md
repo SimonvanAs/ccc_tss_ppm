@@ -90,7 +90,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) `7523c86`
 
-## Phase 4: Frontend - 9-Grid Visualization
+## Phase 4: Frontend - 9-Grid Visualization [checkpoint: 51587f1]
 
 - [x] Task: Create NineGrid component `579a419`
   - [x] Write tests for 3x3 grid rendering
@@ -99,13 +99,13 @@
   - [x] Write tests for real-time position updates
   - [x] Implement `frontend/src/components/review/NineGrid.vue`
 
-- [ ] Task: Create ScoreSummary component
-  - [ ] Write tests for WHAT score display
-  - [ ] Write tests for HOW score display
-  - [ ] Write tests for VETO indicator integration
-  - [ ] Implement `frontend/src/components/review/ScoreSummary.vue`
+- [x] Task: Create ScoreSummary component `bbc0563`
+  - [x] Write tests for WHAT score display
+  - [x] Write tests for HOW score display
+  - [x] Write tests for VETO indicator integration
+  - [x] Implement `frontend/src/components/review/ScoreSummary.vue`
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md) `51587f1`
 
 ## Phase 5: Frontend - Scoring View with Auto-Save
 
