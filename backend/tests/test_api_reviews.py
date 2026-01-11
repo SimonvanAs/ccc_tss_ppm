@@ -1194,3 +1194,202 @@ class TestRejectReviewEndpoint:
 
         assert response.status_code == 200
         assert mock_db_conn.fetchrow.call_count >= 3
+
+
+@pytest.mark.asyncio
+class TestCreateReviewEndpoint:
+    """Tests for POST /api/v1/reviews endpoint with pre-population."""
+
+    @pytest.fixture
+    def employee_user_id(self):
+        """Employee's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def manager_user_id(self):
+        """Manager's database user ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def opco_id(self):
+        """OpCo ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def mock_hr_user(self, opco_id):
+        """Mock authenticated HR user."""
+        return CurrentUser(
+            keycloak_id='hr-keycloak-id',
+            email='hr@example.com',
+            name='HR User',
+            roles=['hr'],
+            opco_id=str(opco_id),
+        )
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        return AsyncMock()
+
+    @pytest.fixture
+    def employee_record(self, employee_user_id, manager_user_id, opco_id):
+        """Sample employee record."""
+        return {
+            'id': employee_user_id,
+            'manager_id': manager_user_id,
+            'opco_id': opco_id,
+            'email': 'employee@example.com',
+        }
+
+    @pytest.fixture
+    def previous_year_review(self, employee_user_id, manager_user_id, opco_id):
+        """Sample previous year review with job_title and tov_level."""
+        return {
+            'id': uuid4(),
+            'employee_id': employee_user_id,
+            'manager_id': manager_user_id,
+            'opco_id': opco_id,
+            'status': 'SIGNED',
+            'stage': 'END_YEAR_REVIEW',
+            'review_year': 2025,
+            'job_title': 'Senior Developer',
+            'tov_level': 'B',
+        }
+
+    @pytest_asyncio.fixture
+    async def hr_client(self, mock_hr_user, mock_db_conn):
+        """HTTP client authenticated as HR."""
+        app.dependency_overrides[get_current_user] = lambda: mock_hr_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    async def test_create_review_pre_populates_job_title(
+        self, hr_client, mock_db_conn, employee_record, previous_year_review, employee_user_id, opco_id
+    ):
+        """POST /reviews should pre-populate job_title from previous year."""
+        new_review_id = uuid4()
+        created_review = {
+            'id': new_review_id,
+            'employee_id': employee_user_id,
+            'manager_id': employee_record['manager_id'],
+            'opco_id': opco_id,
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Senior Developer',  # Pre-populated
+            'tov_level': 'B',  # Pre-populated
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            employee_record,  # Get employee
+            previous_year_review,  # Get previous review
+            created_review,  # Return created review
+        ]
+
+        response = await hr_client.post(
+            '/api/v1/reviews',
+            json={'employee_id': str(employee_user_id), 'review_year': 2026},
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data['job_title'] == 'Senior Developer'
+
+    async def test_create_review_pre_populates_tov_level(
+        self, hr_client, mock_db_conn, employee_record, previous_year_review, employee_user_id, opco_id
+    ):
+        """POST /reviews should pre-populate tov_level from previous year."""
+        new_review_id = uuid4()
+        created_review = {
+            'id': new_review_id,
+            'employee_id': employee_user_id,
+            'manager_id': employee_record['manager_id'],
+            'opco_id': opco_id,
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Senior Developer',
+            'tov_level': 'B',  # Pre-populated
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            employee_record,
+            previous_year_review,
+            created_review,
+        ]
+
+        response = await hr_client.post(
+            '/api/v1/reviews',
+            json={'employee_id': str(employee_user_id), 'review_year': 2026},
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data['tov_level'] == 'B'
+
+    async def test_create_review_sets_manager_from_employee(
+        self, hr_client, mock_db_conn, employee_record, employee_user_id, opco_id
+    ):
+        """POST /reviews should set manager_id from employee's current manager."""
+        new_review_id = uuid4()
+        manager_id = employee_record['manager_id']
+        created_review = {
+            'id': new_review_id,
+            'employee_id': employee_user_id,
+            'manager_id': manager_id,  # From employee record
+            'opco_id': opco_id,
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': None,
+            'tov_level': None,
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            employee_record,
+            None,  # No previous review
+            created_review,
+        ]
+
+        response = await hr_client.post(
+            '/api/v1/reviews',
+            json={'employee_id': str(employee_user_id), 'review_year': 2026},
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data['manager_id'] == str(manager_id)
+
+    async def test_create_review_no_pre_population_when_no_previous(
+        self, hr_client, mock_db_conn, employee_record, employee_user_id, opco_id
+    ):
+        """POST /reviews should not pre-populate when no previous review exists."""
+        new_review_id = uuid4()
+        created_review = {
+            'id': new_review_id,
+            'employee_id': employee_user_id,
+            'manager_id': employee_record['manager_id'],
+            'opco_id': opco_id,
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': None,
+            'tov_level': None,
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            employee_record,
+            None,  # No previous review
+            created_review,
+        ]
+
+        response = await hr_client.post(
+            '/api/v1/reviews',
+            json={'employee_id': str(employee_user_id), 'review_year': 2026},
+        )
+
+        assert response.status_code == 201
+        data = response.json()
+        assert data['job_title'] is None
+        assert data['tov_level'] is None

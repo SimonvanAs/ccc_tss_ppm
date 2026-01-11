@@ -176,6 +176,97 @@ class ReviewDetailResponse(BaseModel):
     model_config = {'from_attributes': True}
 
 
+class CreateReviewRequest(BaseModel):
+    """Request schema for creating a new review."""
+
+    employee_id: UUID
+    review_year: int
+
+
+class CreateReviewResponse(BaseModel):
+    """Response schema for created review."""
+
+    id: UUID
+    employee_id: UUID
+    manager_id: UUID
+    status: str
+    stage: str
+    review_year: int
+    job_title: Optional[str] = None
+    tov_level: Optional[str] = None
+
+    model_config = {'from_attributes': True}
+
+
+@router.post('/reviews', response_model=CreateReviewResponse, status_code=201)
+async def create_review(
+    request: CreateReviewRequest,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> CreateReviewResponse:
+    """Create a new review with pre-population from previous year.
+
+    Pre-populates job_title and tov_level from previous year's review if available.
+    Sets manager_id from employee's current manager.
+
+    Args:
+        request: Employee ID and review year
+        current_user: The authenticated user (must be HR)
+        conn: Database connection
+
+    Returns:
+        The created review
+
+    Raises:
+        HTTPException 404: If employee not found
+        HTTPException 400: If review already exists for this employee/year
+    """
+    # Get employee to find their current manager
+    employee = await conn.fetchrow(
+        'SELECT id, manager_id, opco_id FROM users WHERE id = $1',
+        request.employee_id,
+    )
+    if employee is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Employee not found',
+        )
+
+    manager_id = employee['manager_id']
+    opco_id = employee['opco_id']
+
+    # Look for previous year's review to pre-populate job_title and tov_level
+    previous_review = await conn.fetchrow(
+        '''
+        SELECT job_title, tov_level FROM reviews
+        WHERE employee_id = $1 AND review_year = $2 AND deleted_at IS NULL
+        ORDER BY created_at DESC LIMIT 1
+        ''',
+        request.employee_id,
+        request.review_year - 1,
+    )
+
+    job_title = previous_review['job_title'] if previous_review else None
+    tov_level = previous_review['tov_level'] if previous_review else None
+
+    # Create the new review
+    created_review = await conn.fetchrow(
+        '''
+        INSERT INTO reviews (employee_id, manager_id, opco_id, review_year, job_title, tov_level, status, stage)
+        VALUES ($1, $2, $3, $4, $5, $6, 'DRAFT', 'GOAL_SETTING')
+        RETURNING id, employee_id, manager_id, status, stage, review_year, job_title, tov_level
+        ''',
+        request.employee_id,
+        manager_id,
+        opco_id,
+        request.review_year,
+        job_title,
+        tov_level,
+    )
+
+    return CreateReviewResponse(**dict(created_review))
+
+
 @router.get('/reviews/{review_id}', response_model=ReviewDetailResponse)
 async def get_review(
     review_id: UUID,
