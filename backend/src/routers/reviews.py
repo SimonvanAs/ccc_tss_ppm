@@ -153,6 +153,56 @@ class ReviewRepository:
         return dict(row) if row else None
 
 
+class ReviewDetailResponse(BaseModel):
+    """Schema for detailed review API responses including TOV level."""
+
+    id: UUID
+    employee_id: UUID
+    manager_id: UUID
+    status: str
+    stage: str
+    review_year: int
+    tov_level: Optional[str] = None
+    job_title: Optional[str] = None
+    what_score: Optional[float] = None
+    how_score: Optional[float] = None
+    employee_name: Optional[str] = None
+    manager_name: Optional[str] = None
+
+    model_config = {'from_attributes': True}
+
+
+@router.get('/reviews/{review_id}', response_model=ReviewDetailResponse)
+async def get_review(
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> ReviewDetailResponse:
+    """Get a review by ID.
+
+    Args:
+        review_id: The review UUID
+        current_user: The authenticated user
+        conn: Database connection
+
+    Returns:
+        The review details
+
+    Raises:
+        HTTPException: If review not found
+    """
+    review_repo = ReviewRepository(conn)
+    review = await review_repo.get_review(review_id)
+
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    return ReviewDetailResponse(**review)
+
+
 @router.post('/reviews/{review_id}/submit', response_model=ReviewResponse)
 async def submit_review(
     review_id: UUID,

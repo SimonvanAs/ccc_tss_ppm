@@ -40,7 +40,7 @@ _Link: [./tracks/ui_layout_20260111/](./tracks/ui_layout_20260111/)_
 
 ---
 
-## [ ] Track: 9-Grid Display & Calibration
+## [~] Track: 9-Grid Display & Calibration
 
 _Link: [./tracks/nine_grid_calibration_20260111/](./tracks/nine_grid_calibration_20260111/)_
 
@@ -52,7 +52,7 @@ _Link: [./tracks/keycloak_hostname_v2_20260111/](./tracks/keycloak_hostname_v2_2
 
 ---
 
-## [ ] Track: Review Signatures & PDF Generation
+## [~] Track: Review Signatures & PDF Generation
 
 *Link: [./conductor/tracks/review_signatures_pdf_20260111/](./conductor/tracks/review_signatures_pdf_20260111/)*
 

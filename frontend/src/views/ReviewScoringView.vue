@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useScoring } from '../composables/useScoring'
 import { submitScores as submitScoresApi } from '../api/scores'
+import { fetchReview } from '../api/reviews'
+import { fetchGoals } from '../api/goals'
+import { getCompetencies } from '../api/competencies'
 import { calculateWhatScore, calculateHowScore } from '../services/scoring'
 import GoalScoringSection from '../components/review/GoalScoringSection.vue'
 import CompetencyScoringSection from '../components/review/CompetencyScoringSection.vue'
@@ -13,20 +16,20 @@ import SubmitScoresButton from '../components/review/SubmitScoresButton.vue'
 import { Card, SectionHeader } from '../components/layout'
 import type { Goal } from '../components/review/GoalScoringSection.vue'
 import type { Competency } from '../components/review/CompetencyScoringSection.vue'
+import type { TovLevel } from '../types/competency'
 
-interface Props {
-  goals: Goal[]
-  competencies: Competency[]
-  readOnly?: boolean
-}
+const props = defineProps<{
+  reviewId: string
+}>()
 
-const props = withDefaults(defineProps<Props>(), {
-  readOnly: false,
-})
-
-const route = useRoute()
 const router = useRouter()
-const reviewId = computed(() => route.params.reviewId as string)
+
+// Data state
+const goals = ref<Goal[]>([])
+const competencies = ref<Competency[]>([])
+const isDataLoading = ref(true)
+const dataError = ref<string | null>(null)
+const readOnly = ref(false)
 
 // Submit state
 const isSubmitting = ref(false)
@@ -45,11 +48,11 @@ const {
   setRequiredGoals,
   setRequiredCompetencies,
   loadScores,
-} = useScoring(reviewId.value)
+} = useScoring(props.reviewId)
 
 // Calculate WHAT score from goals
 const whatScoreResult = computed(() => {
-  const goalScoreData = props.goals.map((g) => ({
+  const goalScoreData = goals.value.map((g) => ({
     id: g.id,
     score: goalScores.value[g.id]?.score ?? 0,
     weight: g.weight,
@@ -65,7 +68,7 @@ const whatScoreResult = computed(() => {
 
 // Calculate HOW score from competencies
 const howScoreResult = computed(() => {
-  const compScoreData = props.competencies.map((c) => ({
+  const compScoreData = competencies.value.map((c) => ({
     id: c.id,
     score: competencyScores.value[c.id]?.score ?? 0,
   }))
@@ -103,7 +106,7 @@ async function handleSubmit() {
   submitError.value = null
 
   try {
-    await submitScoresApi(reviewId.value)
+    await submitScoresApi(props.reviewId)
     // Redirect to team dashboard on success
     router.push('/team')
   } catch (error) {
@@ -113,11 +116,43 @@ async function handleSubmit() {
   }
 }
 
+// Load review data
+async function loadReviewData() {
+  isDataLoading.value = true
+  dataError.value = null
+
+  try {
+    // Fetch review to get TOV level and status
+    const review = await fetchReview(props.reviewId)
+
+    // Check if read-only based on status
+    readOnly.value = review.status !== 'DRAFT'
+
+    // Fetch goals and competencies in parallel
+    const [goalsData, compsData] = await Promise.all([
+      fetchGoals(props.reviewId),
+      review.tov_level ? getCompetencies(review.tov_level as TovLevel) : Promise.resolve([]),
+    ])
+
+    goals.value = goalsData
+    competencies.value = compsData
+
+    // Set required items for scoring composable
+    setRequiredGoals(goalsData.map((g) => g.id))
+    setRequiredCompetencies(compsData.map((c) => c.id))
+
+    // Load existing scores
+    await loadScores()
+  } catch (error) {
+    dataError.value = error instanceof Error ? error.message : 'Failed to load review data'
+  } finally {
+    isDataLoading.value = false
+  }
+}
+
 // Initialize
-onMounted(async () => {
-  setRequiredGoals(props.goals.map((g) => g.id))
-  setRequiredCompetencies(props.competencies.map((c) => c.id))
-  await loadScores()
+onMounted(() => {
+  loadReviewData()
 })
 </script>
 
@@ -131,16 +166,16 @@ onMounted(async () => {
     </SectionHeader>
 
     <!-- Loading state -->
-    <Card v-if="isLoading" class="state-card">
+    <Card v-if="isDataLoading || isLoading" class="state-card">
       <div class="loading-state">
-        Loading scores...
+        Loading review data...
       </div>
     </Card>
 
     <!-- Error state -->
-    <Card v-else-if="loadError" class="state-card">
+    <Card v-else-if="dataError || loadError" class="state-card">
       <div class="error-state">
-        {{ loadError }}
+        {{ dataError || loadError }}
       </div>
     </Card>
 

@@ -2,15 +2,16 @@
 
 ## Phase 1: Database Schema & Models [checkpoint: ]
 
-- [ ] Task: Add signature fields to reviews table
-  - [ ] Write migration SQL for employee_signature_at, manager_signature_at, employee_signature_by, manager_signature_by columns
-  - [ ] Add rejection_feedback column for storing feedback notes
-  - [ ] Run migration and verify schema
+- [x] Task: Add signature fields to reviews table `5b99607`
+  - [x] Write migration SQL for employee_signature_by, manager_signature_by columns
+  - [x] Add rejection_feedback column for storing feedback notes
+  - [x] Run migration and verify schema
+  - Note: employee_signature_date and manager_signature_date already exist
 
-- [ ] Task: Create signature audit log entries
-  - [ ] Write tests for signature audit log creation
-  - [ ] Implement audit log entries for sign/reject actions
-  - [ ] Verify audit logs capture user_id, action, timestamp, review_id
+- [x] Task: Create signature audit log entries `869bbc2`
+  - [x] Write tests for signature audit log creation
+  - [x] Implement audit log entries for sign/reject actions
+  - [x] Verify audit logs capture user_id, action, timestamp, review_id
 
 - [ ] Task: Conductor - User Manual Verification 'Database Schema & Models' (Protocol in workflow.md)
 
