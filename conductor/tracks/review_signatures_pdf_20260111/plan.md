@@ -155,17 +155,17 @@
 
 ## Phase 7: Integration Testing & Polish [checkpoint: ]
 
-- [ ] Task: End-to-end signature flow testing
-  - [ ] Test complete goal setting approval flow
-  - [ ] Test complete mid-year signature flow
-  - [ ] Test complete end-year signature flow
-  - [ ] Test rejection and re-submission flows
-  - [ ] Verify audit logs for all actions
+- [x] Task: End-to-end signature flow testing
+  - [x] Test complete goal setting approval flow
+  - [x] Test complete mid-year signature flow
+  - [x] Test complete end-year signature flow
+  - [x] Test rejection and re-submission flows
+  - [x] Verify audit logs for all actions
 
-- [ ] Task: End-to-end PDF testing
-  - [ ] Test PDF generation at each review status
-  - [ ] Verify PDF content accuracy
-  - [ ] Test PDF in all three languages
-  - [ ] Verify performance requirements met
+- [x] Task: End-to-end PDF testing
+  - [x] Test PDF generation at each review status
+  - [x] Verify PDF content accuracy
+  - [x] Test PDF in all three languages
+  - [x] Verify performance requirements met
 
 - [ ] Task: Conductor - User Manual Verification 'Integration Testing & Polish' (Protocol in workflow.md)
