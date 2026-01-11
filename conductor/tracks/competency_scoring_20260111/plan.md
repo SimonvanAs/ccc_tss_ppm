@@ -22,17 +22,17 @@
 
 ## Phase 2: Frontend Scoring Composable
 
-- [~] Task: Write tests for useCompetencyScoring composable
-  - [ ] Test HOW score calculation
-  - [ ] Test VETO detection
-  - [ ] Test grid position calculation
-  - [ ] Test score completion tracking (X/6)
-- [ ] Task: Implement useCompetencyScoring composable
-  - [ ] Create reactive score state management
-  - [ ] Implement `calculateHowScore()` function
-  - [ ] Implement `checkVeto()` function
-  - [ ] Implement `getGridPosition()` function
-  - [ ] Implement `isComplete` computed property
+- [x] Task: Write tests for useCompetencyScoring composable `7ccdefa`
+  - [x] Test HOW score calculation
+  - [x] Test VETO detection
+  - [x] Test grid position calculation
+  - [x] Test score completion tracking (X/6)
+- [x] Task: Implement useCompetencyScoring composable `7ccdefa`
+  - [x] Create reactive score state management
+  - [x] Implement `calculateHowScore()` function
+  - [x] Implement `checkVeto()` function
+  - [x] Implement `getGridPosition()` function
+  - [x] Implement `isComplete` computed property
 - [ ] Task: Conductor - User Manual Verification 'Frontend Scoring Composable' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Score Card Component
