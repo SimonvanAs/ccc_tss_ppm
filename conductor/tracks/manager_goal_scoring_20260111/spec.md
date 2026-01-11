@@ -61,6 +61,15 @@ This feature enables managers to score their team members' performance reviews u
 - **FR-7.3**: Append transcription to existing text
 - **FR-7.4**: Support EN/NL/ES languages
 
+### FR-8: Review Status Transitions
+
+- **FR-8.1**: "Submit Scores" button enabled only when all goals and competencies are scored
+- **FR-8.2**: Submitting scores transitions review status from DRAFT to PENDING_EMPLOYEE_SIGNATURE
+- **FR-8.3**: Display confirmation dialog before status transition (action is not reversible)
+- **FR-8.4**: After successful submission, redirect manager to team dashboard with success message
+- **FR-8.5**: Prevent further score editing once review status is PENDING_EMPLOYEE_SIGNATURE or beyond
+- **FR-8.6**: Show read-only view of scores for reviews past the scoring stage
+
 ## Non-Functional Requirements
 
 - **NFR-1**: Scoring page must load within 2 seconds
@@ -76,6 +85,7 @@ This feature enables managers to score their team members' performance reviews u
 | GET | `/api/v1/manager/team` | Get manager's team members |
 | GET | `/api/v1/reviews/{id}/scores` | Get existing scores for a review |
 | PUT | `/api/v1/reviews/{id}/scores` | Save/update scores for a review |
+| POST | `/api/v1/reviews/{id}/submit-scores` | Submit scores and transition status |
 | GET | `/api/v1/competencies?tov_level={level}` | Get competencies for TOV level |
 
 ## Acceptance Criteria
@@ -89,6 +99,10 @@ This feature enables managers to score their team members' performance reviews u
 - [ ] Scores auto-save without manual save button
 - [ ] Manager can add written feedback with voice input per goal
 - [ ] Partial progress is preserved when leaving/returning
+- [ ] Submit button enabled only when all scores are entered
+- [ ] Submitting scores transitions review to PENDING_EMPLOYEE_SIGNATURE
+- [ ] Confirmation dialog shown before status transition
+- [ ] Scores become read-only after submission
 - [ ] All UI supports EN/NL/ES languages
 
 ## Out of Scope

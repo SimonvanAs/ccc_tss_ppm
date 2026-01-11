@@ -34,6 +34,14 @@
   - [x] Implement router in `backend/src/routers/competencies.py`
   - [x] Add Pydantic schemas for competency response
 
+- [ ] Task: Create POST /api/v1/reviews/{id}/submit-scores endpoint
+  - [ ] Write API tests for status transition (DRAFT → PENDING_EMPLOYEE_SIGNATURE)
+  - [ ] Write API tests for validation (all scores required before submit)
+  - [ ] Write API tests for authorization (only manager of review can submit)
+  - [ ] Write API tests for idempotency (prevent re-submission)
+  - [ ] Implement router handler in `backend/src/routers/reviews.py`
+  - [ ] Add audit log entry for status transition
+
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) `5f1b4fd`
 
 ## Phase 2: Frontend - Team Dashboard
@@ -131,6 +139,30 @@
   - [ ] Implement `frontend/src/views/ReviewScoringView.vue`
   - [ ] Add route `/reviews/:id/score` to router
 
+- [ ] Task: Create SubmitScoresButton component
+  - [ ] Write tests for disabled state when scores incomplete
+  - [ ] Write tests for enabled state when all scores entered
+  - [ ] Write tests for confirmation dialog display
+  - [ ] Write tests for API call on confirmation
+  - [ ] Implement `frontend/src/components/review/SubmitScoresButton.vue`
+
+- [ ] Task: Create ConfirmationDialog component
+  - [ ] Write tests for dialog content and actions
+  - [ ] Write tests for cancel and confirm behavior
+  - [ ] Implement `frontend/src/components/common/ConfirmationDialog.vue`
+
+- [ ] Task: Implement read-only scoring view mode
+  - [ ] Write tests for read-only state detection based on review status
+  - [ ] Write tests for disabled score cards in read-only mode
+  - [ ] Write tests for hidden submit button in read-only mode
+  - [ ] Update ReviewScoringView to support read-only mode
+
+- [ ] Task: Add submit-scores API client function
+  - [ ] Write tests for `submitScores` function
+  - [ ] Write tests for success redirect to team dashboard
+  - [ ] Write tests for error handling
+  - [ ] Implement in `frontend/src/api/scores.ts`
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
 
 ## Phase 6: Internationalization & Polish
@@ -148,5 +180,8 @@
   - [ ] Test complete scoring flow from team dashboard to 9-grid
   - [ ] Test auto-save persistence across page reloads
   - [ ] Test VETO warning display scenarios
+  - [ ] Test submit scores flow with confirmation dialog
+  - [ ] Test status transition and redirect to dashboard
+  - [ ] Test read-only mode for submitted reviews
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)

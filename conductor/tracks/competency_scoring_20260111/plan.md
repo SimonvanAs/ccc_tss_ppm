@@ -2,16 +2,16 @@
 
 ## Phase 1: Backend Scoring Service
 
-- [~] Task: Write tests for HOW score calculation service
-  - [ ] Test average calculation when all scores present
-  - [ ] Test VETO rule when any score equals 1
-  - [ ] Test grid position mapping (1.00-1.66→1, 1.67-2.33→2, 2.34-3.00→3)
-  - [ ] Test incomplete scores handling
-- [ ] Task: Implement scoring service (`backend/src/services/scoring.py`)
-  - [ ] Create `calculate_how_score()` function
-  - [ ] Create `calculate_grid_position()` function
-  - [ ] Create `check_how_veto()` function
-- [ ] Task: Write tests for review score persistence
+- [x] Task: Write tests for HOW score calculation service `00ddce6`
+  - [x] Test average calculation when all scores present
+  - [x] Test VETO rule when any score equals 1
+  - [x] Test grid position mapping (1.00-1.66→1, 1.67-2.33→2, 2.34-3.00→3)
+  - [x] Test incomplete scores handling
+- [x] Task: Implement scoring service (`backend/src/services/scoring.py`) `00ddce6`
+  - [x] Create `calculate_how_score()` function
+  - [x] Create `calculate_grid_position()` function
+  - [x] Create `check_how_veto()` function
+- [~] Task: Write tests for review score persistence
   - [ ] Test how_score update on competency score save
   - [ ] Test how_veto_active flag update
   - [ ] Test grid_position_how update
