@@ -44,11 +44,11 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Test filters by manager_id from JWT
   - [x] Test includes review status for each member
   - [x] Test OpCo isolation
-- [x] Task: Implement GET /api/v1/manager/team/grid endpoint
+- [x] Task: Implement GET /api/v1/manager/team/grid endpoint `b0b0e84`
   - [x] Create team_grid repository function
   - [x] Create router endpoint with JWT auth
   - [x] Return employee id, name, what_score, how_score, review_status
-- [ ] Task: Write tests for TeamNineGrid component
+- [~] Task: Write tests for TeamNineGrid component
   - [ ] Test displays multiple employee markers
   - [ ] Test hover shows employee details tooltip
   - [ ] Test click emits navigation event
