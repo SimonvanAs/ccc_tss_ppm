@@ -42,7 +42,7 @@ TSS PPM v3.0 aims to streamline the annual performance review process by providi
 | Authentication | Keycloak v26 (OIDC/EntraID) + custom theme |
 | Voice Input | faster-whisper (Docker) |
 | PDF Generation | WeasyPrint (integrated in API) |
-| Reverse Proxy | Caddy (auto TLS) |
+| Reverse Proxy | External Caddy (with auto TLS) |
 | Deployment | Docker containers |
 
 ## User Roles
@@ -173,11 +173,13 @@ For production deployment, see the comprehensive [DEPLOYMENT.md](DEPLOYMENT.md) 
 cp .env.example .env.production
 nano .env.production  # Set secure passwords
 
-# 2. Update domain in Caddyfile
-nano Caddyfile  # Replace ppm.tss-vms.co.uk with your domain
+# 2. Start Docker services
+docker compose --env-file .env.production up -d
 
-# 3. Deploy with production profile
-docker compose --env-file .env.production --profile production up -d
+# 3. Configure external reverse proxy (Caddy) to route:
+#    /api/*  -> localhost:8003
+#    /auth/* -> localhost:8082
+#    /*      -> localhost:5173
 ```
 
 ## License
