@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
+import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
 from src.main import app
@@ -18,36 +19,41 @@ class TestCalibrationSessionsAPI:
     """Tests for calibration sessions API endpoints."""
 
     @pytest.fixture
-    def mock_hr_user(self):
+    def sample_opco_id(self):
+        """Sample OpCo ID as UUID."""
+        return uuid4()
+
+    @pytest.fixture
+    def mock_hr_user(self, sample_opco_id):
         """Mock authenticated HR user."""
         return CurrentUser(
             keycloak_id='test-hr-id',
             email='hr@example.com',
             name='HR User',
             roles=['employee', 'hr'],
-            opco_id='test-opco',
+            opco_id=str(sample_opco_id),
         )
 
     @pytest.fixture
-    def mock_manager_user(self):
+    def mock_manager_user(self, sample_opco_id):
         """Mock authenticated manager user (not HR)."""
         return CurrentUser(
             keycloak_id='test-manager-id',
             email='manager@example.com',
             name='Test Manager',
             roles=['employee', 'manager'],
-            opco_id='test-opco',
+            opco_id=str(sample_opco_id),
         )
 
     @pytest.fixture
-    def mock_employee_user(self):
+    def mock_employee_user(self, sample_opco_id):
         """Mock authenticated employee user."""
         return CurrentUser(
             keycloak_id='test-employee-id',
             email='employee@example.com',
             name='Test Employee',
             roles=['employee'],
-            opco_id='test-opco',
+            opco_id=str(sample_opco_id),
         )
 
     @pytest.fixture
@@ -77,7 +83,7 @@ class TestCalibrationSessionsAPI:
         conn = AsyncMock()
         return conn
 
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def hr_client(self, mock_hr_user, mock_db_conn):
         """Async HTTP client with HR authentication."""
         app.dependency_overrides[get_current_user] = lambda: mock_hr_user
@@ -89,7 +95,7 @@ class TestCalibrationSessionsAPI:
 
         app.dependency_overrides.clear()
 
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def manager_client(self, mock_manager_user, mock_db_conn):
         """Async HTTP client with manager authentication (not HR)."""
         app.dependency_overrides[get_current_user] = lambda: mock_manager_user
@@ -101,7 +107,7 @@ class TestCalibrationSessionsAPI:
 
         app.dependency_overrides.clear()
 
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def unauthenticated_client(self):
         """Async HTTP client without auth."""
         app.dependency_overrides.clear()
@@ -315,9 +321,11 @@ class TestCalibrationSessionsAPI:
 
     async def test_start_session_success(self, hr_client, mock_db_conn, sample_session):
         """POST /calibration-sessions/{id}/start should start session."""
+        # 3 fetchrow calls: router get_session, repo.start_session get_session, repo.start_session update
         mock_db_conn.fetchrow.side_effect = [
-            sample_session,  # First call to get session
-            {**sample_session, 'status': 'IN_PROGRESS'}  # Second call after update
+            sample_session,  # Router: get_session_by_id with opco_id
+            sample_session,  # Repo: start_session -> get_session_by_id
+            {**sample_session, 'status': 'IN_PROGRESS'}  # Repo: start_session -> UPDATE
         ]
         session_id = str(sample_session['id'])
 
@@ -340,9 +348,11 @@ class TestCalibrationSessionsAPI:
     async def test_complete_session_success(self, hr_client, mock_db_conn, sample_session):
         """POST /calibration-sessions/{id}/complete should complete session."""
         sample_session['status'] = 'IN_PROGRESS'
+        # 3 fetchrow calls: router get_session, repo.complete_session get_session, repo.complete_session update
         mock_db_conn.fetchrow.side_effect = [
-            sample_session,  # First call to get session
-            {**sample_session, 'status': 'COMPLETED'}  # Second call after update
+            sample_session,  # Router: get_session_by_id with opco_id
+            sample_session,  # Repo: complete_session -> get_session_by_id
+            {**sample_session, 'status': 'COMPLETED'}  # Repo: complete_session -> UPDATE
         ]
         session_id = str(sample_session['id'])
 
