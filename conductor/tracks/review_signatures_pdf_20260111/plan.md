@@ -50,7 +50,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Backend Signature API' (Protocol in workflow.md)
 
-## Phase 3: Frontend Signature Components [checkpoint: ]
+## Phase 3: Frontend Signature Components [checkpoint: 1de901e]
 
 - [x] Task: Create SignatureModal component `a65a313`
   - [x] Write tests for SignatureModal rendering and interactions
