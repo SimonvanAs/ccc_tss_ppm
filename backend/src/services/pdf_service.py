@@ -77,49 +77,159 @@ class PDFService:
         "red": "#cf222e",
     }
 
-    # Stage labels
-    STAGE_LABELS = {
-        "GOAL_SETTING": "Goal Setting",
-        "MID_YEAR_REVIEW": "Mid-Year Review",
-        "END_YEAR_REVIEW": "End-Year Review",
-    }
-
-    # Score labels
-    SCORE_LABELS = {
-        1: "Below Expectations",
-        2: "Meets Expectations",
-        3: "Exceeds Expectations",
+    # Translations for all supported languages
+    TRANSLATIONS = {
+        "en": {
+            "document_title": "Performance Review Report",
+            "employee": "Employee",
+            "manager": "Manager",
+            "job_title": "Job Title",
+            "department": "Department",
+            "performance_summary": "Performance Summary",
+            "what_score": "WHAT Score (Goals)",
+            "how_score": "HOW Score (Competencies)",
+            "grid_position": "Grid Position",
+            "performance_grid": "Performance Grid",
+            "what_axis": "WHAT (Goals)",
+            "how_axis": "HOW (Competencies)",
+            "goals_what": "Goals (WHAT)",
+            "goal": "Goal",
+            "type": "Type",
+            "weight": "Weight",
+            "score": "Score",
+            "competencies_how": "Competencies (HOW)",
+            "comments": "Comments",
+            "manager_comments": "Manager Comments",
+            "employee_comments": "Employee Comments",
+            "feedback_notes": "Feedback Notes",
+            "signatures": "Signatures",
+            "employee_signature": "Employee Signature",
+            "manager_signature": "Manager Signature",
+            "pending": "Pending",
+            "draft": "DRAFT",
+            "stage_goal_setting": "Goal Setting",
+            "stage_mid_year": "Mid-Year Review",
+            "stage_end_year": "End-Year Review",
+            "below": "Below",
+            "meets": "Meets",
+            "exceeds": "Exceeds",
+        },
+        "nl": {
+            "document_title": "Prestatiebeoordeling Rapport",
+            "employee": "Medewerker",
+            "manager": "Manager",
+            "job_title": "Functietitel",
+            "department": "Afdeling",
+            "performance_summary": "Prestatieoverzicht",
+            "what_score": "WAT Score (Doelen)",
+            "how_score": "HOE Score (Competenties)",
+            "grid_position": "Grid Positie",
+            "performance_grid": "Prestatie Grid",
+            "what_axis": "WAT (Doelen)",
+            "how_axis": "HOE (Competenties)",
+            "goals_what": "Doelen (WAT)",
+            "goal": "Doel",
+            "type": "Type",
+            "weight": "Weging",
+            "score": "Score",
+            "competencies_how": "Competenties (HOE)",
+            "comments": "Opmerkingen",
+            "manager_comments": "Manager Opmerkingen",
+            "employee_comments": "Medewerker Opmerkingen",
+            "feedback_notes": "Feedback Notities",
+            "signatures": "Handtekeningen",
+            "employee_signature": "Medewerker Handtekening",
+            "manager_signature": "Manager Handtekening",
+            "pending": "In afwachting",
+            "draft": "CONCEPT",
+            "stage_goal_setting": "Doelstellingen",
+            "stage_mid_year": "Halfjaarlijkse Beoordeling",
+            "stage_end_year": "Eindejaars Beoordeling",
+            "below": "Onder",
+            "meets": "Voldoet",
+            "exceeds": "Boven",
+        },
+        "es": {
+            "document_title": "Informe de Evaluación de Desempeño",
+            "employee": "Empleado",
+            "manager": "Gerente",
+            "job_title": "Puesto",
+            "department": "Departamento",
+            "performance_summary": "Resumen de Desempeño",
+            "what_score": "Puntuación QUÉ (Objetivos)",
+            "how_score": "Puntuación CÓMO (Competencias)",
+            "grid_position": "Posición en Cuadrícula",
+            "performance_grid": "Cuadrícula de Desempeño",
+            "what_axis": "QUÉ (Objetivos)",
+            "how_axis": "CÓMO (Competencias)",
+            "goals_what": "Objetivos (QUÉ)",
+            "goal": "Objetivo",
+            "type": "Tipo",
+            "weight": "Peso",
+            "score": "Puntuación",
+            "competencies_how": "Competencias (CÓMO)",
+            "comments": "Comentarios",
+            "manager_comments": "Comentarios del Gerente",
+            "employee_comments": "Comentarios del Empleado",
+            "feedback_notes": "Notas de Retroalimentación",
+            "signatures": "Firmas",
+            "employee_signature": "Firma del Empleado",
+            "manager_signature": "Firma del Gerente",
+            "pending": "Pendiente",
+            "draft": "BORRADOR",
+            "stage_goal_setting": "Definición de Objetivos",
+            "stage_mid_year": "Evaluación Semestral",
+            "stage_end_year": "Evaluación Anual",
+            "below": "Inferior",
+            "meets": "Cumple",
+            "exceeds": "Supera",
+        },
     }
 
     def __init__(self):
         """Initialize PDF service."""
         pass
 
+    def _t(self, key: str, language: str = "en") -> str:
+        """Get translation for a key in the specified language."""
+        translations = self.TRANSLATIONS.get(language, self.TRANSLATIONS["en"])
+        return translations.get(key, self.TRANSLATIONS["en"].get(key, key))
+
+    def _get_stage_label(self, stage: str, language: str = "en") -> str:
+        """Get translated stage label."""
+        stage_keys = {
+            "GOAL_SETTING": "stage_goal_setting",
+            "MID_YEAR_REVIEW": "stage_mid_year",
+            "END_YEAR_REVIEW": "stage_end_year",
+        }
+        key = stage_keys.get(stage, stage)
+        return self._t(key, language)
+
     def generate_html(self, data: ReviewPDFData, language: str = "en") -> str:
         """Generate HTML content for the PDF."""
         is_draft = data.status != "SIGNED"
-        stage_label = self.STAGE_LABELS.get(data.stage, data.stage)
+        stage_label = self._get_stage_label(data.stage, language)
 
         html = f"""<!DOCTYPE html>
 <html lang="{language}">
 <head>
     <meta charset="UTF-8">
-    <title>Performance Review - {data.employee_name}</title>
+    <title>{self._t("document_title", language)} - {data.employee_name}</title>
     <style>
         {self._get_css()}
     </style>
 </head>
 <body>
-    {self._render_watermark() if is_draft else ""}
+    {self._render_watermark(language) if is_draft else ""}
 
     <div class="container">
-        {self._render_header(data, stage_label)}
-        {self._render_summary(data)}
-        {self._render_nine_grid(data)}
-        {self._render_goals(data)}
-        {self._render_competencies(data)}
-        {self._render_comments(data)}
-        {self._render_signatures(data)}
+        {self._render_header(data, stage_label, language)}
+        {self._render_summary(data, language)}
+        {self._render_nine_grid(data, language)}
+        {self._render_goals(data, language)}
+        {self._render_competencies(data, language)}
+        {self._render_comments(data, language)}
+        {self._render_signatures(data, language)}
     </div>
 </body>
 </html>"""
@@ -513,32 +623,32 @@ class PDFService:
             }}
         """
 
-    def _render_watermark(self) -> str:
+    def _render_watermark(self, language: str = "en") -> str:
         """Render DRAFT watermark."""
-        return '<div class="watermark">DRAFT</div>'
+        return f'<div class="watermark">{self._t("draft", language)}</div>'
 
-    def _render_header(self, data: ReviewPDFData, stage_label: str) -> str:
+    def _render_header(self, data: ReviewPDFData, stage_label: str, language: str = "en") -> str:
         """Render document header."""
         return f"""
         <div class="header">
             <div class="header-left">
                 <div class="company-name">TSS PPM</div>
-                <div class="document-title">Performance Review Report</div>
+                <div class="document-title">{self._t("document_title", language)}</div>
                 <div class="info-grid">
                     <div class="info-item">
-                        <span class="info-label">Employee</span>
+                        <span class="info-label">{self._t("employee", language)}</span>
                         <span class="info-value">{data.employee_name}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Manager</span>
+                        <span class="info-label">{self._t("manager", language)}</span>
                         <span class="info-value">{data.manager_name}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Job Title</span>
+                        <span class="info-label">{self._t("job_title", language)}</span>
                         <span class="info-value">{data.job_title or "—"}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Department</span>
+                        <span class="info-label">{self._t("department", language)}</span>
                         <span class="info-value">{data.department or "—"}</span>
                     </div>
                 </div>
@@ -550,7 +660,7 @@ class PDFService:
         </div>
         """
 
-    def _render_summary(self, data: ReviewPDFData) -> str:
+    def _render_summary(self, data: ReviewPDFData, language: str = "en") -> str:
         """Render score summary section."""
         what_display = f"{data.what_score:.2f}" if data.what_score is not None else "—"
         how_display = f"{data.how_score:.2f}" if data.how_score is not None else "—"
@@ -558,29 +668,29 @@ class PDFService:
         # Calculate grid position
         grid_pos = "—"
         if data.what_score is not None and data.how_score is not None:
-            grid_pos = self._get_grid_position_label(data.what_score, data.how_score)
+            grid_pos = self._get_grid_position_label(data.what_score, data.how_score, language)
 
         return f"""
         <div class="section">
-            <div class="section-title">Performance Summary</div>
+            <div class="section-title">{self._t("performance_summary", language)}</div>
             <div class="summary-grid">
                 <div class="summary-card">
                     <div class="score-value">{what_display}</div>
-                    <div class="score-label">WHAT Score (Goals)</div>
+                    <div class="score-label">{self._t("what_score", language)}</div>
                 </div>
                 <div class="summary-card">
                     <div class="score-value">{how_display}</div>
-                    <div class="score-label">HOW Score (Competencies)</div>
+                    <div class="score-label">{self._t("how_score", language)}</div>
                 </div>
                 <div class="summary-card highlight">
                     <div class="score-value">{grid_pos}</div>
-                    <div class="score-label">Grid Position</div>
+                    <div class="score-label">{self._t("grid_position", language)}</div>
                 </div>
             </div>
         </div>
         """
 
-    def _render_nine_grid(self, data: ReviewPDFData) -> str:
+    def _render_nine_grid(self, data: ReviewPDFData, language: str = "en") -> str:
         """Render 9-grid visualization."""
         # Grid color mapping (row, col) -> color class
         grid_colors = [
@@ -612,17 +722,17 @@ class PDFService:
 
         return f"""
         <div class="section nine-grid-container">
-            <div class="section-title">Performance Grid</div>
+            <div class="section-title">{self._t("performance_grid", language)}</div>
             <div class="nine-grid">
                 {cells_html}
             </div>
             <div style="text-align: center; margin-top: 10px;">
-                <span style="font-size: 10px; color: #666;">WHAT (Goals) ↑ &nbsp;&nbsp;&nbsp; HOW (Competencies) →</span>
+                <span style="font-size: 10px; color: #666;">{self._t("what_axis", language)} ↑ &nbsp;&nbsp;&nbsp; {self._t("how_axis", language)} →</span>
             </div>
         </div>
         """
 
-    def _render_goals(self, data: ReviewPDFData) -> str:
+    def _render_goals(self, data: ReviewPDFData, language: str = "en") -> str:
         """Render goals section."""
         rows_html = ""
         for goal in data.goals:
@@ -648,14 +758,14 @@ class PDFService:
 
         return f"""
         <div class="section">
-            <div class="section-title">Goals (WHAT)</div>
+            <div class="section-title">{self._t("goals_what", language)}</div>
             <table class="goals-table">
                 <thead>
                     <tr>
-                        <th style="width: 50%;">Goal</th>
-                        <th style="width: 15%;">Type</th>
-                        <th style="width: 15%; text-align: center;">Weight</th>
-                        <th style="width: 20%; text-align: center;">Score</th>
+                        <th style="width: 50%;">{self._t("goal", language)}</th>
+                        <th style="width: 15%;">{self._t("type", language)}</th>
+                        <th style="width: 15%; text-align: center;">{self._t("weight", language)}</th>
+                        <th style="width: 20%; text-align: center;">{self._t("score", language)}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -665,7 +775,7 @@ class PDFService:
         </div>
         """
 
-    def _render_competencies(self, data: ReviewPDFData) -> str:
+    def _render_competencies(self, data: ReviewPDFData, language: str = "en") -> str:
         """Render competencies section."""
         # Group by category
         categories: dict[str, list[CompetencyPDFData]] = {}
@@ -696,21 +806,21 @@ class PDFService:
 
         return f"""
         <div class="section">
-            <div class="section-title">Competencies (HOW)</div>
+            <div class="section-title">{self._t("competencies_how", language)}</div>
             <div class="competencies-grid">
                 {categories_html}
             </div>
         </div>
         """
 
-    def _render_comments(self, data: ReviewPDFData) -> str:
+    def _render_comments(self, data: ReviewPDFData, language: str = "en") -> str:
         """Render comments section."""
         comments_html = ""
 
         if data.manager_comments:
             comments_html += f"""
             <div class="comment-block">
-                <div class="comment-label">Manager Comments</div>
+                <div class="comment-label">{self._t("manager_comments", language)}</div>
                 <div class="comment-text">{data.manager_comments}</div>
             </div>
             """
@@ -718,7 +828,7 @@ class PDFService:
         if data.employee_comments:
             comments_html += f"""
             <div class="comment-block">
-                <div class="comment-label">Employee Comments</div>
+                <div class="comment-label">{self._t("employee_comments", language)}</div>
                 <div class="comment-text">{data.employee_comments}</div>
             </div>
             """
@@ -726,7 +836,7 @@ class PDFService:
         if data.rejection_feedback:
             comments_html += f"""
             <div class="comment-block">
-                <div class="comment-label">Feedback Notes</div>
+                <div class="comment-label">{self._t("feedback_notes", language)}</div>
                 <div class="comment-text">{data.rejection_feedback}</div>
             </div>
             """
@@ -736,15 +846,17 @@ class PDFService:
 
         return f"""
         <div class="section">
-            <div class="section-title">Comments</div>
+            <div class="section-title">{self._t("comments", language)}</div>
             <div class="comments-section">
                 {comments_html}
             </div>
         </div>
         """
 
-    def _render_signatures(self, data: ReviewPDFData) -> str:
+    def _render_signatures(self, data: ReviewPDFData, language: str = "en") -> str:
         """Render signatures section."""
+        pending_text = self._t("pending", language)
+
         def format_signature(sig: Optional[SignaturePDFData], label: str) -> str:
             if sig:
                 date_str = sig.signed_at.strftime("%B %d, %Y at %H:%M")
@@ -759,16 +871,16 @@ class PDFService:
                 return f"""
                 <div class="signature-block">
                     <div class="signature-label">{label}</div>
-                    <div class="signature-name signature-pending">Pending</div>
+                    <div class="signature-name signature-pending">{pending_text}</div>
                 </div>
                 """
 
-        employee_sig = format_signature(data.employee_signature, "Employee Signature")
-        manager_sig = format_signature(data.manager_signature, "Manager Signature")
+        employee_sig = format_signature(data.employee_signature, self._t("employee_signature", language))
+        manager_sig = format_signature(data.manager_signature, self._t("manager_signature", language))
 
         return f"""
         <div class="section">
-            <div class="section-title">Signatures</div>
+            <div class="section-title">{self._t("signatures", language)}</div>
             <div class="signatures-grid">
                 {employee_sig}
                 {manager_sig}
@@ -792,14 +904,14 @@ class PDFService:
 
         return score_to_pos(what_score), score_to_pos(how_score)
 
-    def _get_grid_position_label(self, what_score: float, how_score: float) -> str:
+    def _get_grid_position_label(self, what_score: float, how_score: float, language: str = "en") -> str:
         """Get human-readable grid position label."""
         what_row, how_col = self._get_grid_position(what_score, how_score)
 
         if what_row is None:
             return "—"
 
-        row_labels = ["Below", "Meets", "Exceeds"]
-        col_labels = ["Below", "Meets", "Exceeds"]
+        row_labels = [self._t("below", language), self._t("meets", language), self._t("exceeds", language)]
+        col_labels = [self._t("below", language), self._t("meets", language), self._t("exceeds", language)]
 
         return f"{row_labels[what_row]}/{col_labels[how_col]}"
