@@ -1,6 +1,6 @@
 # Plan: UI Layout and Styling
 
-## Phase 1: Core Layout Shell Components
+## Phase 1: Core Layout Shell Components [checkpoint: 5e6fe21]
 
 - [x] Task: Write tests for AppLayout component `bbc0563`
   - [x] Test renders sidebar and main content area
@@ -33,7 +33,7 @@
   - [x] Add language selector with EN/NL/ES flag icons
   - [x] Wire language selector to vue-i18n locale change
   - [x] Add TSS PPM logo/branding
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Core Layout Shell Components' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Core Layout Shell Components' (Protocol in workflow.md) `5e6fe21`
 
 ## Phase 2: Card and Content Styling Components
 
