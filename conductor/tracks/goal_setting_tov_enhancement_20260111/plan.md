@@ -36,11 +36,11 @@
   - [x] Write tests for goal_setting_completed_at timestamp set on approval
   - [x] Implement validation and timestamp updates
 
-- [ ] Task: Implement review creation with pre-population
-  - [ ] Write tests for pre-populating job_title from previous year
-  - [ ] Write tests for pre-populating tov_level from previous year
-  - [ ] Write tests for setting manager_id from employee's current manager
-  - [ ] Implement review creation logic
+- [x] Task: Implement review creation with pre-population `a4885f2`
+  - [x] Write tests for pre-populating job_title from previous year
+  - [x] Write tests for pre-populating tov_level from previous year
+  - [x] Write tests for setting manager_id from employee's current manager
+  - [x] Implement review creation logic
 
 - [ ] Task: Conductor - User Manual Verification 'Backend API - Review Header' (Protocol in workflow.md)
 
