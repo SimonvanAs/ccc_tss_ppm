@@ -604,3 +604,155 @@ async def sign_review(
         employee_signature_by=updated_review.get('employee_signature_by'),
         manager_signature_by=updated_review.get('manager_signature_by'),
     )
+
+
+# --- Reject Review Endpoint ---
+
+
+class RejectReviewRequest(BaseModel):
+    """Request schema for reject review endpoint."""
+
+    feedback: str
+
+
+class RejectReviewResponse(BaseModel):
+    """Response schema for reject review endpoint."""
+
+    status: str
+    rejection_feedback: Optional[str] = None
+
+
+@router.post('/reviews/{review_id}/reject', response_model=RejectReviewResponse)
+async def reject_review(
+    review_id: UUID,
+    request: RejectReviewRequest,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> RejectReviewResponse:
+    """Reject a review with feedback.
+
+    This endpoint handles rejection for both employees and managers:
+    - Employee: PENDING_EMPLOYEE_SIGNATURE → DRAFT
+    - Manager: PENDING_MANAGER_SIGNATURE → PENDING_EMPLOYEE_SIGNATURE (clears employee signature)
+
+    Args:
+        review_id: The review UUID
+        request: Rejection request with feedback
+        current_user: The authenticated user
+        conn: Database connection
+
+    Returns:
+        The updated review status and feedback
+
+    Raises:
+        HTTPException 400: If feedback is empty or review is not rejectable
+        HTTPException 403: If user is not authorized to reject
+        HTTPException 404: If review not found
+    """
+    review_repo = ReviewRepository(conn)
+    audit_repo = AuditRepository(conn)
+
+    # Validate feedback is not empty
+    if not request.feedback or not request.feedback.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Feedback is required for rejection',
+        )
+
+    # Get user's internal ID from keycloak_id
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    if user_row is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='User not found in database',
+        )
+    user_id = user_row['id']
+
+    # Get the review
+    review = await review_repo.get_review(review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    old_status = review['status']
+    new_status = None
+    rejection_action = None
+
+    # Determine rejection action based on status and user role
+    if old_status == 'PENDING_EMPLOYEE_SIGNATURE':
+        # Employee rejection
+        if review['employee_id'] != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to reject this review',
+            )
+        new_status = 'DRAFT'
+        rejection_action = 'EMPLOYEE_REJECTED'
+
+        # Record rejection - return to DRAFT
+        await conn.execute(
+            '''
+            UPDATE reviews
+            SET status = $1, rejection_feedback = $2, updated_at = NOW()
+            WHERE id = $3
+            ''',
+            new_status,
+            request.feedback.strip(),
+            review_id,
+        )
+
+    elif old_status == 'PENDING_MANAGER_SIGNATURE':
+        # Manager rejection - return to employee for re-review
+        if review['manager_id'] != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to reject this review',
+            )
+        new_status = 'PENDING_EMPLOYEE_SIGNATURE'
+        rejection_action = 'MANAGER_REJECTED'
+
+        # Record rejection - clear employee signature and return to them
+        await conn.execute(
+            '''
+            UPDATE reviews
+            SET status = $1, rejection_feedback = $2,
+                employee_signature_by = NULL, employee_signature_date = NULL,
+                updated_at = NOW()
+            WHERE id = $3
+            ''',
+            new_status,
+            request.feedback.strip(),
+            review_id,
+        )
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Review cannot be rejected in current status: {old_status}',
+        )
+
+    # Create audit log entry
+    await audit_repo.log_action(
+        action=rejection_action,
+        entity_type='review',
+        entity_id=review_id,
+        user_id=user_id,
+        opco_id=review.get('opco_id'),
+        changes={
+            'status': {'from': old_status, 'to': new_status},
+            'feedback': request.feedback.strip(),
+        },
+    )
+
+    # Get updated review
+    updated_review = await review_repo.get_review(review_id)
+
+    return RejectReviewResponse(
+        status=updated_review['status'],
+        rejection_feedback=updated_review.get('rejection_feedback'),
+    )
