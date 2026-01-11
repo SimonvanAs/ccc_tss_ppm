@@ -5,6 +5,7 @@ import { nextTick } from 'vue'
 import GoalSettingView from '../../views/GoalSettingView.vue'
 import { GoalType } from '../../types'
 import type { Goal } from '../../types'
+import type { Competency } from '../../types/competency'
 
 // Mock vue-i18n
 vi.mock('vue-i18n', () => ({
@@ -25,6 +26,13 @@ vi.mock('vue-i18n', () => ({
         'actions.cancel': 'Cancel',
         'errors.generic': 'An error occurred',
         'errors.submitFailed': 'Failed to submit goals',
+        'competencyPreview.title': 'Competencies for Selected Level',
+        'competencyPreview.selectTovLevel': 'Select a TOV level',
+        'competencyPreview.emptyState': 'No competencies available',
+        'competencies.categories.Dedicated': 'Dedicated',
+        'competencies.categories.Entrepreneurial': 'Entrepreneurial',
+        'competencies.categories.Innovative': 'Innovative',
+        'common.loading': 'Loading...',
       }
       return messages[key] || key
     },
@@ -49,7 +57,13 @@ vi.mock('../../api/goals', () => ({
   submitReview: vi.fn(),
 }))
 
+// Mock competencies API
+vi.mock('../../api/competencies', () => ({
+  getCompetencies: vi.fn(),
+}))
+
 import * as goalsApi from '../../api/goals'
+import * as competenciesApi from '../../api/competencies'
 
 function createMockGoals(): Goal[] {
   return [
@@ -250,5 +264,79 @@ describe('GoalSettingView - Submission', () => {
       const submitButton = wrapper.find('.btn-submit')
       expect(submitButton.attributes('disabled')).toBeUndefined()
     })
+  })
+})
+
+const mockCompetencies: Competency[] = [
+  {
+    id: 'comp-1',
+    level: 'B',
+    category: 'Dedicated',
+    subcategory: 'Result driven',
+    title_en: 'Achieves Results',
+    indicators_en: ['Delivers on commitments'],
+    display_order: 1,
+  },
+  {
+    id: 'comp-2',
+    level: 'B',
+    category: 'Entrepreneurial',
+    subcategory: 'Entrepreneurial',
+    title_en: 'Takes Initiative',
+    indicators_en: ['Identifies opportunities'],
+    display_order: 2,
+  },
+  {
+    id: 'comp-3',
+    level: 'B',
+    category: 'Innovative',
+    subcategory: 'Market oriented',
+    title_en: 'Understands Market',
+    indicators_en: ['Monitors trends'],
+    display_order: 3,
+  },
+]
+
+describe('GoalSettingView - Competency Preview Integration', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  function createWrapperWithReview(goals: Goal[] = createMockGoals()) {
+    vi.mocked(goalsApi.fetchGoals).mockResolvedValue(goals)
+    vi.mocked(competenciesApi.getCompetencies).mockResolvedValue(mockCompetencies)
+
+    return mount(GoalSettingView, {
+      props: {
+        reviewId: 'review-123',
+      },
+      global: {
+        stubs: {
+          Modal: {
+            template: '<div class="modal-stub"><slot /></div>',
+            props: ['show', 'title'],
+          },
+          ConfirmDialog: {
+            template: '<div class="confirm-stub"></div>',
+            props: ['show', 'title', 'message', 'confirmText', 'danger'],
+          },
+          teleport: true,
+        },
+      },
+    })
+  }
+
+  it('should render CompetencyPreview component', async () => {
+    const wrapper = createWrapperWithReview()
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="competency-preview"]').exists()).toBe(true)
+  })
+
+  it('should display competency preview title', async () => {
+    const wrapper = createWrapperWithReview()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Competencies for Selected Level')
   })
 })

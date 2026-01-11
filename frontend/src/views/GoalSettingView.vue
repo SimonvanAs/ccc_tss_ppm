@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useGoals } from '../composables/useGoals'
 import { useReviewHeader } from '../composables/useReviewHeader'
+import { useCompetencyPreview } from '../composables/useCompetencyPreview'
 import { submitReview } from '../api/goals'
 import type { Goal, GoalCreate } from '../types'
+import type { TovLevel } from '../types/competency'
 import GoalList from '../components/review/GoalList.vue'
 import GoalForm from '../components/review/GoalForm.vue'
 import WeightIndicator from '../components/review/WeightIndicator.vue'
 import ReviewHeader from '../components/review/ReviewHeader.vue'
+import CompetencyPreview from '../components/review/CompetencyPreview.vue'
 import SaveIndicator from '../components/common/SaveIndicator.vue'
 import Modal from '../components/common/Modal.vue'
 import ConfirmDialog from '../components/common/ConfirmDialog.vue'
@@ -47,6 +50,16 @@ const {
   updateTovLevel,
 } = useReviewHeader(props.reviewId)
 
+// Competency preview based on TOV level
+const {
+  competencies,
+  loading: competenciesLoading,
+  loadCompetencies,
+} = useCompetencyPreview()
+
+// Computed to determine if we should show "select TOV" message
+const showSelectTovMessage = computed(() => !review.value?.tov_level)
+
 // Modal states
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -67,7 +80,23 @@ const editModalTitle = computed(() =>
 
 onMounted(async () => {
   await Promise.all([loadGoals(), loadReview()])
+  // Load competencies if TOV level is already set
+  if (review.value?.tov_level) {
+    await loadCompetencies(review.value.tov_level as TovLevel)
+  }
 })
+
+// Watch for TOV level changes to load competencies
+watch(
+  () => review.value?.tov_level,
+  async (newLevel) => {
+    if (newLevel) {
+      await loadCompetencies(newLevel as TovLevel)
+    } else {
+      await loadCompetencies(null)
+    }
+  }
+)
 
 // Handle header field updates (auto-save)
 function handleJobTitleUpdate(value: string) {
@@ -249,6 +278,15 @@ async function handleSubmit() {
       />
     </Card>
 
+    <!-- Competency Preview -->
+    <CompetencyPreview
+      :competencies="competencies"
+      :loading="competenciesLoading"
+      :show-select-message="showSelectTovMessage"
+      class="competency-preview-card"
+      data-testid="competency-preview"
+    />
+
     <!-- Submit section -->
     <Card class="submit-card">
       <!-- Success message -->
@@ -340,6 +378,10 @@ async function handleSubmit() {
 }
 
 .goals-card {
+  margin-bottom: 1.5rem;
+}
+
+.competency-preview-card {
   margin-bottom: 1.5rem;
 }
 

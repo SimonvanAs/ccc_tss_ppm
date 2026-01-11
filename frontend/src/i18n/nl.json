@@ -233,6 +233,12 @@
       "archived": "Gearchiveerd"
     }
   },
+  "pdf": {
+    "downloadDraft": "Concept PDF Downloaden",
+    "downloadFinal": "Definitief Rapport Downloaden",
+    "downloading": "Downloaden...",
+    "error": "PDF downloaden mislukt"
+  },
   "calibration": {
     "title": "Kalibratiesessies",
     "session": "Sessie",

@@ -90,28 +90,28 @@
 
 ## Phase 5: Frontend - Competency Preview [checkpoint: ]
 
-- [ ] Task: Create CompetencyPreview component
-  - [ ] Write tests for displaying 6 competencies grouped by category
-  - [ ] Write tests for competency name and description display
-  - [ ] Write tests for empty state when no TOV level selected
-  - [ ] Write tests for dynamic update on TOV level change
-  - [ ] Implement CompetencyPreview.vue
+- [x] Task: Create CompetencyPreview component
+  - [x] Write tests for displaying 6 competencies grouped by category
+  - [x] Write tests for competency name and description display
+  - [x] Write tests for empty state when no TOV level selected
+  - [x] Write tests for dynamic update on TOV level change
+  - [x] Implement CompetencyPreview.vue
 
-- [ ] Task: Create useCompetencyPreview composable
-  - [ ] Write tests for fetching competencies by TOV level
-  - [ ] Write tests for caching to avoid redundant API calls
-  - [ ] Write tests for loading state management
-  - [ ] Implement composable with API integration
+- [x] Task: Create useCompetencyPreview composable
+  - [x] Write tests for fetching competencies by TOV level
+  - [x] Write tests for caching to avoid redundant API calls
+  - [x] Write tests for loading state management
+  - [x] Implement composable with API integration
 
-- [ ] Task: Add i18n translations for preview section
-  - [ ] Add English translations (header, empty state, category names)
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for preview section
+  - [x] Add English translations (header, empty state, category names)
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Integrate CompetencyPreview into GoalSettingView
-  - [ ] Write tests for preview appearing below goals list
-  - [ ] Write tests for preview updating when header TOV changes
-  - [ ] Update GoalSettingView layout
+- [x] Task: Integrate CompetencyPreview into GoalSettingView
+  - [x] Write tests for preview appearing below goals list
+  - [x] Write tests for preview updating when header TOV changes
+  - [x] Update GoalSettingView layout
 
 - [ ] Task: Conductor - User Manual Verification 'Frontend - Competency Preview' (Protocol in workflow.md)
 

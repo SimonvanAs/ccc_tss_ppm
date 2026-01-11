@@ -247,6 +247,12 @@
       "archived": "Archived"
     }
   },
+  "pdf": {
+    "downloadDraft": "Download Draft PDF",
+    "downloadFinal": "Download Final Report",
+    "downloading": "Downloading...",
+    "error": "Failed to download PDF"
+  },
   "calibration": {
     "title": "Calibration Sessions",
     "session": "Session",

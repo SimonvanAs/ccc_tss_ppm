@@ -464,5 +464,10 @@
     "midYearCompleted": "Mitad de Año",
     "endYearCompleted": "Fin de Año",
     "pending": "Pendiente"
+  },
+  "competencyPreview": {
+    "title": "Competencias para el Nivel Seleccionado",
+    "selectTovLevel": "Seleccione un nivel TOV arriba para ver las competencias aplicables",
+    "emptyState": "No hay competencias disponibles para este nivel"
   }
 }
