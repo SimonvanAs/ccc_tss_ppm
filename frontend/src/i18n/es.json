@@ -641,6 +641,42 @@
       "loadError": "Error al cargar unidades de negocio",
       "saveError": "Error al guardar unidad de negocio",
       "deleteError": "Error al eliminar unidad de negocio"
+    },
+    "system": {
+      "loadError": "Error al cargar estado del sistema",
+      "healthTitle": "Estado del Sistema",
+      "healthDescription": "Monitoree el estado de los servicios conectados",
+      "refresh": "Actualizar",
+      "overallStatus": "Estado General",
+      "lastRefresh": "Última actualización: {time}",
+      "status": {
+        "healthy": "Todos los Sistemas Operativos",
+        "degraded": "Algunos Servicios Degradados",
+        "partial": "Conectividad Parcial"
+      },
+      "voice": {
+        "title": "Configuración del Servicio de Voz",
+        "description": "Configure el servicio de voz a texto para funciones de dictado",
+        "enabled": "Habilitar Entrada de Voz",
+        "enabledHelp": "Cuando está habilitado, los usuarios pueden usar dictado por voz para campos de texto",
+        "serviceUrl": "URL del Servicio",
+        "serviceUrlPlaceholder": "http://whisper:8001",
+        "model": "Modelo",
+        "loadError": "Error al cargar configuración de voz",
+        "saveError": "Error al guardar configuración de voz",
+        "saveSuccess": "Configuración de voz guardada exitosamente"
+      },
+      "periods": {
+        "title": "Períodos de Evaluación",
+        "description": "Gestione las fechas y disponibilidad de los períodos de evaluación",
+        "empty": "No hay períodos de evaluación configurados",
+        "open": "Abierto",
+        "closed": "Cerrado",
+        "openAction": "Abrir Período",
+        "close": "Cerrar Período",
+        "loadError": "Error al cargar períodos de evaluación",
+        "toggleError": "Error al actualizar estado del período"
+      }
     }
   },
   "teamGrid": {

@@ -642,6 +642,42 @@
       "loadError": "Failed to load business units",
       "saveError": "Failed to save business unit",
       "deleteError": "Failed to delete business unit"
+    },
+    "system": {
+      "loadError": "Failed to load system status",
+      "healthTitle": "System Health",
+      "healthDescription": "Monitor the health of connected services",
+      "refresh": "Refresh",
+      "overallStatus": "Overall Status",
+      "lastRefresh": "Last updated: {time}",
+      "status": {
+        "healthy": "All Systems Operational",
+        "degraded": "Some Services Degraded",
+        "partial": "Partial Connectivity"
+      },
+      "voice": {
+        "title": "Voice Service Configuration",
+        "description": "Configure the voice-to-text service for dictation features",
+        "enabled": "Enable Voice Input",
+        "enabledHelp": "When enabled, users can use voice dictation for text fields",
+        "serviceUrl": "Service URL",
+        "serviceUrlPlaceholder": "http://whisper:8001",
+        "model": "Model",
+        "loadError": "Failed to load voice configuration",
+        "saveError": "Failed to save voice configuration",
+        "saveSuccess": "Voice configuration saved successfully"
+      },
+      "periods": {
+        "title": "Review Periods",
+        "description": "Manage review period dates and availability",
+        "empty": "No review periods configured",
+        "open": "Open",
+        "closed": "Closed",
+        "openAction": "Open Period",
+        "close": "Close Period",
+        "loadError": "Failed to load review periods",
+        "toggleError": "Failed to update period status"
+      }
     }
   },
   "teamGrid": {

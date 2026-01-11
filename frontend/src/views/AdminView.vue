@@ -24,8 +24,11 @@ import BulkActionBar from '../components/admin/BulkActionBar.vue'
 import OpCoSettingsForm from '../components/admin/OpCoSettingsForm.vue'
 import BusinessUnitList from '../components/admin/BusinessUnitList.vue'
 
+// System configuration components
+import SystemHealthPanel from '../components/admin/SystemHealthPanel.vue'
+import SystemConfigForm from '../components/admin/SystemConfigForm.vue'
+
 // Placeholder components for later phases
-const SystemHealthPanel = { template: '<div class="stub-content">System Health - Coming in Phase 4</div>' }
 const AuditLogList = { template: '<div class="stub-content">Audit Logs - Coming in Phase 5</div>' }
 
 type AdminTab = 'users' | 'opcoSettings' | 'businessUnits' | 'system' | 'auditLogs'
@@ -375,15 +378,15 @@ async function handleBulkAssignManager(managerId: string) {
       <!-- Business Units Tab -->
       <BusinessUnitList v-else-if="activeTab === 'businessUnits'" />
 
-      <!-- System and Audit Tabs (Placeholders) -->
+      <!-- System Tab -->
+      <div v-else-if="activeTab === 'system'" class="system-tab">
+        <SystemHealthPanel />
+        <SystemConfigForm class="mt-4" />
+      </div>
+
+      <!-- Audit Logs Tab (Placeholder) -->
       <Card v-else>
-        <component
-          :is="
-            activeTab === 'system'
-              ? SystemHealthPanel
-              : AuditLogList
-          "
-        />
+        <component :is="AuditLogList" />
       </Card>
     </div>
   </div>

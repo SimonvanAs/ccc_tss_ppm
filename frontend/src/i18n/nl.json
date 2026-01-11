@@ -641,6 +641,42 @@
       "loadError": "Kan bedrijfsonderdelen niet laden",
       "saveError": "Kan bedrijfsonderdeel niet opslaan",
       "deleteError": "Kan bedrijfsonderdeel niet verwijderen"
+    },
+    "system": {
+      "loadError": "Kan systeemstatus niet laden",
+      "healthTitle": "Systeemstatus",
+      "healthDescription": "Monitor de status van verbonden services",
+      "refresh": "Vernieuwen",
+      "overallStatus": "Algemene Status",
+      "lastRefresh": "Laatst bijgewerkt: {time}",
+      "status": {
+        "healthy": "Alle Systemen Operationeel",
+        "degraded": "Sommige Services Verminderd",
+        "partial": "Gedeeltelijke Connectiviteit"
+      },
+      "voice": {
+        "title": "Spraakservice Configuratie",
+        "description": "Configureer de spraak-naar-tekst service voor dictatiefuncties",
+        "enabled": "Spraakinvoer Inschakelen",
+        "enabledHelp": "Indien ingeschakeld kunnen gebruikers spraakdictatie gebruiken voor tekstvelden",
+        "serviceUrl": "Service URL",
+        "serviceUrlPlaceholder": "http://whisper:8001",
+        "model": "Model",
+        "loadError": "Kan spraakconfiguratie niet laden",
+        "saveError": "Kan spraakconfiguratie niet opslaan",
+        "saveSuccess": "Spraakconfiguratie succesvol opgeslagen"
+      },
+      "periods": {
+        "title": "Beoordelingsperiodes",
+        "description": "Beheer beoordelingsperiode datums en beschikbaarheid",
+        "empty": "Geen beoordelingsperiodes geconfigureerd",
+        "open": "Open",
+        "closed": "Gesloten",
+        "openAction": "Periode Openen",
+        "close": "Periode Sluiten",
+        "loadError": "Kan beoordelingsperiodes niet laden",
+        "toggleError": "Kan periodestatus niet bijwerken"
+      }
     }
   },
   "teamGrid": {

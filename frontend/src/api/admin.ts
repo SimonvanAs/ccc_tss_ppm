@@ -200,3 +200,81 @@ export function updateBusinessUnit(id: string, data: BusinessUnitUpdateRequest):
 export function deleteBusinessUnit(id: string): Promise<void> {
   return del<void>(`/admin/business-units/${id}`)
 }
+
+// ===== System Configuration =====
+
+export interface ServiceStatus {
+  name: string
+  status: 'healthy' | 'unhealthy' | 'unknown'
+  latency_ms: number | null
+  message: string | null
+}
+
+export interface SystemHealthResponse {
+  overall_status: string
+  timestamp: string
+  services: Record<string, ServiceStatus>
+}
+
+export interface VoiceConfig {
+  voice_service_url: string
+  voice_service_enabled: boolean
+  voice_model: string
+}
+
+export interface VoiceConfigUpdate {
+  voice_service_url?: string
+  voice_service_enabled?: boolean
+  voice_model?: string
+}
+
+export interface ReviewPeriod {
+  id: string | null
+  year: number
+  stage: string
+  start_date: string
+  end_date: string
+  is_open: boolean
+}
+
+/**
+ * Fetch system health status.
+ */
+export function fetchSystemHealth(): Promise<SystemHealthResponse> {
+  return get<SystemHealthResponse>('/admin/system/health')
+}
+
+/**
+ * Fetch voice service configuration.
+ */
+export function fetchVoiceConfig(): Promise<VoiceConfig> {
+  return get<VoiceConfig>('/admin/system/voice-config')
+}
+
+/**
+ * Update voice service configuration.
+ */
+export function updateVoiceConfig(data: VoiceConfigUpdate): Promise<VoiceConfig> {
+  return put<VoiceConfig>('/admin/system/voice-config', data)
+}
+
+/**
+ * Fetch review periods configuration.
+ */
+export function fetchReviewPeriods(): Promise<ReviewPeriod[]> {
+  return get<ReviewPeriod[]>('/admin/system/review-periods')
+}
+
+/**
+ * Update review periods configuration.
+ */
+export function updateReviewPeriods(periods: ReviewPeriod[]): Promise<ReviewPeriod[]> {
+  return put<ReviewPeriod[]>('/admin/system/review-periods', { periods })
+}
+
+/**
+ * Toggle a review period open/closed.
+ */
+export function toggleReviewPeriod(periodId: string, isOpen: boolean): Promise<ReviewPeriod> {
+  return post<ReviewPeriod>(`/admin/system/review-periods/${periodId}/toggle`, { is_open: isOpen })
+}
