@@ -41,7 +41,7 @@ const router = createRouter({
     {
       path: '/reviews/:reviewId/score',
       name: 'ReviewScoring',
-      component: () => import('./views/TeamDashboardView.vue'), // Placeholder until Phase 5
+      component: () => import('./views/ReviewScoringView.vue'),
       props: true,
     },
   ]

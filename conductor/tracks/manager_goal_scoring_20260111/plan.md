@@ -121,47 +121,47 @@
   - [x] Write tests for loading existing scores
   - [x] Implement `frontend/src/composables/useScoring.ts`
 
-- [ ] Task: Create GoalScoringSection component
-  - [ ] Write tests for goal list with score cards
-  - [ ] Write tests for feedback text area per goal
-  - [ ] Write tests for voice input integration
-  - [ ] Implement `frontend/src/components/review/GoalScoringSection.vue`
+- [x] Task: Create GoalScoringSection component `158bf73`
+  - [x] Write tests for goal list with score cards
+  - [x] Write tests for feedback text area per goal
+  - [x] Write tests for voice input integration
+  - [x] Implement `frontend/src/components/review/GoalScoringSection.vue`
 
-- [ ] Task: Create CompetencyScoringSection component
-  - [ ] Write tests for competency list by category
-  - [ ] Write tests for score cards per competency
-  - [ ] Implement `frontend/src/components/review/CompetencyScoringSection.vue`
+- [x] Task: Create CompetencyScoringSection component `8b9a8c9`
+  - [x] Write tests for competency list by category
+  - [x] Write tests for score cards per competency
+  - [x] Implement `frontend/src/components/review/CompetencyScoringSection.vue`
 
-- [ ] Task: Create ReviewScoringView page
-  - [ ] Write tests for full page integration
-  - [ ] Write tests for auto-save status indicator
-  - [ ] Write tests for 9-Grid sidebar integration
-  - [ ] Implement `frontend/src/views/ReviewScoringView.vue`
-  - [ ] Add route `/reviews/:id/score` to router
+- [x] Task: Create ReviewScoringView page
+  - [x] Write tests for full page integration
+  - [x] Write tests for auto-save status indicator
+  - [x] Write tests for 9-Grid sidebar integration
+  - [x] Implement `frontend/src/views/ReviewScoringView.vue`
+  - [x] Add route `/reviews/:id/score` to router
 
-- [ ] Task: Create SubmitScoresButton component
-  - [ ] Write tests for disabled state when scores incomplete
-  - [ ] Write tests for enabled state when all scores entered
-  - [ ] Write tests for confirmation dialog display
-  - [ ] Write tests for API call on confirmation
-  - [ ] Implement `frontend/src/components/review/SubmitScoresButton.vue`
+- [x] Task: Create SubmitScoresButton component
+  - [x] Write tests for disabled state when scores incomplete
+  - [x] Write tests for enabled state when all scores entered
+  - [x] Write tests for confirmation dialog display
+  - [x] Write tests for API call on confirmation
+  - [x] Implement `frontend/src/components/review/SubmitScoresButton.vue`
 
-- [ ] Task: Create ConfirmationDialog component
-  - [ ] Write tests for dialog content and actions
-  - [ ] Write tests for cancel and confirm behavior
-  - [ ] Implement `frontend/src/components/common/ConfirmationDialog.vue`
+- [x] Task: Create ConfirmationDialog component
+  - [x] Write tests for dialog content and actions
+  - [x] Write tests for cancel and confirm behavior
+  - [x] Implement `frontend/src/components/common/ConfirmationDialog.vue`
 
-- [ ] Task: Implement read-only scoring view mode
-  - [ ] Write tests for read-only state detection based on review status
-  - [ ] Write tests for disabled score cards in read-only mode
-  - [ ] Write tests for hidden submit button in read-only mode
-  - [ ] Update ReviewScoringView to support read-only mode
+- [x] Task: Implement read-only scoring view mode
+  - [x] Write tests for read-only state detection based on review status
+  - [x] Write tests for disabled score cards in read-only mode
+  - [x] Write tests for hidden submit button in read-only mode
+  - [x] Update ReviewScoringView to support read-only mode
 
-- [ ] Task: Add submit-scores API client function
-  - [ ] Write tests for `submitScores` function
-  - [ ] Write tests for success redirect to team dashboard
-  - [ ] Write tests for error handling
-  - [ ] Implement in `frontend/src/api/scores.ts`
+- [x] Task: Add submit-scores API client function
+  - [x] Write tests for `submitScores` function
+  - [x] Write tests for success redirect to team dashboard
+  - [x] Write tests for error handling
+  - [x] Implement in `frontend/src/api/scores.ts`
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
 
