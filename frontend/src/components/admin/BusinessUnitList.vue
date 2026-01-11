@@ -487,4 +487,32 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 0.75rem;
 }
+
+@media (max-width: 768px) {
+  .units-table th:nth-child(2),
+  .units-table td:nth-child(2),
+  .units-table th:nth-child(3),
+  .units-table td:nth-child(3) {
+    display: none;
+  }
+
+  .unit-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
 </style>

@@ -485,4 +485,39 @@ function handleCloseAuditDetail() {
   color: var(--color-error);
 }
 
+.system-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .admin-view {
+    padding: 0 0.5rem;
+  }
+
+  .tab-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .tab-content {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-navigation {
+    gap: 0;
+  }
+
+  .tab-button {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
 </style>

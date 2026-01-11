@@ -446,4 +446,43 @@ const availableRoles = ['employee', 'manager', 'hr', 'admin']
   font-size: 0.875rem;
   color: var(--color-gray-600, #4b5563);
 }
+
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .search-input {
+    max-width: 100%;
+  }
+
+  .user-table th:nth-child(3),
+  .user-table td:nth-child(3),
+  .user-table th:nth-child(4),
+  .user-table td:nth-child(4) {
+    display: none;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-table th:nth-child(2),
+  .user-table td:nth-child(2) {
+    display: none;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
 </style>
