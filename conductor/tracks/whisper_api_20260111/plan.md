@@ -13,12 +13,12 @@
 
 ## Phase 2: WebSocket Authentication
 
-- [~] Task: Write failing tests for WebSocket JWT authentication
-  - [ ] Test: Connection with valid JWT succeeds
-  - [ ] Test: Connection with expired JWT rejected with close code 4001
-  - [ ] Test: Connection with missing token rejected with close code 4001
-  - [ ] Test: Connection with malformed token rejected with close code 4001
-  - [ ] Test: User claims (user_id, opco_id) extracted from valid token
+- [x] Task: Write failing tests for WebSocket JWT authentication (5199e46)
+  - [x] Test: Connection with valid JWT succeeds
+  - [x] Test: Connection with expired JWT rejected with close code 4001
+  - [x] Test: Connection with missing token rejected with close code 4001
+  - [x] Test: Connection with malformed token rejected with close code 4001
+  - [x] Test: User claims (user_id, opco_id) extracted from valid token
 - [ ] Task: Implement WebSocket JWT authentication middleware
   - [ ] Create `src/services/websocket_auth.py` with token validation
   - [ ] Support token via query parameter `?token=<jwt>`
