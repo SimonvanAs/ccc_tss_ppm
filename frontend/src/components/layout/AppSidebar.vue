@@ -4,6 +4,23 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { getCurrentUser } from '../../api/auth'
 
+type SidebarMode = 'expanded' | 'collapsed' | 'hidden'
+
+const props = withDefaults(
+  defineProps<{
+    mode?: SidebarMode
+    isOpen?: boolean
+  }>(),
+  {
+    mode: 'expanded',
+    isOpen: true,
+  }
+)
+
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
+
 const { t } = useI18n()
 const route = useRoute()
 const user = getCurrentUser()
@@ -21,13 +38,30 @@ const userInitials = computed(() => {
   return user.name[0]?.toUpperCase() || '?'
 })
 
+const isCollapsed = computed(() => props.mode === 'collapsed')
+const isMobileOpen = computed(() => props.mode === 'hidden' && props.isOpen)
+
 function isActive(path: string): boolean {
   return route.path === path
+}
+
+function handleNavClick() {
+  // Close sidebar on mobile after navigation
+  if (props.mode === 'hidden') {
+    emit('close')
+  }
 }
 </script>
 
 <template>
-  <aside class="app-sidebar">
+  <aside
+    class="app-sidebar"
+    :class="{
+      'app-sidebar--collapsed': isCollapsed,
+      'app-sidebar--hidden': mode === 'hidden' && !isOpen,
+      'app-sidebar--mobile-open': isMobileOpen,
+    }"
+  >
     <div class="sidebar-brand">
       <span class="brand-text">TSS PPM</span>
     </div>
@@ -37,6 +71,7 @@ function isActive(path: string): boolean {
         to="/"
         class="nav-item"
         :class="{ 'is-active': isActive('/') }"
+        @click="handleNavClick"
       >
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -51,6 +86,7 @@ function isActive(path: string): boolean {
         to="/team"
         class="nav-item"
         :class="{ 'is-active': isActive('/team') }"
+        @click="handleNavClick"
       >
         <span class="nav-icon">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -86,11 +122,61 @@ function isActive(path: string): boolean {
   color: var(--color-white);
   display: flex;
   flex-direction: column;
+  transition: width 0.25s ease, transform 0.25s ease;
+  z-index: 50;
+}
+
+/* Collapsed state (tablet) */
+.app-sidebar--collapsed {
+  width: 64px;
+}
+
+.app-sidebar--collapsed .brand-text,
+.app-sidebar--collapsed .nav-label,
+.app-sidebar--collapsed .profile-info {
+  display: none;
+}
+
+.app-sidebar--collapsed .sidebar-brand {
+  padding: 1.5rem 0.75rem;
+  justify-content: center;
+}
+
+.app-sidebar--collapsed .nav-item {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.app-sidebar--collapsed .sidebar-profile {
+  justify-content: center;
+  padding: 1rem 0.75rem;
+}
+
+/* Hidden state (mobile - default hidden) */
+.app-sidebar--hidden {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  transform: translateX(-100%);
+}
+
+/* Mobile open state (slide in from left) */
+.app-sidebar--mobile-open {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  transform: translateX(0);
+  width: 280px;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-brand {
   padding: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
 }
 
 .brand-text {
@@ -127,10 +213,12 @@ function isActive(path: string): boolean {
   justify-content: center;
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .nav-label {
   font-size: 0.9375rem;
+  white-space: nowrap;
 }
 
 .sidebar-profile {
@@ -150,6 +238,7 @@ function isActive(path: string): boolean {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .avatar-image {

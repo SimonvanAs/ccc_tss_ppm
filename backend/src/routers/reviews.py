@@ -208,3 +208,125 @@ async def update_scores(
         updated_goals=updated_goals,
         updated_competencies=updated_competencies,
     )
+
+
+# --- Submit Scores Endpoint ---
+
+
+class SubmitScoresResponse(BaseModel):
+    """Response schema for submit scores endpoint."""
+
+    status: str
+
+
+REQUIRED_COMPETENCY_COUNT = 6
+
+
+@router.post('/reviews/{review_id}/submit-scores', response_model=SubmitScoresResponse)
+async def submit_scores(
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(require_manager)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> SubmitScoresResponse:
+    """Submit scores for a review, transitioning status to PENDING_EMPLOYEE_SIGNATURE.
+
+    This endpoint validates that:
+    1. The current user is the manager of the review
+    2. The review is in DRAFT status
+    3. All goals have scores
+    4. All 6 competencies have scores
+
+    On success, transitions status from DRAFT to PENDING_EMPLOYEE_SIGNATURE
+    and creates an audit log entry.
+
+    Args:
+        review_id: The review UUID
+        current_user: The authenticated manager
+        conn: Database connection
+
+    Returns:
+        The updated review status
+
+    Raises:
+        HTTPException 403: If user is not the manager of the review
+        HTTPException 404: If review not found
+        HTTPException 400: If review not in DRAFT status or scores incomplete
+    """
+    review_repo = ReviewRepository(conn)
+    scores_repo = ScoresRepository(conn)
+    audit_repo = AuditRepository(conn)
+
+    # Get user's internal ID from keycloak_id
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    if user_row is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='User not found in database',
+        )
+    user_id = user_row['id']
+
+    # Get the review
+    review = await review_repo.get_review(review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # Check authorization: only the manager of the review can submit
+    if review['manager_id'] != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to submit scores for this review',
+        )
+
+    # Check review is in DRAFT status
+    if review['status'] != 'DRAFT':
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Review must be in DRAFT status to submit scores (current: {review["status"]})',
+        )
+
+    # Validate all goals have scores
+    goal_scores = await scores_repo.get_goal_scores(review_id)
+    unscored_goals = [g for g in goal_scores if g.get('score') is None]
+    if unscored_goals:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'All goals must have scores before submitting ({len(unscored_goals)} goal(s) missing scores)',
+        )
+
+    # Validate all competencies have scores (6 required)
+    competency_scores = await conn.fetch(
+        'SELECT score FROM competency_scores WHERE review_id = $1',
+        review_id,
+    )
+    if len(competency_scores) < REQUIRED_COMPETENCY_COUNT:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'All {REQUIRED_COMPETENCY_COUNT} competencies must have scores before submitting '
+            f'({len(competency_scores)} scored)',
+        )
+
+    # Update status to PENDING_EMPLOYEE_SIGNATURE
+    new_status = 'PENDING_EMPLOYEE_SIGNATURE'
+    old_status = review['status']
+
+    updated_review = await review_repo.update_status(review_id, new_status)
+
+    # Create audit log entry
+    await audit_repo.log_action(
+        action='SUBMIT_SCORES',
+        entity_type='review',
+        entity_id=review_id,
+        user_id=user_id,
+        opco_id=review.get('opco_id'),
+        changes={
+            'status': {'from': old_status, 'to': new_status},
+        },
+    )
+
+    return SubmitScoresResponse(status=updated_review['status'])

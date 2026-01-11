@@ -34,13 +34,13 @@
   - [x] Implement router in `backend/src/routers/competencies.py`
   - [x] Add Pydantic schemas for competency response
 
-- [ ] Task: Create POST /api/v1/reviews/{id}/submit-scores endpoint
-  - [ ] Write API tests for status transition (DRAFT → PENDING_EMPLOYEE_SIGNATURE)
-  - [ ] Write API tests for validation (all scores required before submit)
-  - [ ] Write API tests for authorization (only manager of review can submit)
-  - [ ] Write API tests for idempotency (prevent re-submission)
-  - [ ] Implement router handler in `backend/src/routers/reviews.py`
-  - [ ] Add audit log entry for status transition
+- [x] Task: Create POST /api/v1/reviews/{id}/submit-scores endpoint
+  - [x] Write API tests for status transition (DRAFT → PENDING_EMPLOYEE_SIGNATURE)
+  - [x] Write API tests for validation (all scores required before submit)
+  - [x] Write API tests for authorization (only manager of review can submit)
+  - [x] Write API tests for idempotency (prevent re-submission)
+  - [x] Implement router handler in `backend/src/routers/reviews.py`
+  - [x] Add audit log entry for status transition
 
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) `5f1b4fd`
 
