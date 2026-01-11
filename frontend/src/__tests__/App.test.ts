@@ -1,20 +1,35 @@
 // TSS PPM v3.0 - App Navigation Tests
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { ref } from 'vue'
 import App from '../App.vue'
 
+// Mock vue-router
+const mockRoute = ref({ path: '/' })
+vi.mock('vue-router', () => ({
+  useRoute: () => mockRoute.value,
+  RouterLink: {
+    template: '<a :href="to" class="router-link"><slot /></a>',
+    props: ['to'],
+  },
+  RouterView: {
+    template: '<div class="router-view-stub"></div>',
+  },
+}))
+
 // Mock vue-i18n
+const mockLocale = ref('en')
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
     t: (key: string) => {
       const messages: Record<string, string> = {
         'app.title': 'TSS PPM',
         'nav.dashboard': 'Dashboard',
-        'nav.team': 'Team',
+        'nav.team': 'Team Dashboard',
       }
       return messages[key] || key
     },
-    locale: { value: 'en' },
+    locale: mockLocale,
   }),
 }))
 
@@ -23,11 +38,30 @@ vi.mock('../api/auth', () => ({
   getCurrentUser: vi.fn(),
 }))
 
+// Mock useSidebar composable
+vi.mock('../composables/useSidebar', () => ({
+  useSidebar: () => ({
+    sidebarMode: ref('expanded'),
+    isExpanded: ref(true),
+    isCollapsed: ref(false),
+    isHidden: ref(false),
+    isVisible: ref(true),
+    showHamburger: ref(false),
+    viewportWidth: ref(1200),
+    toggle: vi.fn(),
+    close: vi.fn(),
+    open: vi.fn(),
+  }),
+  _resetSidebarState: vi.fn(),
+}))
+
 import * as auth from '../api/auth'
 
 describe('App Navigation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockRoute.value = { path: '/' }
+    mockLocale.value = 'en'
   })
 
   function createWrapper() {
@@ -35,7 +69,7 @@ describe('App Navigation', () => {
       global: {
         stubs: {
           RouterLink: {
-            template: '<a :href="to" class="router-link" :class="$attrs.class"><slot /></a>',
+            template: '<a :href="to" class="router-link"><slot /></a>',
             props: ['to'],
           },
           RouterView: {
@@ -68,7 +102,7 @@ describe('App Navigation', () => {
 
       const wrapper = createWrapper()
 
-      expect(wrapper.text()).toContain('Team')
+      expect(wrapper.text()).toContain('Team Dashboard')
     })
 
     it('should NOT show Team link for employees without manager role', () => {
@@ -80,7 +114,7 @@ describe('App Navigation', () => {
 
       const wrapper = createWrapper()
 
-      expect(wrapper.text()).not.toContain('Team')
+      expect(wrapper.text()).not.toContain('Team Dashboard')
     })
 
     it('should handle null user gracefully', () => {
@@ -90,7 +124,7 @@ describe('App Navigation', () => {
 
       // Should still render without crashing
       expect(wrapper.text()).toContain('Dashboard')
-      expect(wrapper.text()).not.toContain('Team')
+      expect(wrapper.text()).not.toContain('Team Dashboard')
     })
 
     it('should handle user without roles array', () => {
@@ -102,7 +136,7 @@ describe('App Navigation', () => {
 
       const wrapper = createWrapper()
 
-      expect(wrapper.text()).not.toContain('Team')
+      expect(wrapper.text()).not.toContain('Team Dashboard')
     })
   })
 
