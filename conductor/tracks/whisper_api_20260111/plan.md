@@ -43,7 +43,7 @@
 
 ## Phase 4: Whisper Service Client
 
-- [ ] Task: Write failing tests for whisper service client
+- [~] Task: Write failing tests for whisper service client
   - [ ] Test: Client connects to whisper service WebSocket
   - [ ] Test: Audio chunks are forwarded to whisper service
   - [ ] Test: Transcription responses are received from whisper service

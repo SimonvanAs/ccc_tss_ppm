@@ -11,11 +11,11 @@
   - [x] Create `calculate_how_score()` function
   - [x] Create `calculate_grid_position()` function
   - [x] Create `check_how_veto()` function
-- [~] Task: Write tests for review score persistence
-  - [ ] Test how_score update on competency score save
-  - [ ] Test how_veto_active flag update
-  - [ ] Test grid_position_how update
-- [ ] Task: Enhance scores repository to persist calculated HOW score
+- [x] Task: Write tests for review score persistence `8dbab42`
+  - [x] Test how_score update on competency score save
+  - [x] Test how_veto_active flag update
+  - [x] Test grid_position_how update
+- [~] Task: Enhance scores repository to persist calculated HOW score
   - [ ] Update `bulk_upsert_competency_scores` to recalculate review scores
   - [ ] Add method to update review how_score fields
 - [ ] Task: Conductor - User Manual Verification 'Backend Scoring Service' (Protocol in workflow.md)
