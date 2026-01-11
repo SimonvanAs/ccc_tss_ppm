@@ -52,20 +52,20 @@
 
 ## Phase 4: Frontend Competency List Component
 
-- [ ] Task: Write tests for CompetencyList component
-  - [ ] Test fetches competencies for TOV level
-  - [ ] Test renders 6 competencies grouped by category
-  - [ ] Test score card integration
-  - [ ] Test notes textarea with voice input
-  - [ ] Test VETO highlight on score = 1
-- [ ] Task: Implement CompetencyList.vue component
-  - [ ] Fetch competencies from API on mount
-  - [ ] Group competencies by category (Dedicated/Entrepreneurial/Innovative)
-  - [ ] Display competency title, category badge, indicators
-  - [ ] Integrate CompetencyScoreCard for each competency
-  - [ ] Add notes textarea with VoiceInput component
-  - [ ] Highlight row when score = 1 (VETO warning)
-- [ ] Task: Add i18n translations for component text (EN/NL/ES)
+- [x] Task: Write tests for CompetencyList component
+  - [x] Test fetches competencies for TOV level
+  - [x] Test renders 6 competencies grouped by category
+  - [x] Test score card integration
+  - [x] Test notes textarea with voice input
+  - [x] Test VETO highlight on score = 1
+- [x] Task: Implement CompetencyList.vue component
+  - [x] Fetch competencies from API on mount
+  - [x] Group competencies by category (Dedicated/Entrepreneurial/Innovative)
+  - [x] Display competency title, category badge, indicators
+  - [x] Integrate CompetencyScoreCard for each competency
+  - [x] Add notes textarea with VoiceInput component
+  - [x] Highlight row when score = 1 (VETO warning)
+- [x] Task: Add i18n translations for component text (EN/NL/ES) (already added in Phase 3)
 - [ ] Task: Conductor - User Manual Verification 'Frontend Competency List Component' (Protocol in workflow.md)
 
 ## Phase 5: Frontend HOW Score Indicator

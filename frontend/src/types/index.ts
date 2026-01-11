@@ -2,3 +2,4 @@
 export * from './goal'
 export * from './review'
 export * from './team'
+export * from './competency'
