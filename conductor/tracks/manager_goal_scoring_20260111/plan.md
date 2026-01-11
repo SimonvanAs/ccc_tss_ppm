@@ -68,13 +68,13 @@
 
 ## Phase 3: Frontend - Score Card Component & VETO Logic
 
-- [ ] Task: Create scoring service with VETO calculations
-  - [ ] Write tests for weighted WHAT score calculation
-  - [ ] Write tests for HOW score calculation
-  - [ ] Write tests for SCF VETO rule (SCF=1 → WHAT=1.00)
-  - [ ] Write tests for KAR VETO rule with compensation logic
-  - [ ] Write tests for competency VETO rule (any=1 → HOW=1.00)
-  - [ ] Implement `frontend/src/services/scoring.ts`
+- [x] Task: Create scoring service with VETO calculations
+  - [x] Write tests for weighted WHAT score calculation
+  - [x] Write tests for HOW score calculation
+  - [x] Write tests for SCF VETO rule (SCF=1 → WHAT=1.00)
+  - [x] Write tests for KAR VETO rule with compensation logic
+  - [x] Write tests for competency VETO rule (any=1 → HOW=1.00)
+  - [x] Implement `frontend/src/services/scoring.ts`
 
 - [ ] Task: Create ScoreCard component
   - [ ] Write tests for three-card display (1, 2, 3)
