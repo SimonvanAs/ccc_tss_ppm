@@ -16,7 +16,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Database Schema Updates' (Protocol in workflow.md) `2818148`
 
-## Phase 2: Backend API - Review Header [checkpoint: ]
+## Phase 2: Backend API - Review Header [checkpoint: 100d668]
 
 - [x] Task: Update GET /api/v1/reviews/{id} response `86a84a3`
   - [x] Write tests for response including all header fields
@@ -42,7 +42,7 @@
   - [x] Write tests for setting manager_id from employee's current manager
   - [x] Implement review creation logic
 
-- [ ] Task: Conductor - User Manual Verification 'Backend API - Review Header' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend API - Review Header' (Protocol in workflow.md) `100d668`
 
 ## Phase 3: Backend API - Manager Reassignment [checkpoint: ]
 
