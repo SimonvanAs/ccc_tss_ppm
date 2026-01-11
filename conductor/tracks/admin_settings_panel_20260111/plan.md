@@ -175,41 +175,41 @@
 
 - [x] Task: Conductor - User Manual Verification 'System Configuration' (Protocol in workflow.md)
 
-## Phase 5: Audit Log Viewer [checkpoint: ]
+## Phase 5: Audit Log Viewer [checkpoint: complete]
 
-- [ ] Task: Create audit log API endpoints
-  - [ ] Write tests for GET /api/v1/admin/audit-logs (with pagination)
-  - [ ] Write tests for date range filter
-  - [ ] Write tests for user filter
-  - [ ] Write tests for action type filter
-  - [ ] Write tests for entity type filter
-  - [ ] Write tests for GET /api/v1/admin/audit-logs/export (CSV)
-  - [ ] Write tests for admin role authorization
-  - [ ] Implement audit log router with filters
+- [x] Task: Create audit log API endpoints
+  - [x] Write tests for GET /api/v1/admin/audit-logs (with pagination)
+  - [x] Write tests for date range filter
+  - [x] Write tests for user filter
+  - [x] Write tests for action type filter
+  - [x] Write tests for entity type filter
+  - [x] Write tests for GET /api/v1/admin/audit-logs/export (CSV)
+  - [x] Write tests for admin role authorization
+  - [x] Implement audit log router with filters
 
-- [ ] Task: Create AuditLogList component
-  - [ ] Write tests for table rendering
-  - [ ] Write tests for date range picker
-  - [ ] Write tests for filter dropdowns
-  - [ ] Write tests for pagination
-  - [ ] Write tests for export button
-  - [ ] Implement AuditLogList.vue
+- [x] Task: Create AuditLogList component
+  - [x] Write tests for table rendering
+  - [x] Write tests for date range picker
+  - [x] Write tests for filter dropdowns
+  - [x] Write tests for pagination
+  - [x] Write tests for export button
+  - [x] Implement AuditLogList.vue
 
-- [ ] Task: Create AuditLogDetailModal component
-  - [ ] Write tests for detail view rendering
-  - [ ] Write tests for JSON details display
-  - [ ] Implement AuditLogDetailModal.vue
+- [x] Task: Create AuditLogDetailModal component
+  - [x] Write tests for detail view rendering
+  - [x] Write tests for JSON details display
+  - [x] Implement AuditLogDetailModal.vue
 
-- [ ] Task: Integrate into AdminView Audit Logs tab
-  - [ ] Write tests for Audit Logs tab content
-  - [ ] Implement tab with components
+- [x] Task: Integrate into AdminView Audit Logs tab
+  - [x] Write tests for Audit Logs tab content
+  - [x] Implement tab with components
 
-- [ ] Task: Add i18n translations for audit log UI
-  - [ ] Add English translations
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for audit log UI
+  - [x] Add English translations
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Conductor - User Manual Verification 'Audit Log Viewer' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Audit Log Viewer' (Protocol in workflow.md)
 
 ## Phase 6: Integration Testing & Polish [checkpoint: ]
 
