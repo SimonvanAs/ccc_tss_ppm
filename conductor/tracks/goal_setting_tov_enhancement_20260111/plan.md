@@ -90,30 +90,30 @@
 
 ## Phase 5: Frontend - Competency Preview [checkpoint: ]
 
-- [x] Task: Create CompetencyPreview component
+- [x] Task: Create CompetencyPreview component `f64e0b1`
   - [x] Write tests for displaying 6 competencies grouped by category
   - [x] Write tests for competency name and description display
   - [x] Write tests for empty state when no TOV level selected
   - [x] Write tests for dynamic update on TOV level change
   - [x] Implement CompetencyPreview.vue
 
-- [x] Task: Create useCompetencyPreview composable
+- [x] Task: Create useCompetencyPreview composable `f64e0b1`
   - [x] Write tests for fetching competencies by TOV level
   - [x] Write tests for caching to avoid redundant API calls
   - [x] Write tests for loading state management
   - [x] Implement composable with API integration
 
-- [x] Task: Add i18n translations for preview section
+- [x] Task: Add i18n translations for preview section `f64e0b1`
   - [x] Add English translations (header, empty state, category names)
   - [x] Add Dutch translations
   - [x] Add Spanish translations
 
-- [x] Task: Integrate CompetencyPreview into GoalSettingView
+- [x] Task: Integrate CompetencyPreview into GoalSettingView `f64e0b1`
   - [x] Write tests for preview appearing below goals list
   - [x] Write tests for preview updating when header TOV changes
   - [x] Update GoalSettingView layout
 
-- [ ] Task: Conductor - User Manual Verification 'Frontend - Competency Preview' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend - Competency Preview' (Protocol in workflow.md)
 
 ## Phase 6: Frontend - HR Manager Reassignment [checkpoint: ]
 
