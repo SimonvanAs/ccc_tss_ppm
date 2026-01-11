@@ -144,18 +144,23 @@
 
 ## Phase 7: Validation & Submission Updates [checkpoint: ]
 
-- [x] Task: Update goal submission UI validation
+- [x] Task: Update goal submission UI validation `d6ce79f`
   - [x] Write tests for submit button disabled when job_title empty
   - [x] Write tests for submit button disabled when tov_level empty
   - [x] Write tests for validation error messages display
   - [x] Update GoalSettingView submission logic
 
-- [x] Task: Update stage completion timestamp handling
+- [x] Task: Update stage completion timestamp handling `d6ce79f`
   - [x] Write tests for goal_setting_completed_at display after approval (ReviewHeader.test.ts:69-78)
   - [x] Verify mid_year_completed_at updates (in scoring flow - test_api_reviews.py:681-694)
   - [x] Verify end_year_completed_at updates (in scoring flow - test_api_reviews.py:696-709)
 
 - [ ] Task: Conductor - User Manual Verification 'Validation & Submission Updates' (Protocol in workflow.md)
+  - [ ] Verify submit button is disabled when job_title is empty
+  - [ ] Verify submit button is disabled when tov_level is empty
+  - [ ] Verify "Job title and TOV level are required" hint appears
+  - [ ] Verify "Goal weights must total 100%" hint appears when weights invalid
+  - [ ] Verify submit enables when all validations pass
 
 ## Phase 8: Integration Testing & Polish [checkpoint: ]
 
