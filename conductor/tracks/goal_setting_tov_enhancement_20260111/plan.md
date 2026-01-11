@@ -30,11 +30,11 @@
   - [x] Write tests for rejection when not in DRAFT status
   - [x] Implement endpoint updates with validation
 
-- [ ] Task: Update goal submission validation
-  - [ ] Write tests for submission rejection when job_title missing
-  - [ ] Write tests for submission rejection when tov_level missing
-  - [ ] Write tests for goal_setting_completed_at timestamp set on approval
-  - [ ] Implement validation and timestamp updates
+- [x] Task: Update goal submission validation `cf5b6c1`
+  - [x] Write tests for submission rejection when job_title missing
+  - [x] Write tests for submission rejection when tov_level missing
+  - [x] Write tests for goal_setting_completed_at timestamp set on approval
+  - [x] Implement validation and timestamp updates
 
 - [ ] Task: Implement review creation with pre-population
   - [ ] Write tests for pre-populating job_title from previous year
