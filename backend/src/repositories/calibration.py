@@ -490,3 +490,156 @@ class CalibrationRepository:
             rows = await self.conn.fetch(query, session_id)
 
         return [dict(row) for row in rows]
+
+    # --- Score Adjustment ---
+
+    async def get_review_current_scores(
+        self,
+        review_id: UUID
+    ) -> Optional[Dict[str, Any]]:
+        """Get the current scores for a review.
+
+        Args:
+            review_id: The review UUID
+
+        Returns:
+            Review scores or None if not found
+        """
+        query = """
+            SELECT id, what_score, how_score, grid_position_what, grid_position_how
+            FROM reviews
+            WHERE id = $1
+        """
+        row = await self.conn.fetchrow(query, review_id)
+        return dict(row) if row else None
+
+    async def is_review_in_session(
+        self,
+        session_id: UUID,
+        review_id: UUID
+    ) -> bool:
+        """Check if a review is part of a calibration session.
+
+        Args:
+            session_id: The session UUID
+            review_id: The review UUID
+
+        Returns:
+            True if the review is in the session
+        """
+        query = """
+            SELECT 1 FROM calibration_session_reviews
+            WHERE session_id = $1 AND review_id = $2
+        """
+        row = await self.conn.fetchrow(query, session_id, review_id)
+        return row is not None
+
+    async def adjust_review_scores(
+        self,
+        session_id: UUID,
+        review_id: UUID,
+        what_score: Optional[Any],
+        how_score: Optional[Any],
+        adjusted_by: UUID,
+        rationale: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Adjust review scores during calibration and create audit trail.
+
+        Args:
+            session_id: The session UUID
+            review_id: The review UUID
+            what_score: New WHAT score (optional)
+            how_score: New HOW score (optional)
+            adjusted_by: User ID making the adjustment
+            rationale: Required explanation for the adjustment
+
+        Returns:
+            The adjustment record
+        """
+        # Get current scores
+        current = await self.get_review_current_scores(review_id)
+        if not current:
+            return None
+
+        # Calculate new grid positions (1.00-1.66 -> 1, 1.67-2.33 -> 2, 2.34-3.00 -> 3)
+        def score_to_grid(score):
+            if score is None:
+                return None
+            score_float = float(score)
+            if score_float < 1.67:
+                return 1
+            elif score_float < 2.34:
+                return 2
+            else:
+                return 3
+
+        new_what_score = what_score if what_score is not None else current['what_score']
+        new_how_score = how_score if how_score is not None else current['how_score']
+        new_grid_what = score_to_grid(new_what_score)
+        new_grid_how = score_to_grid(new_how_score)
+
+        # Create audit trail entry
+        audit_query = """
+            INSERT INTO calibration_adjustments (
+                session_id, review_id, adjusted_by,
+                original_what_score, original_how_score,
+                original_grid_what, original_grid_how,
+                adjusted_what_score, adjusted_how_score,
+                adjusted_grid_what, adjusted_grid_how,
+                adjustment_notes
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            RETURNING *
+        """
+        adjustment = await self.conn.fetchrow(
+            audit_query,
+            session_id, review_id, adjusted_by,
+            current['what_score'], current['how_score'],
+            current['grid_position_what'], current['grid_position_how'],
+            new_what_score, new_how_score,
+            new_grid_what, new_grid_how,
+            rationale,
+        )
+
+        # Update review scores
+        update_query = """
+            UPDATE reviews
+            SET what_score = $1,
+                how_score = $2,
+                grid_position_what = $3,
+                grid_position_how = $4,
+                updated_at = NOW()
+            WHERE id = $5
+        """
+        await self.conn.execute(
+            update_query,
+            new_what_score, new_how_score,
+            new_grid_what, new_grid_how,
+            review_id,
+        )
+
+        return dict(adjustment) if adjustment else None
+
+    async def get_review_adjustments(
+        self,
+        session_id: UUID,
+        review_id: UUID
+    ) -> List[Dict[str, Any]]:
+        """Get adjustment history for a review in a session.
+
+        Args:
+            session_id: The session UUID
+            review_id: The review UUID
+
+        Returns:
+            List of adjustment records with adjuster info
+        """
+        query = """
+            SELECT ca.*, u.first_name AS adjuster_first_name, u.last_name AS adjuster_last_name
+            FROM calibration_adjustments ca
+            JOIN users u ON u.id = ca.adjusted_by
+            WHERE ca.session_id = $1 AND ca.review_id = $2
+            ORDER BY ca.created_at DESC
+        """
+        rows = await self.conn.fetch(query, session_id, review_id)
+        return [dict(row) for row in rows]

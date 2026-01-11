@@ -109,3 +109,45 @@ class CalibrationReviewResponse(BaseModel):
     review_status: Optional[str] = None
     manager_first_name: Optional[str] = None
     manager_last_name: Optional[str] = None
+
+
+class ScoreAdjustmentCreate(BaseModel):
+    """Request model for adjusting review scores during calibration."""
+
+    what_score: Optional[float] = Field(None, ge=1.0, le=3.0)
+    how_score: Optional[float] = Field(None, ge=1.0, le=3.0)
+    rationale: str = Field(..., min_length=1, description='Required explanation for the adjustment')
+
+
+class ScoreAdjustmentResponse(BaseModel):
+    """Response model for a score adjustment."""
+
+    adjustment_id: UUID
+    session_id: UUID
+    review_id: UUID
+    adjusted_by: UUID
+    original_what_score: Optional[float] = None
+    original_how_score: Optional[float] = None
+    what_score: Optional[float] = None
+    how_score: Optional[float] = None
+    rationale: str
+    created_at: datetime
+    adjuster_first_name: Optional[str] = None
+    adjuster_last_name: Optional[str] = None
+
+
+class AdjustmentHistoryResponse(BaseModel):
+    """Response model for adjustment history entry."""
+
+    id: UUID
+    session_id: UUID
+    review_id: UUID
+    adjusted_by: UUID
+    original_what_score: Optional[float] = None
+    original_how_score: Optional[float] = None
+    adjusted_what_score: Optional[float] = None
+    adjusted_how_score: Optional[float] = None
+    adjustment_notes: Optional[str] = None
+    created_at: datetime
+    adjuster_first_name: Optional[str] = None
+    adjuster_last_name: Optional[str] = None

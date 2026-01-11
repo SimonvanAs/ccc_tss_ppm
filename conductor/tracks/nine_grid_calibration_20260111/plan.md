@@ -107,34 +107,34 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Implement request/response schemas
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Calibration Backend - Database & Core API' (Protocol in workflow.md)
 
-## Phase 5: Calibration Backend - Reviews & Score Adjustments
+## Phase 5: Calibration Backend - Reviews & Score Adjustments [checkpoint: pending]
 
-- [ ] Task: Write tests for calibration reviews endpoints
-  - [ ] Test GET /api/v1/calibration-sessions/{id}/reviews
-  - [ ] Test returns reviews with current scores
-  - [ ] Test includes employee and manager info
-- [ ] Task: Implement GET /api/v1/calibration-sessions/{id}/reviews endpoint
-  - [ ] Join reviews with scores and user info
-  - [ ] Return data needed for calibration grid
-- [ ] Task: Write tests for score adjustment endpoint
-  - [ ] Test PUT /api/v1/calibration-sessions/{id}/reviews/{reviewId}/scores
-  - [ ] Test creates audit trail entry
-  - [ ] Test requires rationale
-  - [ ] Test updates review scores
-  - [ ] Test only works for in_progress sessions
-- [ ] Task: Implement score adjustment endpoint
-  - [ ] Validate session is in_progress
-  - [ ] Update review scores
-  - [ ] Create audit trail entry
-  - [ ] Require rationale field
-- [ ] Task: Write tests for calibration notes endpoints
-  - [ ] Test POST /api/v1/calibration-sessions/{id}/notes (session-level)
-  - [ ] Test POST /api/v1/calibration-sessions/{id}/reviews/{reviewId}/notes
-  - [ ] Test GET notes for session
-- [ ] Task: Implement calibration notes endpoints
-  - [ ] Create/read notes at session level
-  - [ ] Create/read notes at review level
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Calibration Backend - Reviews & Score Adjustments' (Protocol in workflow.md)
+- [x] Task: Write tests for calibration reviews endpoints (implemented in Phase 4)
+  - [x] Test GET /api/v1/calibration-sessions/{id}/reviews
+  - [x] Test returns reviews with current scores
+  - [x] Test includes employee and manager info
+- [x] Task: Implement GET /api/v1/calibration-sessions/{id}/reviews endpoint (implemented in Phase 4)
+  - [x] Join reviews with scores and user info
+  - [x] Return data needed for calibration grid
+- [x] Task: Write tests for score adjustment endpoint
+  - [x] Test PUT /api/v1/calibration-sessions/{id}/reviews/{reviewId}/scores
+  - [x] Test creates audit trail entry
+  - [x] Test requires rationale
+  - [x] Test updates review scores
+  - [x] Test only works for in_progress sessions
+- [x] Task: Implement score adjustment endpoint
+  - [x] Validate session is in_progress
+  - [x] Update review scores
+  - [x] Create audit trail entry
+  - [x] Require rationale field
+- [x] Task: Write tests for calibration notes endpoints (implemented in Phase 4)
+  - [x] Test POST /api/v1/calibration-sessions/{id}/notes (session-level)
+  - [x] Test POST /api/v1/calibration-sessions/{id}/reviews/{reviewId}/notes (via review_id param)
+  - [x] Test GET notes for session
+- [x] Task: Implement calibration notes endpoints (implemented in Phase 4)
+  - [x] Create/read notes at session level
+  - [x] Create/read notes at review level
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Calibration Backend - Reviews & Score Adjustments' (Protocol in workflow.md)
 
 ## Phase 6: Calibration Frontend - Session Management
 

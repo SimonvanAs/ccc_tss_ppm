@@ -74,3 +74,14 @@ export function rejectReview(
 ): Promise<RejectReviewResponse> {
   return post<RejectReviewResponse>(`/reviews/${reviewId}/reject`, { feedback })
 }
+
+/**
+ * Update review header fields (job_title, tov_level).
+ * Only allowed when review is in DRAFT status.
+ */
+export function updateReviewHeader(
+  reviewId: string,
+  data: ReviewHeaderUpdate
+): Promise<ReviewDetails> {
+  return put<ReviewDetails>(`/reviews/${reviewId}`, data)
+}

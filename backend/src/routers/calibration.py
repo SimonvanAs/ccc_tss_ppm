@@ -20,6 +20,9 @@ from src.schemas.calibration import (
     CalibrationNoteCreate,
     CalibrationNoteResponse,
     CalibrationReviewResponse,
+    ScoreAdjustmentCreate,
+    ScoreAdjustmentResponse,
+    AdjustmentHistoryResponse,
 )
 
 router = APIRouter(prefix='/api/v1/calibration-sessions', tags=['Calibration'])
@@ -477,3 +480,127 @@ async def add_note(
     )
 
     return CalibrationNoteResponse(**note)
+
+
+# --- Score Adjustment Endpoints ---
+
+@router.put('/{session_id}/reviews/{review_id}/scores', response_model=ScoreAdjustmentResponse)
+async def adjust_review_scores(
+    session_id: UUID,
+    review_id: UUID,
+    adjustment_data: ScoreAdjustmentCreate,
+    current_user: Annotated[CurrentUser, Depends(require_hr)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> ScoreAdjustmentResponse:
+    """Adjust review scores during calibration.
+
+    Creates an audit trail entry and updates the review scores.
+    Only works for sessions in IN_PROGRESS status.
+
+    Requires HR role.
+    """
+    repo = CalibrationRepository(conn)
+    opco_id = _get_user_opco_id(current_user, conn)
+    user_id = await _get_user_id(current_user, conn)
+
+    # Check if session exists and belongs to OpCo
+    session = await repo.get_session_by_id(session_id, opco_id=opco_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Calibration session not found',
+        )
+
+    # Check session is in IN_PROGRESS status
+    if session['status'] != 'IN_PROGRESS':
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Score adjustments can only be made on sessions in IN_PROGRESS status',
+        )
+
+    # Check if review is in the session
+    if not await repo.is_review_in_session(session_id, review_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found in this calibration session',
+        )
+
+    # Get current scores for response
+    current_scores = await repo.get_review_current_scores(review_id)
+    if not current_scores:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # Perform the adjustment
+    adjustment = await repo.adjust_review_scores(
+        session_id=session_id,
+        review_id=review_id,
+        what_score=adjustment_data.what_score,
+        how_score=adjustment_data.how_score,
+        adjusted_by=user_id,
+        rationale=adjustment_data.rationale,
+    )
+
+    if not adjustment:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Failed to create adjustment',
+        )
+
+    return ScoreAdjustmentResponse(
+        adjustment_id=adjustment['id'],
+        session_id=adjustment['session_id'],
+        review_id=adjustment['review_id'],
+        adjusted_by=adjustment['adjusted_by'],
+        original_what_score=float(adjustment['original_what_score']) if adjustment['original_what_score'] else None,
+        original_how_score=float(adjustment['original_how_score']) if adjustment['original_how_score'] else None,
+        what_score=float(adjustment['adjusted_what_score']) if adjustment['adjusted_what_score'] else None,
+        how_score=float(adjustment['adjusted_how_score']) if adjustment['adjusted_how_score'] else None,
+        rationale=adjustment['adjustment_notes'],
+        created_at=adjustment['created_at'],
+    )
+
+
+@router.get('/{session_id}/reviews/{review_id}/adjustments', response_model=List[AdjustmentHistoryResponse])
+async def get_adjustment_history(
+    session_id: UUID,
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(require_hr)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> List[AdjustmentHistoryResponse]:
+    """Get the adjustment history for a review in a calibration session.
+
+    Requires HR role.
+    """
+    repo = CalibrationRepository(conn)
+    opco_id = _get_user_opco_id(current_user, conn)
+
+    # Check if session exists and belongs to OpCo
+    session = await repo.get_session_by_id(session_id, opco_id=opco_id)
+    if not session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Calibration session not found',
+        )
+
+    adjustments = await repo.get_review_adjustments(session_id, review_id)
+
+    return [
+        AdjustmentHistoryResponse(
+            id=adj['id'],
+            session_id=adj['session_id'],
+            review_id=adj['review_id'],
+            adjusted_by=adj['adjusted_by'],
+            original_what_score=float(adj['original_what_score']) if adj['original_what_score'] else None,
+            original_how_score=float(adj['original_how_score']) if adj['original_how_score'] else None,
+            adjusted_what_score=float(adj['adjusted_what_score']) if adj['adjusted_what_score'] else None,
+            adjusted_how_score=float(adj['adjusted_how_score']) if adj['adjusted_how_score'] else None,
+            adjustment_notes=adj['adjustment_notes'],
+            created_at=adj['created_at'],
+            adjuster_first_name=adj.get('adjuster_first_name'),
+            adjuster_last_name=adj.get('adjuster_last_name'),
+        )
+        for adj in adjustments
+    ]
