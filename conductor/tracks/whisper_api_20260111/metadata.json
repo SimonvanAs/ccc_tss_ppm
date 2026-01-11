@@ -1,0 +1,8 @@
+{
+  "track_id": "whisper_api_20260111",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-11T09:00:00Z",
+  "updated_at": "2026-01-11T09:00:00Z",
+  "description": "Backend API WebSocket endpoint for proxying audio to faster-whisper-server"
+}
