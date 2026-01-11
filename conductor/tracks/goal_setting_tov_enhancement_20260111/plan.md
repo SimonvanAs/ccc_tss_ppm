@@ -46,17 +46,17 @@
 
 ## Phase 3: Backend API - Manager Reassignment [checkpoint: ]
 
-- [ ] Task: Implement PUT /api/v1/reviews/{id}/manager endpoint
-  - [ ] Write tests for HR role authorization
-  - [ ] Write tests for successful manager reassignment
-  - [ ] Write tests for invalid manager_id rejection
-  - [ ] Write tests for audit log creation with old/new manager
-  - [ ] Implement endpoint with RBAC
+- [x] Task: Implement PUT /api/v1/reviews/{id}/manager endpoint `182b4d3`
+  - [x] Write tests for HR role authorization
+  - [x] Write tests for successful manager reassignment
+  - [x] Write tests for invalid manager_id rejection
+  - [x] Write tests for audit log creation with old/new manager
+  - [x] Implement endpoint with RBAC
 
-- [ ] Task: Add manager reassignment audit logging
-  - [ ] Write tests for audit log entry format
-  - [ ] Write tests for optional reason field capture
-  - [ ] Implement audit log service integration
+- [x] Task: Add manager reassignment audit logging `182b4d3`
+  - [x] Write tests for audit log entry format
+  - [x] Write tests for optional reason field capture
+  - [x] Implement audit log service integration
 
 - [ ] Task: Conductor - User Manual Verification 'Backend API - Manager Reassignment' (Protocol in workflow.md)
 
