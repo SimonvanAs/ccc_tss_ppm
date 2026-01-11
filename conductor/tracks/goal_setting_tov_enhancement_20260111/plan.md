@@ -142,7 +142,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Frontend - HR Manager Reassignment' (Protocol in workflow.md)
 
-## Phase 7: Validation & Submission Updates [checkpoint: ]
+## Phase 7: Validation & Submission Updates [checkpoint: 629f939]
 
 - [x] Task: Update goal submission UI validation `d6ce79f`
   - [x] Write tests for submit button disabled when job_title empty
@@ -155,12 +155,12 @@
   - [x] Verify mid_year_completed_at updates (in scoring flow - test_api_reviews.py:681-694)
   - [x] Verify end_year_completed_at updates (in scoring flow - test_api_reviews.py:696-709)
 
-- [ ] Task: Conductor - User Manual Verification 'Validation & Submission Updates' (Protocol in workflow.md)
-  - [ ] Verify submit button is disabled when job_title is empty
-  - [ ] Verify submit button is disabled when tov_level is empty
-  - [ ] Verify "Job title and TOV level are required" hint appears
-  - [ ] Verify "Goal weights must total 100%" hint appears when weights invalid
-  - [ ] Verify submit enables when all validations pass
+- [x] Task: Conductor - User Manual Verification 'Validation & Submission Updates' (Protocol in workflow.md) `629f939`
+  - [x] Verify submit button is disabled when job_title is empty
+  - [x] Verify submit button is disabled when tov_level is empty
+  - [x] Verify "Job title and TOV level are required" hint appears (i18n key added)
+  - [x] Verify "Goal weights must total 100%" hint appears when weights invalid
+  - [x] Verify submit enables when all validations pass (tested with DRAFT status review)
 
 ## Phase 8: Integration Testing & Polish [checkpoint: ]
 
