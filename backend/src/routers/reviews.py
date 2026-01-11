@@ -12,6 +12,14 @@ import asyncpg
 from src.auth import CurrentUser, get_current_user
 from src.database import get_db
 from src.repositories.goals import GoalRepository
+from src.repositories.scores import ScoresRepository
+from src.schemas.scores import (
+    AllScoresResponse,
+    GoalScoreResponse,
+    CompetencyScoreResponse,
+    ScoresUpdateRequest,
+    ScoresUpdateResponse,
+)
 
 router = APIRouter(prefix='/api/v1', tags=['Reviews'])
 
@@ -119,3 +127,83 @@ async def submit_review(
     )
 
     return ReviewResponse(**updated_review)
+
+
+# --- Scores Endpoints ---
+
+
+@router.get('/reviews/{review_id}/scores', response_model=AllScoresResponse)
+async def get_scores(
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> AllScoresResponse:
+    """Get all scores (goals and competencies) for a review.
+
+    Args:
+        review_id: The review UUID
+        current_user: The authenticated user
+        conn: Database connection
+
+    Returns:
+        Combined goal and competency scores
+    """
+    scores_repo = ScoresRepository(conn)
+    scores = await scores_repo.get_all_scores(review_id)
+
+    return AllScoresResponse(
+        goal_scores=[GoalScoreResponse(**g) for g in scores['goal_scores']],
+        competency_scores=[
+            CompetencyScoreResponse(**c) for c in scores['competency_scores']
+        ],
+    )
+
+
+@router.put('/reviews/{review_id}/scores', response_model=ScoresUpdateResponse)
+async def update_scores(
+    review_id: UUID,
+    scores_data: ScoresUpdateRequest,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> ScoresUpdateResponse:
+    """Update scores for a review.
+
+    Allows partial updates - you can update only goals, only competencies, or both.
+
+    Args:
+        review_id: The review UUID
+        scores_data: Scores to update
+        current_user: The authenticated user
+        conn: Database connection
+
+    Returns:
+        Update confirmation with counts
+    """
+    scores_repo = ScoresRepository(conn)
+
+    updated_goals = 0
+    updated_competencies = 0
+
+    # Update goal scores if provided
+    if scores_data.goal_scores:
+        goal_updates = [
+            {'goal_id': gs.goal_id, 'score': gs.score, 'feedback': gs.feedback}
+            for gs in scores_data.goal_scores
+        ]
+        results = await scores_repo.bulk_upsert_goal_scores(goal_updates)
+        updated_goals = len(results)
+
+    # Update competency scores if provided
+    if scores_data.competency_scores:
+        comp_updates = [
+            {'competency_id': cs.competency_id, 'score': cs.score, 'notes': cs.notes}
+            for cs in scores_data.competency_scores
+        ]
+        results = await scores_repo.bulk_upsert_competency_scores(review_id, comp_updates)
+        updated_competencies = len(results)
+
+    return ScoresUpdateResponse(
+        message='Scores updated successfully',
+        updated_goals=updated_goals,
+        updated_competencies=updated_competencies,
+    )

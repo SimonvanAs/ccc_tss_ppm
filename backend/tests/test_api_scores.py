@@ -1,0 +1,229 @@
+# TSS PPM v3.0 - Scores API Tests
+"""Tests for Scores API endpoints."""
+
+from unittest.mock import AsyncMock
+from uuid import uuid4
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from src.main import app
+from src.auth import CurrentUser, get_current_user
+from src.database import get_db
+
+
+class TestScoresEndpoints:
+    """Tests for GET and PUT /api/v1/reviews/{id}/scores endpoints."""
+
+    @pytest.fixture
+    def mock_manager_user(self):
+        """Mock authenticated manager user."""
+        return CurrentUser(
+            keycloak_id='test-manager-id',
+            email='manager@example.com',
+            name='Test Manager',
+            roles=['employee', 'manager'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def sample_goal_score(self):
+        """Sample goal score data."""
+        return {
+            'id': uuid4(),
+            'review_id': uuid4(),
+            'title': 'Complete project',
+            'description': 'Finish Q1 project',
+            'goal_type': 'STANDARD',
+            'weight': 25,
+            'score': 2,
+            'feedback': 'Good progress',
+            'display_order': 0,
+        }
+
+    @pytest.fixture
+    def sample_competency_score(self):
+        """Sample competency score data."""
+        return {
+            'id': uuid4(),
+            'review_id': uuid4(),
+            'competency_id': uuid4(),
+            'score': 3,
+            'notes': 'Excellent performance',
+            'category': 'Dedicated',
+            'subcategory': 'Result driven',
+            'title_en': 'Achieves Results',
+            'display_order': 0,
+        }
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        conn = AsyncMock()
+        return conn
+
+    @pytest.fixture
+    async def manager_client(self, mock_manager_user, mock_db_conn):
+        """Async HTTP client with manager authentication."""
+        app.dependency_overrides[get_current_user] = lambda: mock_manager_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    @pytest.fixture
+    async def unauthenticated_client(self):
+        """Async HTTP client without auth override."""
+        app.dependency_overrides.clear()
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    # --- GET /api/v1/reviews/{id}/scores tests ---
+
+    async def test_get_scores_requires_auth(self, unauthenticated_client):
+        """GET /reviews/:id/scores should require authentication."""
+        review_id = uuid4()
+        response = await unauthenticated_client.get(
+            f'/api/v1/reviews/{review_id}/scores'
+        )
+        assert response.status_code in [401, 403]
+
+    async def test_get_scores_returns_combined(
+        self, manager_client, mock_db_conn, sample_goal_score, sample_competency_score
+    ):
+        """GET /reviews/:id/scores should return both goal and competency scores."""
+        review_id = uuid4()
+        # Mock both fetch calls (goal scores, then competency scores)
+        mock_db_conn.fetch.side_effect = [
+            [sample_goal_score],
+            [sample_competency_score],
+        ]
+
+        response = await manager_client.get(f'/api/v1/reviews/{review_id}/scores')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'goal_scores' in data
+        assert 'competency_scores' in data
+        assert len(data['goal_scores']) == 1
+        assert len(data['competency_scores']) == 1
+
+    async def test_get_scores_empty(self, manager_client, mock_db_conn):
+        """GET /reviews/:id/scores should return empty lists when no scores."""
+        review_id = uuid4()
+        mock_db_conn.fetch.side_effect = [[], []]
+
+        response = await manager_client.get(f'/api/v1/reviews/{review_id}/scores')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['goal_scores'] == []
+        assert data['competency_scores'] == []
+
+    async def test_get_scores_goal_schema(
+        self, manager_client, mock_db_conn, sample_goal_score
+    ):
+        """GET /reviews/:id/scores should return proper goal score schema."""
+        review_id = uuid4()
+        mock_db_conn.fetch.side_effect = [[sample_goal_score], []]
+
+        response = await manager_client.get(f'/api/v1/reviews/{review_id}/scores')
+
+        assert response.status_code == 200
+        goal = response.json()['goal_scores'][0]
+        assert 'id' in goal
+        assert 'title' in goal
+        assert 'score' in goal
+        assert 'weight' in goal
+        assert 'goal_type' in goal
+
+    # --- PUT /api/v1/reviews/{id}/scores tests ---
+
+    async def test_put_scores_requires_auth(self, unauthenticated_client):
+        """PUT /reviews/:id/scores should require authentication."""
+        review_id = uuid4()
+        response = await unauthenticated_client.put(
+            f'/api/v1/reviews/{review_id}/scores', json={'goal_scores': []}
+        )
+        assert response.status_code in [401, 403]
+
+    async def test_put_scores_updates_goals(self, manager_client, mock_db_conn):
+        """PUT /reviews/:id/scores should update goal scores."""
+        review_id = uuid4()
+        goal_id = uuid4()
+        mock_db_conn.fetchrow.return_value = {
+            'id': goal_id,
+            'score': 3,
+            'feedback': 'Updated',
+        }
+
+        response = await manager_client.put(
+            f'/api/v1/reviews/{review_id}/scores',
+            json={
+                'goal_scores': [
+                    {'goal_id': str(goal_id), 'score': 3, 'feedback': 'Updated'}
+                ]
+            },
+        )
+
+        assert response.status_code == 200
+        assert mock_db_conn.fetchrow.called
+
+    async def test_put_scores_updates_competencies(self, manager_client, mock_db_conn):
+        """PUT /reviews/:id/scores should update competency scores."""
+        review_id = uuid4()
+        competency_id = uuid4()
+        mock_db_conn.fetchrow.return_value = {
+            'id': uuid4(),
+            'score': 2,
+            'notes': 'Good',
+        }
+
+        response = await manager_client.put(
+            f'/api/v1/reviews/{review_id}/scores',
+            json={
+                'competency_scores': [
+                    {'competency_id': str(competency_id), 'score': 2, 'notes': 'Good'}
+                ]
+            },
+        )
+
+        assert response.status_code == 200
+
+    async def test_put_scores_validates_score_range(self, manager_client, mock_db_conn):
+        """PUT /reviews/:id/scores should validate score range (1-3)."""
+        review_id = uuid4()
+        goal_id = uuid4()
+
+        response = await manager_client.put(
+            f'/api/v1/reviews/{review_id}/scores',
+            json={'goal_scores': [{'goal_id': str(goal_id), 'score': 5}]},
+        )
+
+        # Should return validation error
+        assert response.status_code == 422
+
+    async def test_put_scores_partial_update(self, manager_client, mock_db_conn):
+        """PUT /reviews/:id/scores should allow partial updates."""
+        review_id = uuid4()
+        goal_id = uuid4()
+        mock_db_conn.fetchrow.return_value = {'id': goal_id, 'score': 2}
+
+        response = await manager_client.put(
+            f'/api/v1/reviews/{review_id}/scores',
+            json={
+                'goal_scores': [
+                    {'goal_id': str(goal_id), 'score': 2}
+                    # No feedback provided - should still work
+                ]
+            },
+        )
+
+        assert response.status_code == 200
