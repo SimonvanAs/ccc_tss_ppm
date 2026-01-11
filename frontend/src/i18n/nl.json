@@ -392,5 +392,24 @@
     "name": "Naam",
     "email": "E-mail",
     "role": "Rol"
+  },
+  "reviewHeader": {
+    "employee": "Medewerker",
+    "manager": "Manager",
+    "reviewYear": "Beoordelingsjaar",
+    "jobTitle": "Functietitel",
+    "jobTitlePlaceholder": "Voer functietitel in",
+    "tovLevel": "TOV Niveau",
+    "selectTovLevel": "Selecteer TOV niveau",
+    "tovLevelOption": {
+      "A": "Niveau A - Instap",
+      "B": "Niveau B - Professioneel",
+      "C": "Niveau C - Senior",
+      "D": "Niveau D - Leiderschap"
+    },
+    "goalSettingCompleted": "Doelstellingen",
+    "midYearCompleted": "Halfjaar",
+    "endYearCompleted": "Eindjaar",
+    "pending": "In afwachting"
   }
 }

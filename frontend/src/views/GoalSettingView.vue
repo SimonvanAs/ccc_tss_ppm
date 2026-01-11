@@ -3,11 +3,14 @@ import { onMounted, ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useGoals } from '../composables/useGoals'
+import { useReviewHeader } from '../composables/useReviewHeader'
 import { submitReview } from '../api/goals'
 import type { Goal, GoalCreate } from '../types'
 import GoalList from '../components/review/GoalList.vue'
 import GoalForm from '../components/review/GoalForm.vue'
 import WeightIndicator from '../components/review/WeightIndicator.vue'
+import ReviewHeader from '../components/review/ReviewHeader.vue'
+import SaveIndicator from '../components/common/SaveIndicator.vue'
 import Modal from '../components/common/Modal.vue'
 import ConfirmDialog from '../components/common/ConfirmDialog.vue'
 import { Card, SectionHeader } from '../components/layout'
@@ -34,6 +37,16 @@ const {
   setGoalOrder,
 } = useGoals(props.reviewId)
 
+// Review header data and auto-save
+const {
+  review,
+  loading: reviewLoading,
+  saveStatus,
+  loadReview,
+  updateJobTitle,
+  updateTovLevel,
+} = useReviewHeader(props.reviewId)
+
 // Modal states
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -53,8 +66,17 @@ const editModalTitle = computed(() =>
 )
 
 onMounted(async () => {
-  await loadGoals()
+  await Promise.all([loadGoals(), loadReview()])
 })
+
+// Handle header field updates (auto-save)
+function handleJobTitleUpdate(value: string) {
+  updateJobTitle(value)
+}
+
+function handleTovLevelUpdate(value: string) {
+  updateTovLevel(value)
+}
 
 // Handle add goal button click
 function handleAddGoal() {
@@ -166,6 +188,30 @@ async function handleSubmit() {
 
 <template>
   <div class="goal-setting-view">
+    <!-- Review Header -->
+    <ReviewHeader
+      v-if="review"
+      :review-id="reviewId"
+      :employee-name="review.employee_name ?? ''"
+      :manager-name="review.manager_name ?? ''"
+      :review-year="review.review_year"
+      :status="review.status"
+      :stage="review.stage"
+      :job-title="review.job_title"
+      :tov-level="review.tov_level"
+      :goal-setting-completed-at="review.goal_setting_completed_at"
+      :mid-year-completed-at="review.mid_year_completed_at"
+      :end-year-completed-at="review.end_year_completed_at"
+      class="review-header-card"
+      @update:job-title="handleJobTitleUpdate"
+      @update:tov-level="handleTovLevelUpdate"
+    />
+
+    <!-- Save indicator for header -->
+    <div v-if="review" class="save-indicator-container">
+      <SaveIndicator :status="saveStatus" />
+    </div>
+
     <!-- Page Header -->
     <SectionHeader :title="t('goals.pageTitle')">
       <template #subtitle>
@@ -276,6 +322,17 @@ async function handleSubmit() {
 .goal-setting-view {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.review-header-card {
+  margin-bottom: 0.5rem;
+}
+
+.save-indicator-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+  min-height: 28px;
 }
 
 .weight-card {

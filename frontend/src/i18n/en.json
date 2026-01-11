@@ -411,5 +411,24 @@
     "name": "Name",
     "email": "Email",
     "role": "Role"
+  },
+  "reviewHeader": {
+    "employee": "Employee",
+    "manager": "Manager",
+    "reviewYear": "Review Year",
+    "jobTitle": "Job Title",
+    "jobTitlePlaceholder": "Enter job title",
+    "tovLevel": "TOV Level",
+    "selectTovLevel": "Select TOV level",
+    "tovLevelOption": {
+      "A": "Level A - Entry",
+      "B": "Level B - Professional",
+      "C": "Level C - Senior",
+      "D": "Level D - Leadership"
+    },
+    "goalSettingCompleted": "Goal Setting",
+    "midYearCompleted": "Mid-Year",
+    "endYearCompleted": "End-Year",
+    "pending": "Pending"
   }
 }
