@@ -107,7 +107,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md) `51587f1`
 
-## Phase 5: Frontend - Scoring View with Auto-Save
+## Phase 5: Frontend - Scoring View with Auto-Save [checkpoint: 591b898]
 
 - [x] Task: Create scores API client module `9ea0895`
   - [x] Write tests for `fetchScores` function
@@ -163,7 +163,7 @@
   - [x] Write tests for error handling
   - [x] Implement in `frontend/src/api/scores.ts`
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5' (Protocol in workflow.md) `591b898`
 
 ## Phase 6: Internationalization & Polish
 
