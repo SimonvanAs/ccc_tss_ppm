@@ -30,7 +30,7 @@ class TestReviewSubmissionEndpoint:
 
     @pytest.fixture
     def sample_review(self):
-        """Sample review data."""
+        """Sample review data with header fields."""
         return {
             'id': uuid4(),
             'employee_id': uuid4(),
@@ -38,6 +38,36 @@ class TestReviewSubmissionEndpoint:
             'status': 'DRAFT',
             'stage': 'GOAL_SETTING',
             'review_year': 2026,
+            'job_title': 'Senior Developer',
+            'tov_level': 'B',
+        }
+
+    @pytest.fixture
+    def sample_review_missing_job_title(self):
+        """Sample review with missing job_title."""
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': None,
+            'tov_level': 'B',
+        }
+
+    @pytest.fixture
+    def sample_review_missing_tov_level(self):
+        """Sample review with missing tov_level."""
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Senior Developer',
+            'tov_level': None,
         }
 
     @pytest.fixture
@@ -151,6 +181,58 @@ class TestReviewSubmissionEndpoint:
         # Verify update was called with correct status
         assert mock_db_conn.execute.called or mock_db_conn.fetchrow.called
 
+    async def test_submit_review_rejected_when_job_title_missing(
+        self, client, mock_db_conn, sample_review_missing_job_title
+    ):
+        """POST /reviews/:id/submit should reject when job_title is missing."""
+        review_id = sample_review_missing_job_title['id']
+        mock_db_conn.fetchrow.return_value = sample_review_missing_job_title
+        mock_db_conn.fetchval.return_value = 100  # Weights OK
+
+        response = await client.post(f'/api/v1/reviews/{review_id}/submit')
+
+        assert response.status_code == 400
+        detail = response.json()['detail'].lower()
+        assert 'job_title' in detail or 'job title' in detail
+
+    async def test_submit_review_rejected_when_tov_level_missing(
+        self, client, mock_db_conn, sample_review_missing_tov_level
+    ):
+        """POST /reviews/:id/submit should reject when tov_level is missing."""
+        review_id = sample_review_missing_tov_level['id']
+        mock_db_conn.fetchrow.return_value = sample_review_missing_tov_level
+        mock_db_conn.fetchval.return_value = 100  # Weights OK
+
+        response = await client.post(f'/api/v1/reviews/{review_id}/submit')
+
+        assert response.status_code == 400
+        detail = response.json()['detail'].lower()
+        assert 'tov_level' in detail or 'tov level' in detail
+
+    async def test_submit_review_rejected_when_both_missing(
+        self, client, mock_db_conn
+    ):
+        """POST /reviews/:id/submit should reject when both fields missing."""
+        review_missing_both = {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': None,
+            'tov_level': None,
+        }
+        mock_db_conn.fetchrow.return_value = review_missing_both
+        mock_db_conn.fetchval.return_value = 100
+
+        response = await client.post(f'/api/v1/reviews/{review_missing_both["id"]}/submit')
+
+        assert response.status_code == 400
+        detail = response.json()['detail'].lower()
+        # Should mention missing fields
+        assert 'job_title' in detail or 'tov_level' in detail
+
 
 @pytest.mark.asyncio
 class TestSignReviewEndpoint:
@@ -220,6 +302,22 @@ class TestSignReviewEndpoint:
             'employee_signature_date': '2026-01-10T10:00:00Z',
             'manager_signature_by': None,
             'manager_signature_date': None,
+        }
+
+    @pytest.fixture
+    def sample_review_pending_manager_goal_setting(self, employee_user_id, manager_user_id):
+        """Sample review awaiting manager approval for goal setting."""
+        return {
+            'id': uuid4(),
+            'employee_id': employee_user_id,
+            'manager_id': manager_user_id,
+            'opco_id': uuid4(),
+            'status': 'PENDING_MANAGER_SIGNATURE',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Senior Developer',
+            'tov_level': 'B',
+            'goal_setting_completed_at': None,
         }
 
     @pytest.fixture
@@ -421,6 +519,35 @@ class TestSignReviewEndpoint:
 
         assert response.status_code == 200
         assert response.json()['status'] == 'SIGNED'
+
+    async def test_goal_setting_completed_at_set_on_manager_approval(
+        self, manager_client, mock_db_conn, sample_review_pending_manager_goal_setting, manager_user_id
+    ):
+        """Manager approval during GOAL_SETTING should set goal_setting_completed_at."""
+        review_id = sample_review_pending_manager_goal_setting['id']
+        from datetime import datetime, timezone
+        approved_review = {
+            **sample_review_pending_manager_goal_setting,
+            'status': 'SIGNED',
+            'manager_signature_by': manager_user_id,
+            'manager_signature_date': datetime.now(timezone.utc).isoformat(),
+            'goal_setting_completed_at': datetime.now(timezone.utc),
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': manager_user_id},
+            sample_review_pending_manager_goal_setting,
+            {'id': uuid4()},  # Audit log
+            approved_review,  # Get updated review
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await manager_client.post(f'/api/v1/reviews/{review_id}/sign')
+
+        assert response.status_code == 200
+        # Verify execute was called with goal_setting_completed_at update
+        assert mock_db_conn.execute.called
+        execute_call_args = str(mock_db_conn.execute.call_args)
+        assert 'goal_setting_completed_at' in execute_call_args
 
 
 @pytest.mark.asyncio

@@ -340,6 +340,19 @@ async def submit_review(
             detail=f'Review must be in DRAFT status to submit (current: {review["status"]})',
         )
 
+    # Check job_title and tov_level are set (required for submission)
+    missing_fields = []
+    if not review.get('job_title'):
+        missing_fields.append('job_title')
+    if not review.get('tov_level'):
+        missing_fields.append('tov_level')
+
+    if missing_fields:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Missing required fields before submission: {", ".join(missing_fields)}',
+        )
+
     # Check weights total 100%
     weight_total = await goal_repo.get_weight_total(review_id)
     if weight_total != 100:
@@ -658,17 +671,61 @@ async def sign_review(
         new_status = 'SIGNED'
         signature_action = 'MANAGER_SIGNED'
 
-        # Record manager signature
-        await conn.execute(
-            '''
-            UPDATE reviews
-            SET manager_signature_by = $1, manager_signature_date = NOW(), status = $2, updated_at = NOW()
-            WHERE id = $3
-            ''',
-            user_id,
-            new_status,
-            review_id,
-        )
+        # Record manager signature and update stage completion timestamp if applicable
+        current_stage = review.get('stage')
+
+        if current_stage == 'GOAL_SETTING':
+            # Goal setting approval - set goal_setting_completed_at
+            await conn.execute(
+                '''
+                UPDATE reviews
+                SET manager_signature_by = $1, manager_signature_date = NOW(),
+                    status = $2, goal_setting_completed_at = NOW(), updated_at = NOW()
+                WHERE id = $3
+                ''',
+                user_id,
+                new_status,
+                review_id,
+            )
+        elif current_stage == 'MID_YEAR_REVIEW':
+            # Mid-year review completion - set mid_year_completed_at
+            await conn.execute(
+                '''
+                UPDATE reviews
+                SET manager_signature_by = $1, manager_signature_date = NOW(),
+                    status = $2, mid_year_completed_at = NOW(), updated_at = NOW()
+                WHERE id = $3
+                ''',
+                user_id,
+                new_status,
+                review_id,
+            )
+        elif current_stage == 'END_YEAR_REVIEW':
+            # End-year review completion - set end_year_completed_at
+            await conn.execute(
+                '''
+                UPDATE reviews
+                SET manager_signature_by = $1, manager_signature_date = NOW(),
+                    status = $2, end_year_completed_at = NOW(), updated_at = NOW()
+                WHERE id = $3
+                ''',
+                user_id,
+                new_status,
+                review_id,
+            )
+        else:
+            # Fallback for unknown stages
+            await conn.execute(
+                '''
+                UPDATE reviews
+                SET manager_signature_by = $1, manager_signature_date = NOW(),
+                    status = $2, updated_at = NOW()
+                WHERE id = $3
+                ''',
+                user_id,
+                new_status,
+                review_id,
+            )
 
     else:
         raise HTTPException(
