@@ -137,3 +137,24 @@
   - [x] Fix any layout inconsistencies
   Note: CSS uses standard properties (flexbox, grid, CSS variables) with broad browser support. All 605 tests pass. Manual device testing recommended before production.
 - [x] Task: Conductor - User Manual Verification 'Phase 5: Polish and Internationalization' (Protocol in workflow.md) `dd4bfa9`
+
+## Phase 6: Footer and Navigation Enhancements
+
+- [x] Task: Implement AppFooter component
+  - [x] Create footer bar with flexbox layout
+  - [x] Add View Source link to GitHub repository
+  - [x] Add "Built with the help of AI" badge with robot icon
+  - [x] Add Developer Credits expandable dropdown
+- [x] Task: Enhance sidebar profile section
+  - [x] Add profile with avatar and user name at bottom of sidebar
+  - [x] Add logout button next to profile
+  - [x] Make profile sticky at bottom using flexbox
+  - [x] Support two-line text wrap for long names
+- [x] Task: Add HR role navigation
+  - [x] Add isHR computed property to AppSidebar
+  - [x] Add Calibration menu item with 9-grid icon (visible to HR role)
+  - [x] Create CalibrationView with session list/detail/form views
+  - [x] Add /calibration route to router
+- [x] Task: Add i18n translations for new components
+  - [x] Add common.back translation (EN/NL/ES)
+  - [x] Verify calibration translations exist

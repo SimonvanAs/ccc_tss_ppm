@@ -44,6 +44,11 @@ const router = createRouter({
       component: () => import('./views/ReviewScoringView.vue'),
       props: true,
     },
+    {
+      path: '/calibration',
+      name: 'Calibration',
+      component: () => import('./views/CalibrationView.vue'),
+    },
   ]
 })
 

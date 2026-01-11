@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
+import AppFooter from './AppFooter.vue'
 import { useSidebar } from '../../composables/useSidebar'
 
 const { t } = useI18n()
@@ -62,6 +63,7 @@ function scrollToMain() {
       >
         <slot />
       </main>
+      <AppFooter />
     </div>
   </div>
 </template>

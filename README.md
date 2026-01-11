@@ -37,11 +37,12 @@ TSS PPM v3.0 aims to streamline the annual performance review process by providi
 
 | Component | Technology |
 |-----------|------------|
-| Frontend | React 19 + Vite 7 |
-| Backend | TBD + PostgreSQL 17 |
+| Frontend | Vue 3 + Vite + TypeScript |
+| Backend | Python FastAPI + PostgreSQL 17 |
 | Authentication | Keycloak v26 (OIDC/EntraID) + custom theme |
 | Voice Input | faster-whisper (Docker) |
-| Reverse Proxy | Caddy (TLS) |
+| PDF Generation | WeasyPrint (integrated in API) |
+| Reverse Proxy | Caddy (auto TLS) |
 | Deployment | Docker containers |
 
 ## User Roles
@@ -61,7 +62,9 @@ TSS PPM v3.0 aims to streamline the annual performance review process by providi
 
 ## Documentation
 
+- [DEPLOYMENT.md](DEPLOYMENT.md) - **Production deployment guide**
 - [CLAUDE.md](CLAUDE.md) - Development guidance and architectural overview
+- [TSS-PPM-Architecture.md](architecture/TSS-PPM-Architecture.md) - System architecture document
 - [TSS-PPM-Requirements.md](requirements/TSS-PPM-Requirements.md) - Complete requirements specification
 - [IDE-Competency-Framework.md](requirements/IDE-Competency-Framework.md) - HOW-axis competency definitions
 - [TSS-PPM-Demo_Guide.md](requirements/TSS-PPM-Demo_Guide.md) - Quick start guide for new users
@@ -149,6 +152,33 @@ docker compose up -d api
 ## Getting Started
 
 See [TSS-PPM-Demo_Guide.md](requirements/TSS-PPM-Demo_Guide.md) for demo accounts and a walkthrough of the application features.
+
+## Production Deployment
+
+For production deployment, see the comprehensive [DEPLOYMENT.md](DEPLOYMENT.md) guide which covers:
+
+- Server requirements and prerequisites
+- Step-by-step deployment instructions
+- SSL/TLS configuration with automatic Let's Encrypt
+- Database setup and migrations
+- Keycloak configuration and user management
+- Backup and recovery procedures
+- Monitoring and troubleshooting
+- Security checklist
+
+### Quick Production Start
+
+```bash
+# 1. Configure environment
+cp .env.example .env.production
+nano .env.production  # Set secure passwords
+
+# 2. Update domain in Caddyfile
+nano Caddyfile  # Replace ppm.tss-vms.co.uk with your domain
+
+# 3. Deploy with production profile
+docker compose --env-file .env.production --profile production up -d
+```
 
 ## License
 
