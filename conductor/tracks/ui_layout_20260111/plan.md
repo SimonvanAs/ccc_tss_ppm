@@ -2,26 +2,26 @@
 
 ## Phase 1: Core Layout Shell Components
 
-- [~] Task: Write tests for AppLayout component
-  - [ ] Test renders sidebar and main content area
-  - [ ] Test passes content via default slot
-  - [ ] Test applies correct CSS grid/flexbox structure
-- [ ] Task: Implement AppLayout.vue component
-  - [ ] Create shell with sidebar area and content area
-  - [ ] Apply base styling (full height, CSS grid layout)
-  - [ ] Export from components/layout/index.ts
-- [ ] Task: Write tests for AppSidebar component
-  - [ ] Test renders navigation items
-  - [ ] Test Dashboard link visible to all roles
-  - [ ] Test Team Dashboard link visible only for manager role
-  - [ ] Test profile section at bottom with user avatar
-  - [ ] Test active state highlighting on current route
-- [ ] Task: Implement AppSidebar.vue component
-  - [ ] Create sidebar container with Navy background
-  - [ ] Add navigation items (Dashboard, Team Dashboard)
-  - [ ] Implement role-based visibility using useAuth composable
-  - [ ] Add profile section at bottom with avatar from Keycloak user info
-  - [ ] Style active nav item with Magenta highlight
+- [x] Task: Write tests for AppLayout component `bbc0563`
+  - [x] Test renders sidebar and main content area
+  - [x] Test passes content via default slot
+  - [x] Test applies correct CSS grid/flexbox structure
+- [x] Task: Implement AppLayout.vue component `bbc0563`
+  - [x] Create shell with sidebar area and content area
+  - [x] Apply base styling (full height, CSS grid layout)
+  - [x] Export from components/layout/index.ts
+- [x] Task: Write tests for AppSidebar component `a87688c`
+  - [x] Test renders navigation items
+  - [x] Test Dashboard link visible to all roles
+  - [x] Test Team Dashboard link visible only for manager role
+  - [x] Test profile section at bottom with user avatar
+  - [x] Test active state highlighting on current route
+- [x] Task: Implement AppSidebar.vue component `a87688c`
+  - [x] Create sidebar container with Navy background
+  - [x] Add navigation items (Dashboard, Team Dashboard)
+  - [x] Implement role-based visibility using useAuth composable
+  - [x] Add profile section at bottom with avatar from Keycloak user info
+  - [x] Style active nav item with Magenta highlight
 - [ ] Task: Write tests for AppHeader component
   - [ ] Test renders progress bar with percentage
   - [ ] Test renders language selector with three flags
