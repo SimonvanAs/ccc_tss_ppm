@@ -47,10 +47,10 @@
   - [x] Implement `frontend/src/views/TeamDashboardView.vue`
   - [x] Add route `/team` to router
 
-- [ ] Task: Create TeamMemberCard component
-  - [ ] Write tests for status badge rendering (Not Started/In Progress/Complete)
-  - [ ] Write tests for click navigation
-  - [ ] Implement `frontend/src/components/dashboard/TeamMemberCard.vue`
+- [x] Task: Create TeamMemberCard component `12cb594`
+  - [x] Write tests for status badge rendering (Not Started/In Progress/Complete)
+  - [x] Write tests for click navigation
+  - [x] Implement `frontend/src/components/dashboard/TeamMemberCard.vue`
 
 - [ ] Task: Add team dashboard to navigation
   - [ ] Update App.vue or navigation component for manager role
