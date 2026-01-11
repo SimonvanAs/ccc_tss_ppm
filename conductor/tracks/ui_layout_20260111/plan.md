@@ -33,7 +33,7 @@
   - [x] Add language selector with EN/NL/ES flag icons
   - [x] Wire language selector to vue-i18n locale change
   - [x] Add TSS PPM logo/branding
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Layout Shell Components' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Core Layout Shell Components' (Protocol in workflow.md)
 
 ## Phase 2: Card and Content Styling Components
 

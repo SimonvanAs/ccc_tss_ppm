@@ -50,23 +50,23 @@
 - [x] Task: Add i18n translations for score labels (EN/NL/ES) `4f8aaae`
 - [x] Task: Conductor - User Manual Verification 'Frontend Score Card Component' (Protocol in workflow.md) `11cd2d4`
 
-## Phase 4: Frontend Competency List Component
+## Phase 4: Frontend Competency List Component [checkpoint: 1bdd5eb]
 
-- [x] Task: Write tests for CompetencyList component
+- [x] Task: Write tests for CompetencyList component `1078aca`
   - [x] Test fetches competencies for TOV level
   - [x] Test renders 6 competencies grouped by category
   - [x] Test score card integration
   - [x] Test notes textarea with voice input
   - [x] Test VETO highlight on score = 1
-- [x] Task: Implement CompetencyList.vue component
+- [x] Task: Implement CompetencyList.vue component `1078aca`
   - [x] Fetch competencies from API on mount
   - [x] Group competencies by category (Dedicated/Entrepreneurial/Innovative)
   - [x] Display competency title, category badge, indicators
   - [x] Integrate CompetencyScoreCard for each competency
   - [x] Add notes textarea with VoiceInput component
   - [x] Highlight row when score = 1 (VETO warning)
-- [x] Task: Add i18n translations for component text (EN/NL/ES) (already added in Phase 3)
-- [ ] Task: Conductor - User Manual Verification 'Frontend Competency List Component' (Protocol in workflow.md)
+- [x] Task: Add i18n translations for component text (EN/NL/ES) `4f8aaae`
+- [x] Task: Conductor - User Manual Verification 'Frontend Competency List Component' (Protocol in workflow.md) `1bdd5eb`
 
 ## Phase 5: Frontend HOW Score Indicator
 
