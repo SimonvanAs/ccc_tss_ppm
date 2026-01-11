@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import Annotated, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.responses import Response
 from pydantic import BaseModel, field_validator
 
 import asyncpg
@@ -15,6 +16,13 @@ from src.database import get_db
 from src.repositories.goals import GoalRepository
 from src.repositories.scores import ScoresRepository
 from src.repositories.audit import AuditRepository
+from src.services.pdf_service import (
+    PDFService,
+    ReviewPDFData,
+    GoalPDFData,
+    CompetencyPDFData,
+    SignaturePDFData,
+)
 from src.schemas.scores import (
     AllScoresResponse,
     GoalScoreResponse,
@@ -1125,3 +1133,197 @@ async def reassign_manager(
     updated_review = await review_repo.get_review(review_id)
 
     return ManagerReassignResponse(**updated_review)
+
+
+# ============================================================================
+# PDF Generation Endpoint
+# ============================================================================
+
+
+@router.get('/reviews/{review_id}/pdf', response_class=Response)
+async def get_review_pdf(
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+    lang: str = Query(default='en', pattern='^(en|nl|es)$'),
+) -> Response:
+    """Generate and return a PDF for the specified review.
+
+    The PDF includes:
+    - Employee and review information
+    - Goals with scores and feedback
+    - Competencies with scores
+    - 9-grid visualization
+    - Signature section (with DRAFT watermark if not fully signed)
+
+    RBAC:
+    - Employee can access their own review PDF
+    - Manager can access their team's review PDFs
+    - HR can access all review PDFs in their OpCo
+    """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    user_id = user_row['id'] if user_row else None
+
+    # Get the review with full details
+    review_repo = ReviewRepository(conn)
+    review = await review_repo.get_review(review_id)
+
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # RBAC check: employee, manager, or HR
+    is_employee = user_id == review['employee_id']
+    is_manager = user_id == review['manager_id']
+    is_hr = 'HR' in current_user.roles
+
+    if not (is_employee or is_manager or is_hr):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to access this review PDF',
+        )
+
+    # OpCo check for HR
+    if is_hr and str(review.get('opco_id')) != current_user.opco_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to access reviews from other OpCos',
+        )
+
+    # Get goals and scores
+    goals = await conn.fetch(
+        '''
+        SELECT id, title, description, weight, goal_type
+        FROM goals
+        WHERE review_id = $1
+        ORDER BY weight DESC, title
+        ''',
+        review_id,
+    )
+
+    goal_scores = await conn.fetch(
+        '''
+        SELECT goal_id, score, feedback
+        FROM goal_scores
+        WHERE review_id = $1
+        ''',
+        review_id,
+    )
+    goal_scores_map = {gs['goal_id']: gs for gs in goal_scores}
+
+    # Get competencies and scores
+    tov_level = review.get('tov_level') or 'B'
+    competencies = await conn.fetch(
+        '''
+        SELECT id, name, category, subcategory
+        FROM competencies
+        WHERE tov_level = $1
+        ORDER BY category, subcategory, name
+        ''',
+        tov_level,
+    )
+
+    comp_scores = await conn.fetch(
+        '''
+        SELECT competency_id, score
+        FROM competency_scores
+        WHERE review_id = $1
+        ''',
+        review_id,
+    )
+    comp_scores_map = {cs['competency_id']: cs for cs in comp_scores}
+
+    # Build PDF data
+    goals_data = [
+        GoalPDFData(
+            title=g['title'],
+            description=g.get('description'),
+            weight=g['weight'],
+            goal_type=g['goal_type'],
+            score=goal_scores_map.get(g['id'], {}).get('score'),
+            feedback=goal_scores_map.get(g['id'], {}).get('feedback'),
+        )
+        for g in goals
+    ]
+
+    competencies_data = [
+        CompetencyPDFData(
+            name=c['name'],
+            category=c['category'],
+            subcategory=c['subcategory'],
+            score=comp_scores_map.get(c['id'], {}).get('score'),
+        )
+        for c in competencies
+    ]
+
+    # Build signature data
+    employee_signature = None
+    if review.get('employee_signature_date') and review.get('employee_signature_by'):
+        # Get signer name
+        signer = await conn.fetchrow(
+            'SELECT name FROM users WHERE id = $1',
+            review['employee_signature_by'],
+        )
+        signer_name = signer['name'] if signer else 'Unknown'
+        employee_signature = SignaturePDFData(
+            signed_by=signer_name,
+            signed_at=review['employee_signature_date']
+            if isinstance(review['employee_signature_date'], datetime)
+            else datetime.fromisoformat(str(review['employee_signature_date'])),
+        )
+
+    manager_signature = None
+    if review.get('manager_signature_date') and review.get('manager_signature_by'):
+        signer = await conn.fetchrow(
+            'SELECT name FROM users WHERE id = $1',
+            review['manager_signature_by'],
+        )
+        signer_name = signer['name'] if signer else 'Unknown'
+        manager_signature = SignaturePDFData(
+            signed_by=signer_name,
+            signed_at=review['manager_signature_date']
+            if isinstance(review['manager_signature_date'], datetime)
+            else datetime.fromisoformat(str(review['manager_signature_date'])),
+        )
+
+    pdf_data = ReviewPDFData(
+        employee_name=review.get('employee_name') or 'Unknown',
+        employee_email='',  # Not shown in PDF
+        manager_name=review.get('manager_name') or 'Unknown',
+        job_title=review.get('job_title'),
+        department=None,  # Not in current schema
+        review_year=review['review_year'],
+        stage=review['stage'],
+        status=review['status'],
+        what_score=review.get('what_score'),
+        how_score=review.get('how_score'),
+        goals=goals_data,
+        competencies=competencies_data,
+        employee_signature=employee_signature,
+        manager_signature=manager_signature,
+        manager_comments=review.get('manager_comments'),
+        employee_comments=review.get('employee_comments'),
+        rejection_feedback=review.get('rejection_feedback'),
+    )
+
+    # Generate PDF
+    pdf_service = PDFService()
+    pdf_bytes = pdf_service.generate_pdf(pdf_data, language=lang)
+
+    # Create filename
+    employee_name_safe = (review.get('employee_name') or 'review').replace(' ', '_')
+    filename = f"review_{employee_name_safe}_{review['review_year']}.pdf"
+
+    return Response(
+        content=pdf_bytes,
+        media_type='application/pdf',
+        headers={
+            'Content-Disposition': f'inline; filename="{filename}"',
+        },
+    )

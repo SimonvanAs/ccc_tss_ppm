@@ -87,41 +87,41 @@
 
 ## Phase 4: PDF Generation Service [checkpoint: ]
 
-- [ ] Task: Create PDF template with WeasyPrint
-  - [ ] Write tests for PDF template rendering
-  - [ ] Create HTML/CSS template for review PDF
-  - [ ] Implement header section (logo, employee info, review year)
-  - [ ] Implement goals section with scores and comments
-  - [ ] Implement competencies section with scores
-  - [ ] Apply brand styling (Magenta, Navy Blue, Tahoma)
+- [x] Task: Create PDF template with WeasyPrint
+  - [x] Write tests for PDF template rendering
+  - [x] Create HTML/CSS template for review PDF
+  - [x] Implement header section (logo, employee info, review year)
+  - [x] Implement goals section with scores and comments
+  - [x] Implement competencies section with scores
+  - [x] Apply brand styling (Magenta, Navy Blue, Tahoma)
 
-- [ ] Task: Implement 9-grid visualization for PDF
-  - [ ] Write tests for 9-grid SVG/HTML generation
-  - [ ] Create 3x3 grid with color coding
-  - [ ] Mark employee position on grid
-  - [ ] Ensure proper rendering in PDF
+- [x] Task: Implement 9-grid visualization for PDF
+  - [x] Write tests for 9-grid SVG/HTML generation
+  - [x] Create 3x3 grid with color coding
+  - [x] Mark employee position on grid
+  - [x] Ensure proper rendering in PDF
 
-- [ ] Task: Implement signature and comments sections
-  - [ ] Write tests for signature section rendering
-  - [ ] Add employee signature line with timestamp
-  - [ ] Add manager signature line with timestamp
-  - [ ] Add comments section (manager, employee, feedback)
-  - [ ] Handle "Pending" state for unsigned
+- [x] Task: Implement signature and comments sections
+  - [x] Write tests for signature section rendering
+  - [x] Add employee signature line with timestamp
+  - [x] Add manager signature line with timestamp
+  - [x] Add comments section (manager, employee, feedback)
+  - [x] Handle "Pending" state for unsigned
 
-- [ ] Task: Implement draft watermark
-  - [ ] Write tests for watermark presence/absence
-  - [ ] Add "DRAFT" watermark for non-SIGNED reviews
-  - [ ] Remove watermark for SIGNED reviews
-  - [ ] Ensure watermark doesn't obscure content
+- [x] Task: Implement draft watermark
+  - [x] Write tests for watermark presence/absence
+  - [x] Add "DRAFT" watermark for non-SIGNED reviews
+  - [x] Remove watermark for SIGNED reviews
+  - [x] Ensure watermark doesn't obscure content
 
-- [ ] Task: Implement PDF generation endpoint
-  - [ ] Write tests for GET /api/v1/reviews/{id}/pdf
-  - [ ] Test draft PDF generation (any status)
-  - [ ] Test final PDF generation (SIGNED status)
-  - [ ] Implement endpoint with WeasyPrint integration
-  - [ ] Verify PDF-A format output
-  - [ ] Verify RBAC enforcement
-  - [ ] Test performance (< 5 seconds)
+- [x] Task: Implement PDF generation endpoint
+  - [x] Write tests for GET /api/v1/reviews/{id}/pdf
+  - [x] Test draft PDF generation (any status)
+  - [x] Test final PDF generation (SIGNED status)
+  - [x] Implement endpoint with WeasyPrint integration
+  - [x] Verify PDF-A format output
+  - [x] Verify RBAC enforcement
+  - [x] Test performance (< 5 seconds)
 
 - [ ] Task: Conductor - User Manual Verification 'PDF Generation Service' (Protocol in workflow.md)
 
