@@ -35,6 +35,7 @@ vi.mock('vue-router', () => ({
 // Mock team API
 vi.mock('../../api/team', () => ({
   fetchTeamMembers: vi.fn(),
+  fetchTeamGrid: vi.fn(),
 }))
 
 import * as teamApi from '../../api/team'
@@ -94,6 +95,10 @@ describe('TeamDashboardView', () => {
             template: '<div class="team-member-card-stub" @click="$emit(\'click\')"><slot /></div>',
             props: ['member'],
           },
+          TeamNineGrid: {
+            template: '<div class="team-nine-grid-stub" @employee-click="$emit(\'employee-click\', $event)"><slot /></div>',
+            props: ['employees'],
+          },
         },
       },
     })
@@ -102,6 +107,9 @@ describe('TeamDashboardView', () => {
   describe('loading state', () => {
     it('should show loading state initially', async () => {
       vi.mocked(teamApi.fetchTeamMembers).mockImplementation(
+        () => new Promise(() => {})  // Never resolves
+      )
+      vi.mocked(teamApi.fetchTeamGrid).mockImplementation(
         () => new Promise(() => {})  // Never resolves
       )
 
@@ -114,6 +122,7 @@ describe('TeamDashboardView', () => {
   describe('team list rendering', () => {
     it('should fetch team members on mount', async () => {
       vi.mocked(teamApi.fetchTeamMembers).mockResolvedValue(createMockTeamMembers())
+      vi.mocked(teamApi.fetchTeamGrid).mockResolvedValue([])
 
       createWrapper()
       await flushPromises()
@@ -123,6 +132,7 @@ describe('TeamDashboardView', () => {
 
     it('should render team members', async () => {
       vi.mocked(teamApi.fetchTeamMembers).mockResolvedValue(createMockTeamMembers())
+      vi.mocked(teamApi.fetchTeamGrid).mockResolvedValue([])
 
       const wrapper = createWrapper()
       await flushPromises()
@@ -133,6 +143,7 @@ describe('TeamDashboardView', () => {
 
     it('should show empty state when no team members', async () => {
       vi.mocked(teamApi.fetchTeamMembers).mockResolvedValue([])
+      vi.mocked(teamApi.fetchTeamGrid).mockResolvedValue([])
 
       const wrapper = createWrapper()
       await flushPromises()
@@ -142,6 +153,7 @@ describe('TeamDashboardView', () => {
 
     it('should show page title', async () => {
       vi.mocked(teamApi.fetchTeamMembers).mockResolvedValue(createMockTeamMembers())
+      vi.mocked(teamApi.fetchTeamGrid).mockResolvedValue([])
 
       const wrapper = createWrapper()
       await flushPromises()
@@ -153,6 +165,7 @@ describe('TeamDashboardView', () => {
   describe('error handling', () => {
     it('should show error message on API failure', async () => {
       vi.mocked(teamApi.fetchTeamMembers).mockRejectedValue(new Error('Network error'))
+      vi.mocked(teamApi.fetchTeamGrid).mockResolvedValue([])
 
       const wrapper = createWrapper()
       await flushPromises()

@@ -231,11 +231,16 @@
   },
   "team": {
     "title": "Vista General del Equipo",
+    "pageTitle": "Mi Equipo",
+    "pageSubtitle": "Ver y gestionar los miembros de su equipo",
     "directReports": "Reportes Directos",
     "reviewStatus": "Estado de Evaluación",
     "pendingActions": "Acciones Pendientes",
     "nineGrid": "Vista de 9-Cuadrículas",
-    "approveGoals": "Aprobar Objetivos"
+    "approveGoals": "Aprobar Objetivos",
+    "loading": "Cargando datos del equipo...",
+    "error": "Error al cargar los datos del equipo",
+    "emptyState": "No se encontraron miembros del equipo"
   },
   "analytics": {
     "title": "Análisis",

@@ -231,11 +231,16 @@
   },
   "team": {
     "title": "Team Overzicht",
+    "pageTitle": "Mijn Team",
+    "pageSubtitle": "Bekijk en beheer uw teamleden",
     "directReports": "Directe Medewerkers",
     "reviewStatus": "Beoordelingsstatus",
     "pendingActions": "Openstaande Acties",
     "nineGrid": "9-Grid Overzicht",
-    "approveGoals": "Doelen Goedkeuren"
+    "approveGoals": "Doelen Goedkeuren",
+    "loading": "Teamgegevens laden...",
+    "error": "Fout bij laden van teamgegevens",
+    "emptyState": "Geen teamleden gevonden"
   },
   "analytics": {
     "title": "Analyses",
