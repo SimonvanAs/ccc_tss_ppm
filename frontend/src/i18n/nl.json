@@ -127,7 +127,21 @@
     "behavioralIndicators": "Gedragsindicatoren",
     "showIndicators": "Indicatoren tonen",
     "hideIndicators": "Indicatoren verbergen",
-    "notes": "Notities"
+    "notes": "Notities",
+    "scores": {
+      "1": "Onder",
+      "2": "Voldoet",
+      "3": "Overtreft"
+    },
+    "scoreLabels": {
+      "1": "Toont verwacht gedrag niet",
+      "2": "Toont verwacht gedrag",
+      "3": "Overtreft verwacht gedrag"
+    },
+    "veto": "VETO",
+    "vetoWarning": "Score 1 activeert VETO - HOE score wordt 1.00",
+    "scoreComplete": "{count}/6 competenties gescoord",
+    "howScoreLabel": "HOE Score"
   },
   "scoring": {
     "whatScore": "WAT Score",

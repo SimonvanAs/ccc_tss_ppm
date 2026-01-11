@@ -141,7 +141,21 @@
     "behavioralIndicators": "Behavioral Indicators",
     "showIndicators": "Show indicators",
     "hideIndicators": "Hide indicators",
-    "notes": "Notes"
+    "notes": "Notes",
+    "scores": {
+      "1": "Below",
+      "2": "Meets",
+      "3": "Exceeds"
+    },
+    "scoreLabels": {
+      "1": "Does not demonstrate expected behavior",
+      "2": "Demonstrates expected behavior",
+      "3": "Exceeds expected behavior"
+    },
+    "veto": "VETO",
+    "vetoWarning": "Score of 1 triggers VETO - HOW score will be 1.00",
+    "scoreComplete": "{count}/6 competencies scored",
+    "howScoreLabel": "HOW Score"
   },
   "scoring": {
     "whatScore": "WHAT Score",

@@ -127,7 +127,21 @@
     "behavioralIndicators": "Indicadores de Comportamiento",
     "showIndicators": "Mostrar indicadores",
     "hideIndicators": "Ocultar indicadores",
-    "notes": "Notas"
+    "notes": "Notas",
+    "scores": {
+      "1": "Debajo",
+      "2": "Cumple",
+      "3": "Supera"
+    },
+    "scoreLabels": {
+      "1": "No demuestra el comportamiento esperado",
+      "2": "Demuestra el comportamiento esperado",
+      "3": "Supera el comportamiento esperado"
+    },
+    "veto": "VETO",
+    "vetoWarning": "Puntuación 1 activa VETO - Puntuación CÓMO será 1.00",
+    "scoreComplete": "{count}/6 competencias puntuadas",
+    "howScoreLabel": "Puntuación CÓMO"
   },
   "scoring": {
     "whatScore": "Puntuación QUÉ",

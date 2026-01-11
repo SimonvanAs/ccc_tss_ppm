@@ -37,17 +37,17 @@
 
 ## Phase 3: Frontend Score Card Component
 
-- [ ] Task: Write tests for CompetencyScoreCard component
-  - [ ] Test renders three score buttons (1, 2, 3)
-  - [ ] Test selected state visual feedback
-  - [ ] Test click emits score-change event
-  - [ ] Test disabled state
-- [ ] Task: Implement CompetencyScoreCard.vue component
-  - [ ] Create score button layout with labels
-  - [ ] Add selected state styling (magenta highlight)
-  - [ ] Emit score-change event on click
-  - [ ] Support disabled prop
-- [ ] Task: Add i18n translations for score labels (EN/NL/ES)
+- [x] Task: Write tests for CompetencyScoreCard component
+  - [x] Test renders three score buttons (1, 2, 3)
+  - [x] Test selected state visual feedback
+  - [x] Test click emits score-change event
+  - [x] Test disabled state
+- [x] Task: Implement CompetencyScoreCard.vue component
+  - [x] Create score button layout with labels
+  - [x] Add selected state styling (magenta highlight)
+  - [x] Emit score-change event on click
+  - [x] Support disabled prop
+- [x] Task: Add i18n translations for score labels (EN/NL/ES)
 - [ ] Task: Conductor - User Manual Verification 'Frontend Score Card Component' (Protocol in workflow.md)
 
 ## Phase 4: Frontend Competency List Component
