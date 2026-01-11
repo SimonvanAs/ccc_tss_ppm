@@ -88,7 +88,7 @@
   - [x] Ensure proper cleanup on disconnect via finally block
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Error Handling & Resilience' (Protocol in workflow.md)
 
-## Phase 7: Observability & Documentation [checkpoint: 27cd408]
+## Phase 7: Observability & Documentation [checkpoint: db8708e]
 
 - [x] Task: Write failing tests for observability features
   - [x] Test: Connection events logged with user ID
