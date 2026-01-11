@@ -60,33 +60,33 @@
 
 - [x] Task: Conductor - User Manual Verification 'Backend API - Manager Reassignment' (Protocol in workflow.md)
 
-## Phase 4: Frontend - Review Header Component [checkpoint: ]
+## Phase 4: Frontend - Review Header Component [checkpoint: 4fb2a8c]
 
-- [ ] Task: Create ReviewHeader component
-  - [ ] Write tests for displaying employee name, manager name, review year
-  - [ ] Write tests for displaying stage dates (completed or "Pending")
-  - [ ] Write tests for job title input (editable in DRAFT)
-  - [ ] Write tests for TOV level dropdown (editable in DRAFT)
-  - [ ] Write tests for read-only mode after submission
-  - [ ] Implement ReviewHeader.vue with Card styling
+- [x] Task: Create ReviewHeader component `d4bb12f`
+  - [x] Write tests for displaying employee name, manager name, review year
+  - [x] Write tests for displaying stage dates (completed or "Pending")
+  - [x] Write tests for job title input (editable in DRAFT)
+  - [x] Write tests for TOV level dropdown (editable in DRAFT)
+  - [x] Write tests for read-only mode after submission
+  - [x] Implement ReviewHeader.vue with Card styling
 
-- [ ] Task: Integrate auto-save for header fields
-  - [ ] Write tests for job_title auto-save on change
-  - [ ] Write tests for tov_level auto-save on change
-  - [ ] Implement auto-save using existing useAutoSave composable
-  - [ ] Connect SaveIndicator for feedback
+- [x] Task: Integrate auto-save for header fields `d4bb12f`
+  - [x] Write tests for job_title auto-save on change
+  - [x] Write tests for tov_level auto-save on change
+  - [x] Implement auto-save using existing useAutoSave composable
+  - [x] Connect SaveIndicator for feedback
 
-- [ ] Task: Add i18n translations for header labels
-  - [ ] Add English translations
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for header labels `d4bb12f`
+  - [x] Add English translations
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Integrate ReviewHeader into GoalSettingView
-  - [ ] Write tests for header visibility at top of page
-  - [ ] Write tests for data flow from API to header
-  - [ ] Update GoalSettingView layout
+- [x] Task: Integrate ReviewHeader into GoalSettingView `d4bb12f`
+  - [x] Write tests for header visibility at top of page
+  - [x] Write tests for data flow from API to header
+  - [x] Update GoalSettingView layout
 
-- [ ] Task: Conductor - User Manual Verification 'Frontend - Review Header Component' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend - Review Header Component' (Protocol in workflow.md)
 
 ## Phase 5: Frontend - Competency Preview [checkpoint: ]
 
