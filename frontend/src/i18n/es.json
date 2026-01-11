@@ -511,5 +511,16 @@
     "title": "Competencias para el Nivel Seleccionado",
     "selectTovLevel": "Seleccione un nivel TOV arriba para ver las competencias aplicables",
     "emptyState": "No hay competencias disponibles para este nivel"
+  },
+  "managerReassign": {
+    "title": "Reasignar Gerente",
+    "reassignButton": "Reasignar",
+    "selectManager": "Nuevo Gerente",
+    "selectPlaceholder": "Seleccione un gerente...",
+    "reason": "Motivo de Reasignación",
+    "optional": "(opcional)",
+    "reasonPlaceholder": "Ingrese motivo del cambio de gerente...",
+    "submit": "Reasignar Gerente",
+    "submitting": "Reasignando..."
   }
 }

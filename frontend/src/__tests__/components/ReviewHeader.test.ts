@@ -262,4 +262,41 @@ describe('ReviewHeader', () => {
       expect(wrapper.find('.review-header-grid').exists()).toBe(true)
     })
   })
+
+  describe('HR reassign button', () => {
+    it('should not show reassign button when isHrUser is false', () => {
+      const wrapper = mount(ReviewHeader, {
+        props: {
+          ...baseProps,
+          isHrUser: false,
+        },
+      })
+
+      expect(wrapper.find('[data-testid="reassign-button"]').exists()).toBe(false)
+    })
+
+    it('should show reassign button when isHrUser is true', () => {
+      const wrapper = mount(ReviewHeader, {
+        props: {
+          ...baseProps,
+          isHrUser: true,
+        },
+      })
+
+      expect(wrapper.find('[data-testid="reassign-button"]').exists()).toBe(true)
+    })
+
+    it('should emit reassign event when reassign button is clicked', async () => {
+      const wrapper = mount(ReviewHeader, {
+        props: {
+          ...baseProps,
+          isHrUser: true,
+        },
+      })
+
+      await wrapper.find('[data-testid="reassign-button"]').trigger('click')
+
+      expect(wrapper.emitted('reassign')).toBeTruthy()
+    })
+  })
 })

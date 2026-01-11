@@ -3,23 +3,30 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { ReviewStatus, ReviewStage } from '../../api/reviews'
 
-const props = defineProps<{
-  reviewId: string
-  employeeName: string
-  managerName: string
-  reviewYear: number
-  status: ReviewStatus
-  stage: ReviewStage
-  jobTitle: string | null
-  tovLevel: string | null
-  goalSettingCompletedAt: string | null
-  midYearCompletedAt: string | null
-  endYearCompletedAt: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    reviewId: string
+    employeeName: string
+    managerName: string
+    reviewYear: number
+    status: ReviewStatus
+    stage: ReviewStage
+    jobTitle: string | null
+    tovLevel: string | null
+    goalSettingCompletedAt: string | null
+    midYearCompletedAt: string | null
+    endYearCompletedAt: string | null
+    isHrUser?: boolean
+  }>(),
+  {
+    isHrUser: false,
+  }
+)
 
 const emit = defineEmits<{
   'update:jobTitle': [value: string]
   'update:tovLevel': [value: string]
+  'reassign': []
 }>()
 
 const { t, d } = useI18n()
@@ -44,6 +51,10 @@ function handleTovLevelChange(event: Event) {
   const target = event.target as HTMLSelectElement
   emit('update:tovLevel', target.value)
 }
+
+function handleReassign() {
+  emit('reassign')
+}
 </script>
 
 <template>
@@ -57,7 +68,18 @@ function handleTovLevelChange(event: Event) {
         </div>
         <div class="header-field">
           <label class="field-label">{{ t('reviewHeader.manager') }}</label>
-          <span class="field-value">{{ managerName }}</span>
+          <div class="manager-field">
+            <span class="field-value">{{ managerName }}</span>
+            <button
+              v-if="isHrUser"
+              data-testid="reassign-button"
+              type="button"
+              class="reassign-button"
+              @click="handleReassign"
+            >
+              {{ t('managerReassign.reassignButton') }}
+            </button>
+          </div>
         </div>
         <div class="header-field">
           <label class="field-label">{{ t('reviewHeader.reviewYear') }}</label>
@@ -165,6 +187,29 @@ function handleTovLevelChange(event: Event) {
   font-size: 0.9375rem;
   color: var(--color-gray-900, #111827);
   font-weight: 500;
+}
+
+.manager-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reassign-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-magenta, #CC0E70);
+  background: none;
+  border: 1px solid var(--color-magenta, #CC0E70);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reassign-button:hover {
+  background: var(--color-magenta, #CC0E70);
+  color: white;
 }
 
 .date-value {

@@ -511,5 +511,16 @@
     "title": "Competenties voor Geselecteerd Niveau",
     "selectTovLevel": "Selecteer hierboven een TOV-niveau om de toepasselijke competenties te zien",
     "emptyState": "Geen competenties beschikbaar voor dit niveau"
+  },
+  "managerReassign": {
+    "title": "Manager Hertoewijzen",
+    "reassignButton": "Hertoewijzen",
+    "selectManager": "Nieuwe Manager",
+    "selectPlaceholder": "Selecteer een manager...",
+    "reason": "Reden voor Hertoewijzing",
+    "optional": "(optioneel)",
+    "reasonPlaceholder": "Voer reden voor managerwijziging in...",
+    "submit": "Manager Hertoewijzen",
+    "submitting": "Bezig met hertoewijzen..."
   }
 }

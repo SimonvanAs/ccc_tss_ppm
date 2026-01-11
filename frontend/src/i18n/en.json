@@ -530,5 +530,16 @@
     "title": "Competencies for Selected Level",
     "selectTovLevel": "Select a TOV level above to see the applicable competencies",
     "emptyState": "No competencies available for this level"
+  },
+  "managerReassign": {
+    "title": "Reassign Manager",
+    "reassignButton": "Reassign",
+    "selectManager": "New Manager",
+    "selectPlaceholder": "Select a manager...",
+    "reason": "Reason for Reassignment",
+    "optional": "(optional)",
+    "reasonPlaceholder": "Enter reason for manager change...",
+    "submit": "Reassign Manager",
+    "submitting": "Reassigning..."
   }
 }

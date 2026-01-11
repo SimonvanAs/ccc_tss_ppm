@@ -95,3 +95,35 @@ export function updateReviewHeader(
 export function downloadReviewPdf(reviewId: string, lang: string = 'en'): Promise<Blob> {
   return getBlob(`/reviews/${reviewId}/pdf?lang=${lang}`)
 }
+
+export interface ManagerReassignResponse {
+  id: string
+  employee_id: string
+  manager_id: string
+  status: string
+  stage: string
+  review_year: number
+  job_title: string | null
+  tov_level: string | null
+}
+
+/**
+ * Reassign a review to a different manager.
+ * Only HR users can perform this action.
+ * @param reviewId - The review ID
+ * @param newManagerId - The new manager's user ID
+ * @param reason - Optional reason for the reassignment
+ */
+export function reassignManager(
+  reviewId: string,
+  newManagerId: string,
+  reason?: string
+): Promise<ManagerReassignResponse> {
+  const payload: { new_manager_id: string; reason?: string } = {
+    new_manager_id: newManagerId,
+  }
+  if (reason) {
+    payload.reason = reason
+  }
+  return put<ManagerReassignResponse>(`/reviews/${reviewId}/manager`, payload)
+}
