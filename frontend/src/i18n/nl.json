@@ -342,6 +342,15 @@
       "currentLanguage": "Huidige taal: {language}"
     }
   },
+  "teamGrid": {
+    "title": "Team 9-Grid",
+    "whatScore": "WAT Score",
+    "howScore": "HOE Score",
+    "status": "Status",
+    "noEmployees": "Geen medewerkers met scores om weer te geven",
+    "clickToView": "Klik om beoordeling te bekijken",
+    "employeesInCell": "{count} medewerkers"
+  },
   "common": {
     "loading": "Laden...",
     "noData": "Geen gegevens beschikbaar",

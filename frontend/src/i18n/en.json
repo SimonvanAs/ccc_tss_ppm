@@ -366,6 +366,15 @@
       "currentLanguage": "Current language: {language}"
     }
   },
+  "teamGrid": {
+    "title": "Team 9-Grid",
+    "whatScore": "WHAT Score",
+    "howScore": "HOW Score",
+    "status": "Status",
+    "noEmployees": "No employees have scores to display",
+    "clickToView": "Click to view review",
+    "employeesInCell": "{count} employees"
+  },
   "common": {
     "loading": "Loading...",
     "noData": "No data available",

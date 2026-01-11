@@ -342,6 +342,15 @@
       "currentLanguage": "Idioma actual: {language}"
     }
   },
+  "teamGrid": {
+    "title": "9-Grid del Equipo",
+    "whatScore": "Puntuación QUÉ",
+    "howScore": "Puntuación CÓMO",
+    "status": "Estado",
+    "noEmployees": "No hay empleados con puntuaciones para mostrar",
+    "clickToView": "Haga clic para ver la revisión",
+    "employeesInCell": "{count} empleados"
+  },
   "common": {
     "loading": "Cargando...",
     "noData": "No hay datos disponibles",

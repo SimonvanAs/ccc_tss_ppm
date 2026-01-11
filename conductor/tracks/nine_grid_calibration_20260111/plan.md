@@ -48,19 +48,19 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Create team_grid repository function
   - [x] Create router endpoint with JWT auth
   - [x] Return employee id, name, what_score, how_score, review_status
-- [~] Task: Write tests for TeamNineGrid component
-  - [ ] Test displays multiple employee markers
-  - [ ] Test hover shows employee details tooltip
-  - [ ] Test click emits navigation event
-  - [ ] Test distribution counts per cell
-  - [ ] Test handles overlapping positions
-- [ ] Task: Implement TeamNineGrid.vue component
-  - [ ] Extend NineGrid with multi-employee support
-  - [ ] Add employee markers with positioning
-  - [ ] Implement hover tooltip with employee details
-  - [ ] Add click handler for navigation
-  - [ ] Display distribution counts overlay
-- [ ] Task: Create team dashboard page with TeamNineGrid
+- [x] Task: Write tests for TeamNineGrid component
+  - [x] Test displays multiple employee markers
+  - [x] Test hover shows employee details tooltip
+  - [x] Test click emits navigation event
+  - [x] Test distribution counts per cell
+  - [x] Test handles overlapping positions
+- [x] Task: Implement TeamNineGrid.vue component `b0b0e84`
+  - [x] Extend NineGrid with multi-employee support
+  - [x] Add employee markers with positioning
+  - [x] Implement hover tooltip with employee details
+  - [x] Add click handler for navigation
+  - [x] Display distribution counts overlay
+- [~] Task: Create team dashboard page with TeamNineGrid
   - [ ] Fetch team data from API
   - [ ] Display TeamNineGrid component
   - [ ] Handle navigation to individual reviews
