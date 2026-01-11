@@ -1,6 +1,6 @@
 # Plan: Manager Goal Scoring
 
-## Phase 1: Backend API - Team & Scores Endpoints
+## Phase 1: Backend API - Team & Scores Endpoints [checkpoint: 5f1b4fd]
 
 - [x] Task: Create team repository with raw SQL queries `aa32289`
   - [x] Write tests for `get_team_members_by_manager_id` query
@@ -34,7 +34,7 @@
   - [x] Implement router in `backend/src/routers/competencies.py`
   - [x] Add Pydantic schemas for competency response
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) `5f1b4fd`
 
 ## Phase 2: Frontend - Team Dashboard
 
