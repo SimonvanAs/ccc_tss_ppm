@@ -51,3 +51,22 @@ class TeamMemberResponse(BaseModel):
     scoring_status: ScoringStatus
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TeamMemberGridResponse(BaseModel):
+    """Schema for team member with 9-grid position data."""
+
+    id: UUID
+    email: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    review_id: Optional[UUID] = None
+    review_status: Optional[str] = None
+    what_score: Optional[float] = None
+    how_score: Optional[float] = None
+    grid_position_what: Optional[int] = None
+    grid_position_how: Optional[int] = None
+    what_veto_active: bool = False
+    how_veto_active: bool = False
+
+    model_config = ConfigDict(from_attributes=True)

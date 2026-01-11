@@ -127,3 +127,41 @@ class TeamRepository:
             )
 
         return members
+
+    async def get_team_members_with_grid_data(
+        self, manager_id: UUID, review_year: Optional[int] = None
+    ) -> List[Dict[str, Any]]:
+        """Get team members with their 9-grid position data.
+
+        Args:
+            manager_id: The manager's user UUID
+            review_year: Optional filter for specific review year
+
+        Returns:
+            List of team member records with WHAT/HOW scores and grid positions
+        """
+        query = """
+            SELECT
+                u.id,
+                u.email,
+                u.first_name,
+                u.last_name,
+                r.id AS review_id,
+                r.status AS review_status,
+                r.what_score,
+                r.how_score,
+                r.grid_position_what,
+                r.grid_position_how,
+                COALESCE(r.what_veto_active, false) AS what_veto_active,
+                COALESCE(r.how_veto_active, false) AS how_veto_active
+            FROM users u
+            LEFT JOIN reviews r ON r.employee_id = u.id
+                AND r.deleted_at IS NULL
+                AND ($2::int IS NULL OR r.review_year = $2)
+            WHERE u.manager_id = $1
+              AND u.deleted_at IS NULL
+              AND u.is_active = true
+            ORDER BY u.last_name ASC, u.first_name ASC
+        """
+        rows = await self.conn.fetch(query, manager_id, review_year)
+        return [dict(row) for row in rows]

@@ -39,15 +39,15 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
 
 ## Phase 3: Team Dashboard 9-Grid
 
-- [ ] Task: Write tests for GET /api/v1/manager/team/grid endpoint
-  - [ ] Test returns team members with WHAT/HOW scores
-  - [ ] Test filters by manager_id from JWT
-  - [ ] Test includes review status for each member
-  - [ ] Test OpCo isolation
-- [ ] Task: Implement GET /api/v1/manager/team/grid endpoint
-  - [ ] Create team_grid repository function
-  - [ ] Create router endpoint with JWT auth
-  - [ ] Return employee id, name, what_score, how_score, review_status
+- [x] Task: Write tests for GET /api/v1/manager/team/grid endpoint
+  - [x] Test returns team members with WHAT/HOW scores
+  - [x] Test filters by manager_id from JWT
+  - [x] Test includes review status for each member
+  - [x] Test OpCo isolation
+- [x] Task: Implement GET /api/v1/manager/team/grid endpoint
+  - [x] Create team_grid repository function
+  - [x] Create router endpoint with JWT auth
+  - [x] Return employee id, name, what_score, how_score, review_status
 - [ ] Task: Write tests for TeamNineGrid component
   - [ ] Test displays multiple employee markers
   - [ ] Test hover shows employee details tooltip
