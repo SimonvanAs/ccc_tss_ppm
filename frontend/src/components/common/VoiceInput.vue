@@ -37,6 +37,10 @@ if (!isSupported.value) {
 let mediaRecorder: MediaRecorder | null = null
 let mediaStream: MediaStream | null = null
 let audioChunks: Blob[] = []
+let recordingStartTime: number | null = null
+
+// Minimum recording duration in milliseconds (3 seconds)
+const MIN_RECORDING_DURATION_MS = 3000
 
 const stateClass = computed(() => `is-${state.value}`)
 
@@ -88,6 +92,17 @@ async function startRecording() {
         mediaStream = null
       }
 
+      // Check recording duration - ignore if too short (accidental click)
+      const recordingDuration = recordingStartTime ? Date.now() - recordingStartTime : 0
+      recordingStartTime = null
+
+      if (recordingDuration < MIN_RECORDING_DURATION_MS) {
+        // Recording too short, silently ignore
+        state.value = 'idle'
+        audioChunks = []
+        return
+      }
+
       if (audioChunks.length > 0) {
         await processAudio()
       }
@@ -98,6 +113,7 @@ async function startRecording() {
     }
 
     mediaRecorder.start()
+    recordingStartTime = Date.now()
     state.value = 'recording'
   } catch (error) {
     handleError(error instanceof Error ? error : new Error('Microphone access denied'))
