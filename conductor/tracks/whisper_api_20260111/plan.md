@@ -41,7 +41,7 @@
   - [x] Add inactivity timeout handling
 - [x] Task: Conductor - User Manual Verification 'Phase 3: WebSocket Endpoint Foundation' (Protocol in workflow.md)
 
-## Phase 4: Whisper Service Client
+## Phase 4: Whisper Service Client [checkpoint: 923a638]
 
 - [x] Task: Write failing tests for whisper service client (285d4f5)
   - [x] Test: Client connects to whisper service HTTP endpoint
@@ -55,7 +55,7 @@
   - [x] Handle connection errors gracefully
   - [x] Implement audio forwarding via POST
   - [x] Parse transcription responses (JSON format)
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Whisper Service Client' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Whisper Service Client' (Protocol in workflow.md)
 
 ## Phase 5: End-to-End Audio Pipeline
 
