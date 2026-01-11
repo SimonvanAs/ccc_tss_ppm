@@ -142,7 +142,7 @@
 
 - [ ] Task: Conductor - User Manual Verification 'Frontend PDF Download' (Protocol in workflow.md)
 
-## Phase 6: Multi-language PDF Support [checkpoint: b5b3114]
+## Phase 6: Multi-language PDF Support [checkpoint: 5be67ae]
 
 - [x] Task: Implement i18n for PDF content
   - [x] Write tests for PDF in each language (EN/NL/ES)
