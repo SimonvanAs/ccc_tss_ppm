@@ -1,5 +1,5 @@
 // TSS PPM v3.0 - Admin API
-import { get, put, post } from './client'
+import { get, put, post, del } from './client'
 
 export interface AdminUser {
   id: string
@@ -103,4 +103,100 @@ export function bulkOperation(request: BulkOperationRequest): Promise<BulkOperat
 export async function fetchManagers(): Promise<AdminUser[]> {
   // Filter users who have manager role
   return fetchUsers({ role: 'manager' })
+}
+
+// ===== OpCo Settings =====
+
+export interface ReviewCycleSettings {
+  goal_setting_start: string
+  goal_setting_end: string
+  mid_year_start: string
+  mid_year_end: string
+  end_year_start: string
+  end_year_end: string
+}
+
+export interface OpCoSettings {
+  review_cycle?: ReviewCycleSettings
+}
+
+export interface OpCoResponse {
+  id: string
+  name: string
+  code: string
+  logo_url: string | null
+  default_language: string
+  settings: OpCoSettings
+}
+
+export interface OpCoUpdateRequest {
+  name?: string
+  code?: string
+  logo_url?: string | null
+  default_language?: string
+  settings?: OpCoSettings
+}
+
+/**
+ * Fetch current OpCo settings.
+ */
+export function fetchOpCoSettings(): Promise<OpCoResponse> {
+  return get<OpCoResponse>('/admin/opco/settings')
+}
+
+/**
+ * Update OpCo settings.
+ */
+export function updateOpCoSettings(data: OpCoUpdateRequest): Promise<OpCoResponse> {
+  return put<OpCoResponse>('/admin/opco/settings', data)
+}
+
+// ===== Business Units =====
+
+export interface BusinessUnit {
+  id: string
+  name: string
+  code: string
+  parent_id: string | null
+  opco_id: string
+}
+
+export interface BusinessUnitCreateRequest {
+  name: string
+  code: string
+  parent_id?: string | null
+}
+
+export interface BusinessUnitUpdateRequest {
+  name?: string
+  code?: string
+  parent_id?: string | null
+}
+
+/**
+ * Fetch list of business units.
+ */
+export function fetchBusinessUnits(): Promise<BusinessUnit[]> {
+  return get<BusinessUnit[]>('/admin/business-units')
+}
+
+/**
+ * Create a new business unit.
+ */
+export function createBusinessUnit(data: BusinessUnitCreateRequest): Promise<BusinessUnit> {
+  return post<BusinessUnit>('/admin/business-units', data)
+}
+
+/**
+ * Update a business unit.
+ */
+export function updateBusinessUnit(id: string, data: BusinessUnitUpdateRequest): Promise<BusinessUnit> {
+  return put<BusinessUnit>(`/admin/business-units/${id}`, data)
+}
+
+/**
+ * Delete a business unit.
+ */
+export function deleteBusinessUnit(id: string): Promise<void> {
+  return del<void>(`/admin/business-units/${id}`)
 }

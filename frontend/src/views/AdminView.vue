@@ -20,9 +20,11 @@ import UserDetailModal from '../components/admin/UserDetailModal.vue'
 import DeactivateUserModal from '../components/admin/DeactivateUserModal.vue'
 import BulkActionBar from '../components/admin/BulkActionBar.vue'
 
+// OpCo and Business Unit components
+import OpCoSettingsForm from '../components/admin/OpCoSettingsForm.vue'
+import BusinessUnitList from '../components/admin/BusinessUnitList.vue'
+
 // Placeholder components for later phases
-const OpCoSettingsForm = { template: '<div class="stub-content">OpCo Settings - Coming in Phase 3</div>' }
-const BusinessUnitList = { template: '<div class="stub-content">Business Units - Coming in Phase 3</div>' }
 const SystemHealthPanel = { template: '<div class="stub-content">System Health - Coming in Phase 4</div>' }
 const AuditLogList = { template: '<div class="stub-content">Audit Logs - Coming in Phase 5</div>' }
 
@@ -367,17 +369,19 @@ async function handleBulkAssignManager(managerId: string) {
         />
       </template>
 
-      <!-- Other Tabs (Placeholders) -->
+      <!-- OpCo Settings Tab -->
+      <OpCoSettingsForm v-else-if="activeTab === 'opcoSettings'" />
+
+      <!-- Business Units Tab -->
+      <BusinessUnitList v-else-if="activeTab === 'businessUnits'" />
+
+      <!-- System and Audit Tabs (Placeholders) -->
       <Card v-else>
         <component
           :is="
-            activeTab === 'opcoSettings'
-              ? OpCoSettingsForm
-              : activeTab === 'businessUnits'
-                ? BusinessUnitList
-                : activeTab === 'system'
-                  ? SystemHealthPanel
-                  : AuditLogList
+            activeTab === 'system'
+              ? SystemHealthPanel
+              : AuditLogList
           "
         />
       </Card>
