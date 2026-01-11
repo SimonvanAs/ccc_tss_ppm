@@ -68,20 +68,20 @@
 - [x] Task: Add i18n translations for component text (EN/NL/ES) `4f8aaae`
 - [x] Task: Conductor - User Manual Verification 'Frontend Competency List Component' (Protocol in workflow.md) `1bdd5eb`
 
-## Phase 5: Frontend HOW Score Indicator
+## Phase 5: Frontend HOW Score Indicator [checkpoint: 074dec7]
 
-- [x] Task: Write tests for HOWScoreIndicator component
+- [x] Task: Write tests for HOWScoreIndicator component `76335e3`
   - [x] Test displays calculated HOW score
   - [x] Test VETO warning banner when active
   - [x] Test grid position indicator
   - [x] Test incomplete state display
-- [x] Task: Implement HOWScoreIndicator.vue component
+- [x] Task: Implement HOWScoreIndicator.vue component `76335e3`
   - [x] Display HOW score value with 2 decimal places
   - [x] Show VETO warning banner (magenta styling)
   - [x] Display grid position (1, 2, or 3)
   - [x] Show progress indicator (X/6 competencies scored)
-- [x] Task: Add i18n translations for indicator text (EN/NL/ES) (already added in Phase 3)
-- [ ] Task: Conductor - User Manual Verification 'Frontend HOW Score Indicator' (Protocol in workflow.md)
+- [x] Task: Add i18n translations for indicator text (EN/NL/ES) `4f8aaae`
+- [x] Task: Conductor - User Manual Verification 'Frontend HOW Score Indicator' (Protocol in workflow.md) `074dec7`
 
 ## Phase 6: Integration and Auto-Save
 
