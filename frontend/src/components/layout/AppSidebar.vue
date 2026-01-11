@@ -191,7 +191,7 @@ function changeLocale(code: string) {
     </nav>
 
     <!-- Profile Section (sticky at bottom) -->
-    <div class="sidebar-profile">
+    <div class="sidebar-profile" :aria-label="t('layout.sidebar.profile')">
       <div class="profile-avatar">
         <img
           v-if="user?.picture"

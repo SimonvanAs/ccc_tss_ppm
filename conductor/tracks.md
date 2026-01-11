@@ -61,3 +61,9 @@ _Link: [./tracks/keycloak_hostname_v2_20260111/](./tracks/keycloak_hostname_v2_2
 ## [~] Track: Goal Setting IDE/TOV Enhancement
 
 *Link: [./conductor/tracks/goal_setting_tov_enhancement_20260111/](./conductor/tracks/goal_setting_tov_enhancement_20260111/)*
+
+---
+
+## [~] Track: Admin Settings Panel
+
+*Link: [./conductor/tracks/admin_settings_panel_20260111/](./conductor/tracks/admin_settings_panel_20260111/)*

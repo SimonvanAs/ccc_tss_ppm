@@ -41,8 +41,11 @@ vi.mock('vue-i18n', () => ({
       const messages: Record<string, string> = {
         'nav.dashboard': 'Dashboard',
         'nav.team': 'Team Dashboard',
+        'nav.admin': 'Admin',
+        'nav.calibration': 'Calibration',
         'nav.profile': 'Profile',
         'nav.settings': 'Settings',
+        'nav.logout': 'Logout',
         'layout.sidebar.ariaLabel': 'Main navigation',
         'layout.sidebar.navigation': 'Navigation menu',
         'layout.sidebar.profile': 'User profile',
@@ -120,6 +123,38 @@ describe('AppSidebar', () => {
       const wrapper = createWrapper()
       expect(wrapper.text()).not.toContain('Team Dashboard')
     })
+
+    it('should show Admin link for admin role', () => {
+      mockUser.value = { ...mockUser.value, roles: ['admin'] }
+      const wrapper = createWrapper()
+      expect(wrapper.text()).toContain('Admin')
+    })
+
+    it('should hide Admin link for employee role', () => {
+      mockUser.value = { ...mockUser.value, roles: ['employee'] }
+      const wrapper = createWrapper()
+      expect(wrapper.text()).not.toContain('Admin')
+    })
+
+    it('should hide Admin link for manager role', () => {
+      mockUser.value = { ...mockUser.value, roles: ['manager'] }
+      const wrapper = createWrapper()
+      // Manager should see Team Dashboard but not Admin
+      expect(wrapper.text()).toContain('Team Dashboard')
+      expect(wrapper.text()).not.toContain('Admin')
+    })
+
+    it('should hide Admin link for hr role', () => {
+      mockUser.value = { ...mockUser.value, roles: ['hr'] }
+      const wrapper = createWrapper()
+      expect(wrapper.text()).not.toContain('Admin')
+    })
+
+    it('should show Admin link when user has admin role among others', () => {
+      mockUser.value = { ...mockUser.value, roles: ['employee', 'admin'] }
+      const wrapper = createWrapper()
+      expect(wrapper.text()).toContain('Admin')
+    })
   })
 
   describe('profile section', () => {
@@ -165,6 +200,15 @@ describe('AppSidebar', () => {
       const navItems = wrapper.findAll('.nav-item')
       const teamItem = navItems.find((item) => item.text().includes('Team'))
       expect(teamItem?.classes()).toContain('is-active')
+    })
+
+    it('should highlight Admin when on /admin route', () => {
+      mockRoute.value = { path: '/admin' }
+      mockUser.value = { ...mockUser.value, roles: ['admin'] }
+      const wrapper = createWrapper()
+      const navItems = wrapper.findAll('.nav-item')
+      const adminItem = navItems.find((item) => item.text().includes('Admin'))
+      expect(adminItem?.classes()).toContain('is-active')
     })
   })
 

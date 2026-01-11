@@ -11,6 +11,7 @@
     "calibration": "Calibración",
     "analytics": "Análisis",
     "settings": "Configuración",
+    "admin": "Administración",
     "logout": "Cerrar sesión"
   },
   "auth": {
