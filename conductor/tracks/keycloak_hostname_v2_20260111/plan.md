@@ -2,17 +2,31 @@
 
 ## Phase 1: Research & Analysis
 
-- [ ] Task: Analyze current Keycloak configuration
-  - [ ] Read current docker-compose.yml Keycloak environment variables
-  - [ ] Document all hostname-related options currently in use
-  - [ ] Identify deprecated v1 options that need removal
+- [x] Task: Analyze current Keycloak configuration
+  - [x] Read current docker-compose.yml Keycloak environment variables
+  - [x] Document all hostname-related options currently in use
+  - [x] Identify deprecated v1 options that need removal
+  - **Findings:**
+    - Current: `KC_HOSTNAME: localhost`, `KC_HOSTNAME_PORT: 8080`
+    - Deprecated v1 option: `KC_HOSTNAME_PORT` must be removed
+    - `KC_HOSTNAME` needs to be updated to v2 format (include port if needed)
 
-- [ ] Task: Research Keycloak 26 v2 hostname configuration
-  - [ ] Review Keycloak 26 documentation for v2 hostname options
-  - [ ] Document required v2 options: `hostname`, `hostname-admin`, `hostname-strict`, `hostname-backchannel-dynamic`
-  - [ ] Determine correct configuration for development (localhost) environment
+- [x] Task: Research Keycloak 26 v2 hostname configuration
+  - [x] Review Keycloak 26 documentation for v2 hostname options
+  - [x] Document required v2 options: `hostname`, `hostname-admin`, `hostname-strict`, `hostname-backchannel-dynamic`
+  - [x] Determine correct configuration for development (localhost) environment
+  - **Findings:**
+    - v2 Options:
+      - `KC_HOSTNAME`: Full URL or just hostname (e.g., `http://localhost:8080` or `localhost`)
+      - `KC_HOSTNAME_ADMIN`: Full URL for admin console (optional, only if different)
+      - `KC_HOSTNAME_STRICT`: Default `true`, but `start-dev` defaults to `false`
+      - `KC_HOSTNAME_BACKCHANNEL_DYNAMIC`: For dynamic backchannel resolution (default `false`)
+      - `KC_HOSTNAME_DEBUG`: Enable debug page at /realms/master/hostname-debug
+    - **Deprecated/Removed in v2:** `KC_HOSTNAME_PORT` - must include port in URL if needed
+    - **Dev config recommendation:** Remove `KC_HOSTNAME_PORT`, use `KC_HOSTNAME: http://localhost:8080`
+    - **Note:** `start-dev` mode already uses `hostname-strict=false` by default
 
-- [ ] Task: Conductor - User Manual Verification 'Research & Analysis' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Research & Analysis' (Protocol in workflow.md)
 
 ## Phase 2: Development Configuration Update
 
