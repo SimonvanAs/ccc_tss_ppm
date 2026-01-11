@@ -109,10 +109,10 @@
 
 ## Phase 5: Frontend - Scoring View with Auto-Save
 
-- [ ] Task: Create scores API client module
-  - [ ] Write tests for `fetchScores` function
-  - [ ] Write tests for `saveScores` function with debouncing
-  - [ ] Implement `frontend/src/api/scores.ts`
+- [x] Task: Create scores API client module `9ea0895`
+  - [x] Write tests for `fetchScores` function
+  - [x] Write tests for `saveScores` function with debouncing
+  - [x] Implement `frontend/src/api/scores.ts`
 
 - [ ] Task: Create useScoring composable
   - [ ] Write tests for score state management
