@@ -144,6 +144,8 @@
     "howScoreLabel": "HOE Score"
   },
   "scoring": {
+    "pageTitle": "Beoordeling Scoren",
+    "pageSubtitle": "Voer scores in voor doelen en competenties",
     "whatScore": "WAT Score",
     "howScore": "HOE Score",
     "gridPosition": "Grid Positie",
@@ -164,7 +166,39 @@
         "2": "Voldoet",
         "3": "Overtreft"
       }
-    }
+    },
+    "performanceGrid": "Prestatie Grid",
+    "scoreSummary": "Score Samenvatting",
+    "goalsSection": "Doelen (WAT)",
+    "competenciesSection": "Competenties (HOE)",
+    "feedback": "Feedback",
+    "feedbackPlaceholder": "Voer feedback in voor dit doel...",
+    "loading": "Scores laden...",
+    "loadError": "Kon scores niet laden",
+    "saveStatus": {
+      "idle": "",
+      "saving": "Opslaan...",
+      "saved": "Alle wijzigingen opgeslagen",
+      "error": "Opslaan mislukt"
+    },
+    "submit": {
+      "button": "Scores Indienen",
+      "disabled": "Vul alle scores in voordat u indient",
+      "confirmTitle": "Bevestig Indiening",
+      "confirmMessage": "Weet u zeker dat u deze scores wilt indienen? Deze actie stuurt de beoordeling ter ondertekening naar de medewerker.",
+      "confirm": "Bevestigen",
+      "cancel": "Annuleren",
+      "submitting": "Indienen...",
+      "success": "Scores succesvol ingediend",
+      "error": "Kon scores niet indienen"
+    },
+    "scoreCard": {
+      "below": "Onder",
+      "meets": "Voldoet",
+      "exceeds": "Overtreft"
+    },
+    "readOnly": "Deze beoordeling is alleen-lezen",
+    "noScoreSelected": "Geen score geselecteerd"
   },
   "signature": {
     "title": "Digitale Handtekening",

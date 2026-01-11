@@ -144,6 +144,8 @@
     "howScoreLabel": "Puntuación CÓMO"
   },
   "scoring": {
+    "pageTitle": "Puntuación de Evaluación",
+    "pageSubtitle": "Ingrese puntuaciones para objetivos y competencias",
     "whatScore": "Puntuación QUÉ",
     "howScore": "Puntuación CÓMO",
     "gridPosition": "Posición en la Cuadrícula",
@@ -164,7 +166,39 @@
         "2": "Cumple",
         "3": "Supera"
       }
-    }
+    },
+    "performanceGrid": "Cuadrícula de Rendimiento",
+    "scoreSummary": "Resumen de Puntuación",
+    "goalsSection": "Objetivos (QUÉ)",
+    "competenciesSection": "Competencias (CÓMO)",
+    "feedback": "Comentarios",
+    "feedbackPlaceholder": "Ingrese comentarios para este objetivo...",
+    "loading": "Cargando puntuaciones...",
+    "loadError": "Error al cargar puntuaciones",
+    "saveStatus": {
+      "idle": "",
+      "saving": "Guardando...",
+      "saved": "Todos los cambios guardados",
+      "error": "Error al guardar"
+    },
+    "submit": {
+      "button": "Enviar Puntuaciones",
+      "disabled": "Complete todas las puntuaciones antes de enviar",
+      "confirmTitle": "Confirmar Envío",
+      "confirmMessage": "¿Está seguro de que desea enviar estas puntuaciones? Esta acción enviará la evaluación para la firma del empleado.",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "submitting": "Enviando...",
+      "success": "Puntuaciones enviadas exitosamente",
+      "error": "Error al enviar puntuaciones"
+    },
+    "scoreCard": {
+      "below": "Debajo",
+      "meets": "Cumple",
+      "exceeds": "Supera"
+    },
+    "readOnly": "Esta evaluación es de solo lectura",
+    "noScoreSelected": "Ninguna puntuación seleccionada"
   },
   "signature": {
     "title": "Firma Digital",

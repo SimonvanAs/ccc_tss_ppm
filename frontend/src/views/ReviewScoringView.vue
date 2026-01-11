@@ -251,6 +251,52 @@ onMounted(async () => {
   }
 }
 
+@media (max-width: 768px) {
+  .review-scoring-view {
+    padding: 0.75rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  .scoring-sidebar {
+    flex-direction: column;
+  }
+
+  .sidebar-card {
+    flex: none;
+  }
+
+  .scoring-main {
+    gap: 1.5rem;
+  }
+
+  .submit-section {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-scoring-view {
+    padding: 0.5rem;
+  }
+
+  .page-title {
+    font-size: 1.125rem;
+  }
+
+  .scoring-layout {
+    gap: 1rem;
+  }
+}
+
 .scoring-main {
   display: flex;
   flex-direction: column;

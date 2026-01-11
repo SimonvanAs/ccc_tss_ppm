@@ -177,4 +177,17 @@ const howAriaLabel = computed(() => {
   font-size: 0.4375rem;
   padding: 0.0625rem 0.25rem;
 }
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  .score-summary {
+    justify-content: center;
+  }
+
+  .score-item {
+    flex: 1;
+    min-width: 0;
+    max-width: 100px;
+  }
+}
 </style>

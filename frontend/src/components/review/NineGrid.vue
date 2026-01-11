@@ -257,4 +257,30 @@ const ariaLabel = computed(() => {
   border-radius: 2px;
   text-transform: uppercase;
 }
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+  }
+
+  .col-label {
+    width: 50px;
+    font-size: 0.625rem;
+  }
+
+  .row-label {
+    font-size: 0.625rem;
+  }
+
+  .position-marker {
+    width: 16px;
+    height: 16px;
+  }
+
+  .row-labels {
+    left: -1.25rem;
+  }
+}
 </style>

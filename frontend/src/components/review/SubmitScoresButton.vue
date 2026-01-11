@@ -205,4 +205,36 @@ const disabledTooltip = 'Complete all scores before submitting'
 .confirm-button:hover {
   background: var(--color-navy);
 }
+
+/* Responsive styles */
+@media (max-width: 480px) {
+  .submit-button {
+    width: 100%;
+    padding: 0.875rem 1rem;
+  }
+
+  .dialog-content {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .dialog-title {
+    font-size: 1.125rem;
+  }
+
+  .dialog-message {
+    font-size: 0.875rem;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .cancel-button,
+  .confirm-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
 </style>

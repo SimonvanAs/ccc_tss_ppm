@@ -256,4 +256,52 @@ const scoreLabels = {
   background: var(--color-gray-100);
   cursor: not-allowed;
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .goal-item {
+    padding: 1rem;
+  }
+
+  .goal-title {
+    font-size: 0.9375rem;
+  }
+
+  .goal-scoring {
+    display: flex;
+    justify-content: center;
+  }
+
+  .feedback-input-wrapper {
+    flex-direction: column;
+  }
+
+  .feedback-input-wrapper textarea {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.125rem;
+  }
+
+  .goal-list {
+    gap: 1rem;
+  }
+
+  .goal-item {
+    padding: 0.75rem;
+  }
+
+  .goal-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .goal-description {
+    font-size: 0.8125rem;
+  }
+}
 </style>

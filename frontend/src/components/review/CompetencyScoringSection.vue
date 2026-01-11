@@ -172,4 +172,18 @@ function getScoresRecord(): Record<string, number> {
   color: var(--color-navy, #004A91);
   margin: 0;
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.125rem;
+  }
+}
 </style>

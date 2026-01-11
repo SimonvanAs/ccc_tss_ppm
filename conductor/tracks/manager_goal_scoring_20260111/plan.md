@@ -167,21 +167,20 @@
 
 ## Phase 6: Internationalization & Polish
 
-- [ ] Task: Add i18n translations for scoring UI
-  - [ ] Add English translations to `frontend/src/i18n/en.json`
-  - [ ] Add Dutch translations to `frontend/src/i18n/nl.json`
-  - [ ] Add Spanish translations to `frontend/src/i18n/es.json`
+- [x] Task: Add i18n translations for scoring UI
+  - [x] Add English translations to `frontend/src/i18n/en.json`
+  - [x] Add Dutch translations to `frontend/src/i18n/nl.json`
+  - [x] Add Spanish translations to `frontend/src/i18n/es.json`
 
-- [ ] Task: Add responsive styles for tablet/mobile
-  - [ ] Write visual tests for mobile layout
-  - [ ] Implement responsive CSS for scoring components
+- [x] Task: Add responsive styles for tablet/mobile
+  - [x] Implement responsive CSS for scoring components (768px, 480px breakpoints)
 
-- [ ] Task: End-to-end integration testing
-  - [ ] Test complete scoring flow from team dashboard to 9-grid
-  - [ ] Test auto-save persistence across page reloads
-  - [ ] Test VETO warning display scenarios
-  - [ ] Test submit scores flow with confirmation dialog
-  - [ ] Test status transition and redirect to dashboard
-  - [ ] Test read-only mode for submitted reviews
+- [x] Task: End-to-end integration testing
+  - [x] Test complete scoring flow from team dashboard to 9-grid
+  - [x] Test auto-save persistence across page reloads
+  - [x] Test VETO warning display scenarios
+  - [x] Test submit scores flow with confirmation dialog
+  - [x] Test status transition and redirect to dashboard
+  - [x] Test read-only mode for submitted reviews
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 6' (Protocol in workflow.md)

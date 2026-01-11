@@ -158,6 +158,8 @@
     "howScoreLabel": "HOW Score"
   },
   "scoring": {
+    "pageTitle": "Score Review",
+    "pageSubtitle": "Enter scores for goals and competencies",
     "whatScore": "WHAT Score",
     "howScore": "HOW Score",
     "gridPosition": "Grid Position",
@@ -178,7 +180,39 @@
         "2": "Meets",
         "3": "Exceeds"
       }
-    }
+    },
+    "performanceGrid": "Performance Grid",
+    "scoreSummary": "Score Summary",
+    "goalsSection": "Goals (WHAT)",
+    "competenciesSection": "Competencies (HOW)",
+    "feedback": "Feedback",
+    "feedbackPlaceholder": "Enter feedback for this goal...",
+    "loading": "Loading scores...",
+    "loadError": "Failed to load scores",
+    "saveStatus": {
+      "idle": "",
+      "saving": "Saving...",
+      "saved": "All changes saved",
+      "error": "Failed to save"
+    },
+    "submit": {
+      "button": "Submit Scores",
+      "disabled": "Complete all scores before submitting",
+      "confirmTitle": "Confirm Submission",
+      "confirmMessage": "Are you sure you want to submit these scores? This action will send the review for employee signature.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "submitting": "Submitting...",
+      "success": "Scores submitted successfully",
+      "error": "Failed to submit scores"
+    },
+    "scoreCard": {
+      "below": "Below",
+      "meets": "Meets",
+      "exceeds": "Exceeds"
+    },
+    "readOnly": "This review is read-only",
+    "noScoreSelected": "No score selected"
   },
   "signature": {
     "title": "Digital Signature",
