@@ -3,7 +3,7 @@
 
 import json
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -12,6 +12,7 @@ from src.services.websocket_auth import (
     authenticate_websocket,
     WS_CLOSE_AUTH_REQUIRED,
 )
+from src.services.whisper_client import get_whisper_client, WhisperServiceError
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,10 @@ async def voice_transcribe(websocket: WebSocket):
         }
     )
 
+    # Session state
+    audio_buffer: List[bytes] = []
+    language: Optional[str] = None
+
     try:
         while True:
             # Handle incoming messages
@@ -79,6 +84,47 @@ async def voice_transcribe(websocket: WebSocket):
                             'name': current_user.name,
                         })
 
+                    elif msg_type == 'set_language':
+                        language = data.get('language')
+                        await websocket.send_json({
+                            'type': 'ack',
+                            'message': f'Language set to {language}',
+                        })
+
+                    elif msg_type == 'end_audio':
+                        # Trigger transcription with accumulated audio
+                        if audio_buffer:
+                            combined_audio = b''.join(audio_buffer)
+                            audio_buffer.clear()
+
+                            try:
+                                whisper_client = get_whisper_client()
+                                result = await whisper_client.transcribe(
+                                    combined_audio,
+                                    language=language,
+                                )
+                                await websocket.send_json({
+                                    'type': 'final',
+                                    'text': result.get('text', ''),
+                                    'language': language or 'auto',
+                                })
+                            except WhisperServiceError as e:
+                                logger.error(
+                                    'Whisper transcription failed',
+                                    extra={'error': str(e)}
+                                )
+                                await websocket.send_json({
+                                    'type': 'error',
+                                    'code': 'TRANSCRIPTION_FAILED',
+                                    'message': 'Transcription service unavailable',
+                                })
+                        else:
+                            await websocket.send_json({
+                                'type': 'error',
+                                'code': 'NO_AUDIO',
+                                'message': 'No audio data received',
+                            })
+
                     else:
                         await websocket.send_json({
                             'type': 'error',
@@ -94,12 +140,8 @@ async def voice_transcribe(websocket: WebSocket):
                     })
 
             elif 'bytes' in message:
-                # Handle binary audio data (to be implemented in Phase 4)
-                # For now, just acknowledge receipt
-                await websocket.send_json({
-                    'type': 'ack',
-                    'message': 'Audio chunk received',
-                })
+                # Accumulate audio chunks in buffer
+                audio_buffer.append(message['bytes'])
 
     except WebSocketDisconnect:
         pass

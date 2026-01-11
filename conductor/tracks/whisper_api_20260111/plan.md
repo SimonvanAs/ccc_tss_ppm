@@ -57,18 +57,19 @@
   - [x] Parse transcription responses (JSON format)
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Whisper Service Client' (Protocol in workflow.md)
 
-## Phase 5: End-to-End Audio Pipeline
+## Phase 5: End-to-End Audio Pipeline [checkpoint: b548f65]
 
-- [ ] Task: Write failing tests for full transcription pipeline
-  - [ ] Test: Audio from client reaches whisper service
-  - [ ] Test: Transcription from whisper service reaches client
-  - [ ] Test: Partial transcriptions streamed in real-time
-  - [ ] Test: Final transcription sent with correct message format
-  - [ ] Test: Language hint flows through entire pipeline
-- [ ] Task: Integrate whisper client with WebSocket endpoint
-  - [ ] Connect client audio stream to whisper client
-  - [ ] Stream transcription responses back to client
-  - [ ] Implement message format: `{"type": "partial|final", "text": "...", "language": "..."}`
+- [x] Task: Write failing tests for full transcription pipeline
+  - [x] Test: Audio from client reaches whisper service
+  - [x] Test: Transcription from whisper service reaches client
+  - [x] Test: Audio accumulation before transcription (HTTP API batches audio)
+  - [x] Test: Final transcription sent with correct message format
+  - [x] Test: Language hint flows through entire pipeline
+- [x] Task: Integrate whisper client with WebSocket endpoint
+  - [x] Accumulate audio chunks in buffer until end_audio signal
+  - [x] Forward combined audio to whisper client
+  - [x] Implement message format: `{"type": "final", "text": "...", "language": "..."}`
+  - [x] Handle set_language message to configure language hint
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: End-to-End Audio Pipeline' (Protocol in workflow.md)
 
 ## Phase 6: Error Handling & Resilience

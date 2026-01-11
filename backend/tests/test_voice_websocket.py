@@ -132,19 +132,20 @@ class TestWebSocketEndpointLifecycle:
                 assert response2.get('type') == 'pong'
 
     def test_binary_messages_accepted(self, mock_current_user):
-        """Binary messages (audio chunks) should be accepted."""
+        """Binary messages (audio chunks) should be accepted and accumulated."""
         with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
             mock_validate.return_value = mock_current_user
 
             client = TestClient(app)
             with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
-                # Send binary audio data
+                # Send binary audio data - should be accumulated silently
                 audio_chunk = b'\x00\x01\x02\x03\x04\x05'
                 websocket.send_bytes(audio_chunk)
 
-                # Should receive acknowledgment
+                # Verify connection is still active with a ping
+                websocket.send_json({'type': 'ping'})
                 response = websocket.receive_json()
-                assert response.get('type') == 'ack'
+                assert response.get('type') == 'pong'
 
     def test_text_messages_with_language_hint(self, mock_current_user):
         """Text messages with language hint should be accepted."""
@@ -156,9 +157,7 @@ class TestWebSocketEndpointLifecycle:
                 # Send language configuration message
                 websocket.send_json({'type': 'set_language', 'language': 'nl'})
                 response = websocket.receive_json()
-                # Should get error for unknown type (not implemented yet)
-                # This will be implemented in Phase 5
-                assert response.get('type') in ['ack', 'error']
+                assert response.get('type') == 'ack'
 
     def test_invalid_json_returns_error(self, mock_current_user):
         """Invalid JSON messages should return an error response."""
@@ -185,3 +184,143 @@ class TestWebSocketEndpointLifecycle:
                 response = websocket.receive_json()
                 assert response.get('type') == 'error'
                 assert response.get('code') == 'UNKNOWN_MESSAGE_TYPE'
+
+
+class TestTranscriptionPipeline:
+    """Tests for the end-to-end audio transcription pipeline."""
+
+    @pytest.fixture
+    def mock_current_user(self):
+        """Mock authenticated user."""
+        return CurrentUser(
+            keycloak_id='test-user-id',
+            email='test@example.com',
+            name='Test User',
+            roles=['employee'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def sample_audio_chunk(self):
+        """Sample audio data chunk."""
+        return b'\x1a\x45\xdf\xa3' + b'\x00' * 100
+
+    def test_audio_chunks_reach_whisper_service(self, mock_current_user, sample_audio_chunk):
+        """Audio sent via WebSocket should be forwarded to whisper service."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(return_value={'text': 'Test transcription'})
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    # Send audio chunks
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_bytes(sample_audio_chunk)
+
+                    # Signal end of audio
+                    websocket.send_json({'type': 'end_audio'})
+
+                    # Should get transcription response
+                    response = websocket.receive_json()
+                    assert response.get('type') == 'final'
+
+                    # Verify whisper client was called
+                    mock_client.transcribe.assert_called_once()
+
+    def test_transcription_response_reaches_client(self, mock_current_user, sample_audio_chunk):
+        """Transcription from whisper service should be returned to client."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(return_value={'text': 'Hello world transcription'})
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_json({'type': 'end_audio'})
+
+                    response = websocket.receive_json()
+                    assert response.get('text') == 'Hello world transcription'
+
+    def test_final_transcription_format(self, mock_current_user, sample_audio_chunk):
+        """Final transcription should have correct message format."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(return_value={'text': 'Final text'})
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_json({'type': 'end_audio'})
+
+                    response = websocket.receive_json()
+                    assert response.get('type') == 'final'
+                    assert 'text' in response
+                    assert 'language' in response
+
+    def test_language_hint_flows_through_pipeline(self, mock_current_user, sample_audio_chunk):
+        """Language hint should be passed to whisper service."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(return_value={'text': 'Hallo wereld'})
+                mock_get_client.return_value = mock_client
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    # Set language before sending audio
+                    websocket.send_json({'type': 'set_language', 'language': 'nl'})
+                    response = websocket.receive_json()
+                    assert response.get('type') == 'ack'
+
+                    websocket.send_bytes(sample_audio_chunk)
+                    websocket.send_json({'type': 'end_audio'})
+
+                    response = websocket.receive_json()
+                    assert response.get('type') == 'final'
+
+                    # Verify language was passed to transcribe
+                    call_kwargs = mock_client.transcribe.call_args
+                    assert call_kwargs.kwargs.get('language') == 'nl'
+
+    def test_audio_accumulation_before_transcription(self, mock_current_user):
+        """Multiple audio chunks should be accumulated before transcription."""
+        with patch('src.services.websocket_auth.validate_websocket_token') as mock_validate:
+            mock_validate.return_value = mock_current_user
+
+            with patch('src.routers.voice.get_whisper_client') as mock_get_client:
+                mock_client = MagicMock()
+                mock_client.transcribe = AsyncMock(return_value={'text': 'Combined audio'})
+                mock_get_client.return_value = mock_client
+
+                chunk1 = b'\x00\x01\x02\x03'
+                chunk2 = b'\x04\x05\x06\x07'
+                chunk3 = b'\x08\x09\x0a\x0b'
+
+                client = TestClient(app)
+                with client.websocket_connect('/api/v1/voice/transcribe?token=valid-token') as websocket:
+                    websocket.send_bytes(chunk1)
+                    websocket.send_bytes(chunk2)
+                    websocket.send_bytes(chunk3)
+                    websocket.send_json({'type': 'end_audio'})
+
+                    response = websocket.receive_json()
+                    assert response.get('type') == 'final'
+
+                    # Verify all chunks were combined
+                    call_args = mock_client.transcribe.call_args
+                    audio_data = call_args.args[0]
+                    assert audio_data == chunk1 + chunk2 + chunk3
