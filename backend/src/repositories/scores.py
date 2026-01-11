@@ -6,6 +6,12 @@ from uuid import UUID
 
 import asyncpg
 
+from src.services.scoring import (
+    calculate_how_score,
+    calculate_grid_position,
+    check_how_veto,
+)
+
 
 class ScoresRepository:
     """Repository for score database operations."""
@@ -220,3 +226,82 @@ class ScoresRepository:
             if result:
                 results.append(result)
         return results
+
+    async def update_review_how_score(
+        self,
+        review_id: UUID,
+        how_score: float,
+        how_veto_active: bool,
+        grid_position_how: int,
+    ) -> Dict[str, Any]:
+        """Update review's HOW score fields.
+
+        Args:
+            review_id: The review UUID
+            how_score: Calculated HOW score (1.00-3.00)
+            how_veto_active: Whether VETO rule is active
+            grid_position_how: Grid position for HOW axis (1, 2, or 3)
+
+        Returns:
+            Updated review record with HOW score fields
+        """
+        query = """
+            UPDATE reviews
+            SET how_score = $1,
+                how_veto_active = $2,
+                grid_position_how = $3,
+                updated_at = NOW()
+            WHERE id = $4 AND deleted_at IS NULL
+            RETURNING id, how_score, how_veto_active, grid_position_how
+        """
+        row = await self.conn.fetchrow(
+            query, how_score, how_veto_active, grid_position_how, review_id
+        )
+        return dict(row) if row else None
+
+    async def recalculate_and_update_how_score(
+        self, review_id: UUID
+    ) -> Optional[Dict[str, Any]]:
+        """Recalculate HOW score from competency scores and update review.
+
+        Fetches all competency scores for the review, calculates the HOW score
+        using the scoring service, checks for VETO rule, and updates the review.
+
+        Args:
+            review_id: The review UUID
+
+        Returns:
+            Updated review record, or None if fewer than 6 scores exist
+        """
+        # Fetch all competency scores for this review
+        query = """
+            SELECT score FROM competency_scores
+            WHERE review_id = $1
+            ORDER BY id
+        """
+        rows = await self.conn.fetch(query, review_id)
+        scores = [row['score'] for row in rows]
+
+        # Check if we have all 6 scores
+        if len(scores) < 6:
+            return None
+
+        # Check for VETO rule
+        veto_active = check_how_veto(scores)
+
+        # Calculate HOW score (1.00 if VETO, otherwise average)
+        if veto_active:
+            how_score = 1.00
+        else:
+            how_score = calculate_how_score(scores)
+
+        # Calculate grid position
+        grid_position = calculate_grid_position(how_score)
+
+        # Update the review
+        return await self.update_review_how_score(
+            review_id=review_id,
+            how_score=how_score,
+            how_veto_active=veto_active,
+            grid_position_how=grid_position,
+        )
