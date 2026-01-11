@@ -84,6 +84,7 @@ services:
       KEYCLOAK_URL: http://keycloak:8080
       KEYCLOAK_REALM: tss-ppm
       KEYCLOAK_CLIENT_ID: tss-ppm-api
+      KEYCLOAK_ISSUER_URL: http://localhost:8080
       WHISPER_URL: http://whisper:8000
       CORS_ORIGINS: http://localhost:5173
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -117,7 +118,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: tss_ppm_web
     environment:
-      VITE_API_URL: http://localhost:8000
+      VITE_API_URL: http://localhost:8000/api/v1
       VITE_KEYCLOAK_URL: http://localhost:8080
       VITE_KEYCLOAK_REALM: tss-ppm
       VITE_KEYCLOAK_CLIENT_ID: tss-ppm-web

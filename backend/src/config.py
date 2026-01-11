@@ -16,9 +16,12 @@ class Settings:
     )
 
     # Keycloak
+    # Internal URL for fetching JWKS (inside Docker network)
     keycloak_url: str = os.getenv('KEYCLOAK_URL', 'http://localhost:8080')
     keycloak_realm: str = os.getenv('KEYCLOAK_REALM', 'tss-ppm')
     keycloak_client_id: str = os.getenv('KEYCLOAK_CLIENT_ID', 'tss-ppm-api')
+    # External URL for issuer validation (how clients access Keycloak)
+    keycloak_issuer_url: str = os.getenv('KEYCLOAK_ISSUER_URL', 'http://localhost:8080')
 
     # CORS
     cors_origins: list[str] = None
@@ -34,13 +37,13 @@ class Settings:
 
     @property
     def keycloak_issuer(self) -> str:
-        """Get the Keycloak issuer URL."""
-        return f'{self.keycloak_url}/realms/{self.keycloak_realm}'
+        """Get the Keycloak issuer URL (external, as seen by clients)."""
+        return f'{self.keycloak_issuer_url}/realms/{self.keycloak_realm}'
 
     @property
     def keycloak_jwks_url(self) -> str:
-        """Get the Keycloak JWKS URL for token verification."""
-        return f'{self.keycloak_issuer}/protocol/openid-connect/certs'
+        """Get the Keycloak JWKS URL for token verification (internal)."""
+        return f'{self.keycloak_url}/realms/{self.keycloak_realm}/protocol/openid-connect/certs'
 
 
 # Global settings instance

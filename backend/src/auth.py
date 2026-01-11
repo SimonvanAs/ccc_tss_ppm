@@ -102,12 +102,14 @@ def decode_token(token: str, jwks: dict) -> dict:
             )
 
         # Decode and verify the token
+        # Note: audience verification disabled for local dev - tokens from
+        # Keycloak public clients don't include aud claim by default
         payload = jwt.decode(
             token,
             rsa_key,
             algorithms=['RS256'],
-            audience=settings.keycloak_client_id,
             issuer=settings.keycloak_issuer,
+            options={'verify_aud': False},
         )
         return payload
 

@@ -5,7 +5,7 @@ import Keycloak from 'keycloak-js'
 const keycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8080',
   realm: import.meta.env.VITE_KEYCLOAK_REALM || 'tss-ppm',
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'tss-ppm-frontend',
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'tss-ppm-web',
 }
 
 // Keycloak instance

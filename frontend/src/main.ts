@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createI18n } from 'vue-i18n'
 import App from './App.vue'
+import { initAuth } from './api/auth'
 
 // Import translations
 import en from './i18n/en.json'
@@ -35,8 +36,14 @@ const router = createRouter({
   ]
 })
 
-// Create and mount app
-const app = createApp(App)
-app.use(i18n)
-app.use(router)
-app.mount('#app')
+// Initialize authentication, then mount app
+initAuth().then((authenticated) => {
+  if (authenticated) {
+    const app = createApp(App)
+    app.use(i18n)
+    app.use(router)
+    app.mount('#app')
+  } else {
+    console.error('Authentication failed')
+  }
+})
