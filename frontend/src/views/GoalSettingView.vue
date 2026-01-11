@@ -7,6 +7,7 @@ import { useReviewHeader } from '../composables/useReviewHeader'
 import { useCompetencyPreview } from '../composables/useCompetencyPreview'
 import { submitReview } from '../api/goals'
 import { hasRole } from '../api/auth'
+import { reassignManager, downloadReviewPdf } from '../api/reviews'
 import type { Goal, GoalCreate } from '../types'
 import type { TovLevel } from '../types/competency'
 import GoalList from '../components/review/GoalList.vue'
@@ -14,10 +15,11 @@ import GoalForm from '../components/review/GoalForm.vue'
 import WeightIndicator from '../components/review/WeightIndicator.vue'
 import ReviewHeader from '../components/review/ReviewHeader.vue'
 import CompetencyPreview from '../components/review/CompetencyPreview.vue'
+import ManagerReassignModal from '../components/review/ManagerReassignModal.vue'
+import type { Manager } from '../components/review/ManagerReassignModal.vue'
 import SaveIndicator from '../components/common/SaveIndicator.vue'
 import Modal from '../components/common/Modal.vue'
 import ConfirmDialog from '../components/common/ConfirmDialog.vue'
-import { Card, SectionHeader } from '../components/layout'
 
 const props = defineProps<{
   reviewId: string
@@ -88,6 +90,12 @@ const isSaving = ref(false)
 const isSubmitting = ref(false)
 const submitSuccess = ref(false)
 const submitError = ref<string | null>(null)
+
+// Manager reassignment states
+const showReassignModal = ref(false)
+const availableManagers = ref<Manager[]>([])
+const isReassigning = ref(false)
+const reassignError = ref<string | null>(null)
 
 // Computed modal title
 const editModalTitle = computed(() =>
@@ -222,11 +230,62 @@ async function handleSubmit() {
 
     // Navigate to dashboard after short delay to show success
     setTimeout(() => {
-      router.push({ name: 'dashboard' })
+      router.push({ name: 'Dashboard' })
     }, 1500)
   } catch (e) {
     submitError.value = t('errors.submitFailed')
     isSubmitting.value = false
+  }
+}
+
+// Handle PDF download
+async function handleDownloadPdf() {
+  try {
+    const lang = localStorage.getItem('locale') || 'en'
+    const blob = await downloadReviewPdf(props.reviewId, lang)
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `review-${props.reviewId}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    console.error('Failed to download PDF:', e)
+  }
+}
+
+// Handle opening reassign modal
+function handleOpenReassignModal() {
+  reassignError.value = null
+  // TODO: Load available managers from API when endpoint is available
+  // For now, the modal will show with empty list
+  showReassignModal.value = true
+}
+
+// Handle closing reassign modal
+function handleCloseReassignModal() {
+  showReassignModal.value = false
+  reassignError.value = null
+}
+
+// Handle manager reassignment submission
+async function handleReassignSubmit(payload: { managerId: string; reason: string }) {
+  if (!review.value) return
+
+  isReassigning.value = true
+  reassignError.value = null
+
+  try {
+    await reassignManager(props.reviewId, payload.managerId, payload.reason || undefined)
+    showReassignModal.value = false
+    // Reload review to show updated manager
+    await loadReview()
+  } catch (e) {
+    reassignError.value = t('errors.reassignFailed')
+  } finally {
+    isReassigning.value = false
   }
 }
 </script>
@@ -251,6 +310,7 @@ async function handleSubmit() {
       class="review-header-card"
       @update:job-title="handleJobTitleUpdate"
       @update:tov-level="handleTovLevelUpdate"
+      @reassign="handleOpenReassignModal"
     />
 
     <!-- Save indicator for header -->
@@ -258,12 +318,15 @@ async function handleSubmit() {
       <SaveIndicator :status="saveStatus" />
     </div>
 
-    <!-- Page Header -->
-    <SectionHeader :title="t('goals.pageTitle')">
-      <template #subtitle>
-        {{ t('goals.pageSubtitle') }}
-      </template>
-      <template #actions>
+    <!-- WHAT-axis Goals Section -->
+    <div class="goals-section">
+      <!-- Section Header -->
+      <div class="section-header-row">
+        <div class="section-header-content">
+          <h2 class="section-title">{{ t('goals.whatAxisTitle') }}</h2>
+          <div class="section-divider"></div>
+          <p class="section-subtitle">{{ t('goals.whatAxisSubtitle') }}</p>
+        </div>
         <button
           class="btn btn-primary"
           :disabled="isMaxGoalsReached"
@@ -271,21 +334,19 @@ async function handleSubmit() {
         >
           {{ t('goals.addGoal') }}
         </button>
-      </template>
-    </SectionHeader>
+      </div>
 
-    <!-- Error message -->
-    <div v-if="error" class="error-banner">
-      {{ error }}
-    </div>
+      <!-- Error message -->
+      <div v-if="error" class="error-banner">
+        {{ error }}
+      </div>
 
-    <!-- Weight indicator -->
-    <Card padding="sm" class="weight-card">
-      <WeightIndicator :total="totalWeight" />
-    </Card>
+      <!-- Weight indicator -->
+      <div class="weight-indicator-wrapper">
+        <WeightIndicator :total="totalWeight" />
+      </div>
 
-    <!-- Goals list -->
-    <Card class="goals-card">
+      <!-- Goals list -->
       <GoalList
         :goals="goals"
         :loading="loading"
@@ -293,7 +354,7 @@ async function handleSubmit() {
         @delete="handleDeleteGoal"
         @reorder="handleReorder"
       />
-    </Card>
+    </div>
 
     <!-- Competency Preview -->
     <CompetencyPreview
@@ -304,8 +365,8 @@ async function handleSubmit() {
       data-testid="competency-preview"
     />
 
-    <!-- Submit section -->
-    <Card class="submit-card">
+    <!-- Footer Actions -->
+    <div class="footer-actions">
       <!-- Success message -->
       <div v-if="submitSuccess" class="submit-success">
         {{ t('goals.submitSuccess') }}
@@ -316,22 +377,28 @@ async function handleSubmit() {
         {{ submitError }}
       </div>
 
-      <div class="submit-actions">
+      <div class="action-buttons">
+        <button
+          class="btn btn-secondary"
+          @click="handleDownloadPdf"
+        >
+          {{ t('pdf.downloadDraft') }}
+        </button>
         <button
           class="btn btn-submit"
           :disabled="!canSubmit || isSubmitting || submitSuccess"
           @click="handleSubmit"
         >
-          {{ isSubmitting ? t('goals.submitting') : t('goals.submit') }}
+          {{ isSubmitting ? t('goals.submitting') : t('goals.submitReview') }}
         </button>
-        <p v-if="!isHeaderFieldsValid && !submitSuccess" class="submit-hint">
-          {{ t('goals.headerFieldsRequired') }}
-        </p>
-        <p v-if="isHeaderFieldsValid && !isWeightValid && !submitSuccess" class="submit-hint">
-          {{ t('goals.submitHint') }}
-        </p>
       </div>
-    </Card>
+      <p v-if="!isHeaderFieldsValid && !submitSuccess" class="submit-hint">
+        {{ t('goals.headerFieldsRequired') }}
+      </p>
+      <p v-if="isHeaderFieldsValid && !isWeightValid && !submitSuccess" class="submit-hint">
+        {{ t('goals.submitHint') }}
+      </p>
+    </div>
 
     <!-- Add Goal Modal -->
     <Modal
@@ -373,6 +440,18 @@ async function handleSubmit() {
       @confirm="handleConfirmDelete"
       @cancel="handleCancelDelete"
     />
+
+    <!-- Manager Reassignment Modal (HR only) -->
+    <ManagerReassignModal
+      v-if="review"
+      :show="showReassignModal"
+      :managers="availableManagers"
+      :current-manager-id="review.manager_id"
+      :loading="isReassigning"
+      :error="reassignError ?? ''"
+      @submit="handleReassignSubmit"
+      @cancel="handleCloseReassignModal"
+    />
   </div>
 </template>
 
@@ -393,24 +472,71 @@ async function handleSubmit() {
   min-height: 28px;
 }
 
-.weight-card {
+/* Goals Section Styles */
+.goals-section {
+  background-color: var(--color-white, #ffffff);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.goals-card {
-  margin-bottom: 1.5rem;
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.section-header-content {
+  flex: 1;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-magenta, #CC0E70);
+  margin: 0 0 0.75rem 0;
+}
+
+.section-divider {
+  height: 2px;
+  background-color: var(--color-magenta, #CC0E70);
+  margin-bottom: 0.75rem;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-gray-600, #6b7280);
+  margin: 0;
+}
+
+.weight-indicator-wrapper {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .competency-preview-card {
   margin-bottom: 1.5rem;
 }
 
-.submit-card {
-  text-align: center;
+/* Footer Actions */
+.footer-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 .btn {
-  padding: 0.625rem 1.25rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 6px;
   font-family: inherit;
@@ -434,6 +560,16 @@ async function handleSubmit() {
   background: #a00b5a;
 }
 
+.btn-secondary {
+  background: var(--color-gray-100, #f3f4f6);
+  color: var(--color-gray-700, #374151);
+  border: 1px solid var(--color-gray-300, #d1d5db);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-gray-200, #e5e7eb);
+}
+
 .btn-submit {
   background: var(--color-navy);
   color: white;
@@ -452,17 +588,11 @@ async function handleSubmit() {
   margin-bottom: 1rem;
 }
 
-.submit-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 .submit-hint {
   margin: 0;
   font-size: 0.875rem;
   color: var(--color-gray-600);
+  text-align: center;
 }
 
 .submit-success {
@@ -471,7 +601,6 @@ async function handleSubmit() {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
-  margin-bottom: 1rem;
   display: inline-block;
 }
 
@@ -481,7 +610,22 @@ async function handleSubmit() {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 500;
-  margin-bottom: 1rem;
   display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .section-header-row {
+    flex-direction: column;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
 }
 </style>
