@@ -44,7 +44,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) `5f1b4fd`
 
-## Phase 2: Frontend - Team Dashboard
+## Phase 2: Frontend - Team Dashboard [checkpoint: 06595cb]
 
 - [x] Task: Create team API client module `d25f75a`
   - [x] Write tests for `fetchTeamMembers` function
@@ -64,7 +64,7 @@
   - [x] Update App.vue or navigation component for manager role
   - [x] Write tests for role-based navigation visibility
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) `06595cb`
 
 ## Phase 3: Frontend - Score Card Component & VETO Logic
 
