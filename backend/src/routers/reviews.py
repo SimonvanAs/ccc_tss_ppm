@@ -6,7 +6,7 @@ from typing import Annotated, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 import asyncpg
 
@@ -205,6 +205,95 @@ async def get_review(
         )
 
     return ReviewDetailResponse(**review)
+
+
+class ReviewHeaderUpdateRequest(BaseModel):
+    """Request schema for updating review header fields."""
+
+    job_title: Optional[str] = None
+    tov_level: Optional[str] = None
+
+    @property
+    def has_updates(self) -> bool:
+        """Check if any update fields are provided."""
+        return self.job_title is not None or self.tov_level is not None
+
+    model_config = {
+        'json_schema_extra': {
+            'examples': [
+                {'job_title': 'Senior Developer', 'tov_level': 'B'},
+            ]
+        }
+    }
+
+
+class ReviewHeaderUpdateRequestValidated(BaseModel):
+    """Request schema for updating review header fields with validation."""
+
+    job_title: Optional[str] = None
+    tov_level: Optional[str] = None
+
+    @field_validator('tov_level')
+    @classmethod
+    def validate_tov_level(cls, v: Optional[str]) -> Optional[str]:
+        """Validate tov_level is A, B, C, or D."""
+        if v is not None and v not in ('A', 'B', 'C', 'D'):
+            raise ValueError('tov_level must be A, B, C, or D')
+        return v
+
+
+@router.put('/reviews/{review_id}', response_model=ReviewDetailResponse)
+async def update_review_header(
+    review_id: UUID,
+    update_data: ReviewHeaderUpdateRequestValidated,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> ReviewDetailResponse:
+    """Update a review's job_title and/or tov_level.
+
+    Only allowed when review is in DRAFT status.
+
+    Args:
+        review_id: The review UUID
+        update_data: Fields to update (job_title, tov_level)
+        current_user: The authenticated user
+        conn: Database connection
+
+    Returns:
+        The updated review details
+
+    Raises:
+        HTTPException 404: If review not found
+        HTTPException 400: If review is not in DRAFT status
+    """
+    review_repo = ReviewRepository(conn)
+
+    # Get current review to check status
+    review = await review_repo.get_review(review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # Only allow updates in DRAFT status
+    if review['status'] != 'DRAFT':
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Review must be in DRAFT status to update (current: {review["status"]})',
+        )
+
+    # Update the review
+    updated_review = await review_repo.update_review(
+        review_id,
+        job_title=update_data.job_title,
+        tov_level=update_data.tov_level,
+    )
+
+    # Fetch updated review with all fields (including names from JOINs)
+    updated_review = await review_repo.get_review(review_id)
+
+    return ReviewDetailResponse(**updated_review)
 
 
 @router.post('/reviews/{review_id}/submit', response_model=ReviewResponse)

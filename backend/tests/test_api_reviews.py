@@ -607,6 +607,174 @@ class TestGetReviewEndpoint:
 
 
 @pytest.mark.asyncio
+class TestUpdateReviewHeaderEndpoint:
+    """Tests for PUT /api/v1/reviews/{id} endpoint for job_title and tov_level."""
+
+    @pytest.fixture
+    def mock_current_user(self):
+        """Mock authenticated user."""
+        return CurrentUser(
+            keycloak_id='test-user-id',
+            email='test@example.com',
+            name='Test User',
+            roles=['employee'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        return AsyncMock()
+
+    @pytest.fixture
+    def sample_review_draft(self):
+        """Sample review in DRAFT status."""
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'opco_id': uuid4(),
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'what_score': None,
+            'how_score': None,
+            'job_title': None,
+            'tov_level': None,
+            'employee_name': 'John Doe',
+            'manager_name': 'Jane Smith',
+        }
+
+    @pytest_asyncio.fixture
+    async def client(self, mock_current_user, mock_db_conn):
+        """Async HTTP client with dependency overrides."""
+        app.dependency_overrides[get_current_user] = lambda: mock_current_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    async def test_update_job_title_in_draft_status(
+        self, client, mock_db_conn, sample_review_draft
+    ):
+        """PUT /reviews/:id should update job_title when in DRAFT status."""
+        review_id = sample_review_draft['id']
+        updated_review = {**sample_review_draft, 'job_title': 'Senior Developer'}
+        # Mock: get_review (check status), update_review, get_review (fetch result)
+        mock_db_conn.fetchrow.side_effect = [sample_review_draft, updated_review, updated_review]
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'job_title': 'Senior Developer'},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['job_title'] == 'Senior Developer'
+
+    async def test_update_tov_level_in_draft_status(
+        self, client, mock_db_conn, sample_review_draft
+    ):
+        """PUT /reviews/:id should update tov_level when in DRAFT status."""
+        review_id = sample_review_draft['id']
+        updated_review = {**sample_review_draft, 'tov_level': 'B'}
+        # Mock: get_review (check status), update_review, get_review (fetch result)
+        mock_db_conn.fetchrow.side_effect = [sample_review_draft, updated_review, updated_review]
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'tov_level': 'B'},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['tov_level'] == 'B'
+
+    async def test_update_both_fields_in_draft_status(
+        self, client, mock_db_conn, sample_review_draft
+    ):
+        """PUT /reviews/:id should update both job_title and tov_level."""
+        review_id = sample_review_draft['id']
+        updated_review = {
+            **sample_review_draft,
+            'job_title': 'Lead Developer',
+            'tov_level': 'C',
+        }
+        # Mock: get_review (check status), update_review, get_review (fetch result)
+        mock_db_conn.fetchrow.side_effect = [sample_review_draft, updated_review, updated_review]
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'job_title': 'Lead Developer', 'tov_level': 'C'},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['job_title'] == 'Lead Developer'
+        assert data['tov_level'] == 'C'
+
+    async def test_update_rejected_when_not_draft(
+        self, client, mock_db_conn, sample_review_draft
+    ):
+        """PUT /reviews/:id should reject updates when not in DRAFT status."""
+        review_id = sample_review_draft['id']
+        submitted_review = {**sample_review_draft, 'status': 'PENDING_MANAGER_SIGNATURE'}
+        mock_db_conn.fetchrow.return_value = submitted_review
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'job_title': 'Senior Developer'},
+        )
+
+        assert response.status_code == 400
+        assert 'DRAFT' in response.json()['detail'] or 'status' in response.json()['detail'].lower()
+
+    async def test_update_rejected_when_signed(
+        self, client, mock_db_conn, sample_review_draft
+    ):
+        """PUT /reviews/:id should reject updates when review is SIGNED."""
+        review_id = sample_review_draft['id']
+        signed_review = {**sample_review_draft, 'status': 'SIGNED'}
+        mock_db_conn.fetchrow.return_value = signed_review
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'tov_level': 'A'},
+        )
+
+        assert response.status_code == 400
+
+    async def test_update_review_not_found(self, client, mock_db_conn):
+        """PUT /reviews/:id should return 404 for non-existent review."""
+        review_id = uuid4()
+        mock_db_conn.fetchrow.return_value = None
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'job_title': 'Senior Developer'},
+        )
+
+        assert response.status_code == 404
+
+    async def test_update_validates_tov_level(
+        self, client, mock_db_conn, sample_review_draft
+    ):
+        """PUT /reviews/:id should validate tov_level is A, B, C, or D."""
+        review_id = sample_review_draft['id']
+        mock_db_conn.fetchrow.return_value = sample_review_draft
+
+        response = await client.put(
+            f'/api/v1/reviews/{review_id}',
+            json={'tov_level': 'X'},  # Invalid level
+        )
+
+        assert response.status_code == 422  # Validation error
+
+
+@pytest.mark.asyncio
 class TestRejectReviewEndpoint:
     """Tests for review rejection endpoint."""
 
