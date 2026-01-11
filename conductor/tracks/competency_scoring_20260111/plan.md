@@ -83,18 +83,18 @@
 - [x] Task: Add i18n translations for indicator text (EN/NL/ES) `4f8aaae`
 - [x] Task: Conductor - User Manual Verification 'Frontend HOW Score Indicator' (Protocol in workflow.md) `074dec7`
 
-## Phase 6: Integration and Auto-Save
+## Phase 6: Integration and Auto-Save [checkpoint: 6c91f0d]
 
-- [x] Task: Write integration tests for competency scoring flow
+- [x] Task: Write integration tests for competency scoring flow `ffef5ce`
   - [x] Test end-to-end score entry and save
   - [x] Test auto-save triggers on score change
   - [x] Test 9-Grid updates on HOW score change
-- [x] Task: Integrate CompetencyList into manager scoring view
+- [x] Task: Integrate CompetencyList into manager scoring view `ffef5ce`
   - [x] Add CompetencyList to scoring page layout
   - [x] Connect to useCompetencyScoring composable
   - [x] Wire up auto-save with debounce (1 second)
   - [x] Connect SaveIndicator component (via emit)
-- [x] Task: Integrate HOW score with 9-Grid component
+- [x] Task: Integrate HOW score with 9-Grid component `ffef5ce`
   - [x] Emit HOW score changes to parent view
   - [x] Update 9-Grid column position on score change
-- [ ] Task: Conductor - User Manual Verification 'Integration and Auto-Save' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Integration and Auto-Save' (Protocol in workflow.md) `6c91f0d`
