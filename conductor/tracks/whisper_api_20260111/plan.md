@@ -43,18 +43,18 @@
 
 ## Phase 4: Whisper Service Client
 
-- [~] Task: Write failing tests for whisper service client
-  - [ ] Test: Client connects to whisper service WebSocket
-  - [ ] Test: Audio chunks are forwarded to whisper service
-  - [ ] Test: Transcription responses are received from whisper service
-  - [ ] Test: Connection error handling when service unavailable
-  - [ ] Test: Language parameter is passed correctly
-- [ ] Task: Implement whisper service client
-  - [ ] Create `src/services/whisper_client.py`
-  - [ ] Implement async WebSocket client to faster-whisper-server
-  - [ ] Handle connection lifecycle to whisper service
-  - [ ] Implement audio chunk forwarding
-  - [ ] Parse transcription responses (partial/final)
+- [x] Task: Write failing tests for whisper service client (285d4f5)
+  - [x] Test: Client connects to whisper service HTTP endpoint
+  - [x] Test: Audio chunks are forwarded to whisper service
+  - [x] Test: Transcription responses are received from whisper service
+  - [x] Test: Connection error handling when service unavailable
+  - [x] Test: Language parameter is passed correctly
+- [x] Task: Implement whisper service client (a2420b6)
+  - [x] Create `src/services/whisper_client.py`
+  - [x] Implement async HTTP client to faster-whisper-server
+  - [x] Handle connection errors gracefully
+  - [x] Implement audio forwarding via POST
+  - [x] Parse transcription responses (JSON format)
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Whisper Service Client' (Protocol in workflow.md)
 
 ## Phase 5: End-to-End Audio Pipeline
