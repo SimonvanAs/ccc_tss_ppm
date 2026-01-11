@@ -18,11 +18,11 @@
 
 ## Phase 2: Backend API - Review Header [checkpoint: ]
 
-- [ ] Task: Update GET /api/v1/reviews/{id} response
-  - [ ] Write tests for response including all header fields
-  - [ ] Write tests for employee_name and manager_name resolution
-  - [ ] Write tests for stage completion timestamps
-  - [ ] Update schema and endpoint implementation
+- [x] Task: Update GET /api/v1/reviews/{id} response `86a84a3`
+  - [x] Write tests for response including all header fields
+  - [x] Write tests for employee_name and manager_name resolution
+  - [x] Write tests for stage completion timestamps
+  - [x] Update schema and endpoint implementation
 
 - [ ] Task: Update PUT /api/v1/reviews/{id} for job_title and tov_level
   - [ ] Write tests for updating job_title in DRAFT status
