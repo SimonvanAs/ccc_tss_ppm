@@ -88,7 +88,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Frontend - Review Header Component' (Protocol in workflow.md)
 
-## Phase 5: Frontend - Competency Preview [checkpoint: ]
+## Phase 5: Frontend - Competency Preview [checkpoint: 037a3f5]
 
 - [x] Task: Create CompetencyPreview component `f64e0b1`
   - [x] Write tests for displaying 6 competencies grouped by category
