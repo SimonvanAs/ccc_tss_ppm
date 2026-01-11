@@ -115,7 +115,7 @@
 
 - [x] Task: Conductor - User Manual Verification 'Frontend - Competency Preview' (Protocol in workflow.md)
 
-## Phase 6: Frontend - HR Manager Reassignment [checkpoint: ]
+## Phase 6: Frontend - HR Manager Reassignment [checkpoint: 9f20807]
 
 - [x] Task: Create ManagerReassignModal component `7a00ca9`
   - [x] Write tests for modal rendering with manager dropdown
