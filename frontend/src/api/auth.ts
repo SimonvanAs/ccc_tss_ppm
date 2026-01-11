@@ -2,8 +2,10 @@
 import Keycloak from 'keycloak-js'
 
 // Keycloak configuration
+// Use current origin if VITE_KEYCLOAK_URL is empty or not set
+const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8080',
+  url: keycloakUrl === '' ? window.location.origin : (keycloakUrl || 'http://localhost:8080'),
   realm: import.meta.env.VITE_KEYCLOAK_REALM || 'tss-ppm',
   clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'tss-ppm-web',
 }
