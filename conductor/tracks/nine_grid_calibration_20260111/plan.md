@@ -107,7 +107,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Implement request/response schemas
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Calibration Backend - Database & Core API' (Protocol in workflow.md)
 
-## Phase 5: Calibration Backend - Reviews & Score Adjustments [checkpoint: pending]
+## Phase 5: Calibration Backend - Reviews & Score Adjustments [checkpoint: 21a14b2]
 
 - [x] Task: Write tests for calibration reviews endpoints (implemented in Phase 4)
   - [x] Test GET /api/v1/calibration-sessions/{id}/reviews
