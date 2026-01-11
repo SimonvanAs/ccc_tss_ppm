@@ -75,53 +75,30 @@ function handleKeydown(score: number) {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  min-width: 80px;
+  width: 90px;
+  min-height: 70px;
   border: 2px solid var(--color-gray-200);
   border-radius: 8px;
   background: var(--color-white);
   cursor: pointer;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .score-option:hover:not(.selected) {
-  border-color: var(--color-navy);
+  border-color: var(--color-magenta);
   background: var(--color-gray-100);
 }
 
 .score-option:focus {
-  outline: 2px solid var(--color-navy);
+  outline: 2px solid var(--color-magenta);
   outline-offset: 2px;
 }
 
+/* Selected state - magenta for all scores */
 .score-option.selected {
-  border-width: 3px;
-}
-
-.score-option.score-1 {
-  border-color: var(--color-gray-200);
-}
-
-.score-option.score-1.selected {
-  border-color: var(--color-grid-red);
-  background: #FEF2F2;
-}
-
-.score-option.score-2 {
-  border-color: var(--color-gray-200);
-}
-
-.score-option.score-2.selected {
-  border-color: var(--color-grid-orange);
-  background: #FFFBEB;
-}
-
-.score-option.score-3 {
-  border-color: var(--color-gray-200);
-}
-
-.score-option.score-3.selected {
-  border-color: var(--color-grid-green);
-  background: #F0FDF4;
+  border-color: var(--color-magenta);
+  background: rgba(204, 14, 112, 0.08);
 }
 
 .score-number {
@@ -130,16 +107,8 @@ function handleKeydown(score: number) {
   color: var(--color-gray-900);
 }
 
-.score-option.score-1.selected .score-number {
-  color: var(--color-grid-red);
-}
-
-.score-option.score-2.selected .score-number {
-  color: var(--color-grid-orange);
-}
-
-.score-option.score-3.selected .score-number {
-  color: var(--color-grid-green);
+.score-option.selected .score-number {
+  color: var(--color-magenta);
 }
 
 .score-label {
@@ -147,6 +116,10 @@ function handleKeydown(score: number) {
   color: var(--color-gray-600);
   text-align: center;
   margin-top: 0.25rem;
-  max-width: 100px;
+  max-width: 80px;
+}
+
+.score-option.selected .score-label {
+  color: var(--color-magenta);
 }
 </style>
