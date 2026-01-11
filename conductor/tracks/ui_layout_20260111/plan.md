@@ -93,7 +93,7 @@
   - [x] Slide-in animation from left
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Responsive Sidebar Behavior' (Protocol in workflow.md) `5d2c397`
 
-## Phase 4: View Integration
+## Phase 4: View Integration [checkpoint: dcc3fc8]
 
 - [x] Task: Integrate AppLayout into App.vue
   - [x] Wrap router-view with AppLayout
@@ -115,7 +115,7 @@
 - [x] Task: Update any remaining views with layout
   - [x] Audit all views in src/views/
   - [x] Apply consistent Card and SectionHeader usage
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: View Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: View Integration' (Protocol in workflow.md) `dcc3fc8`
 
 ## Phase 5: Polish and Internationalization
 
