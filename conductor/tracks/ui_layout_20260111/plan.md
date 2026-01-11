@@ -35,7 +35,7 @@
   - [x] Add TSS PPM logo/branding
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Core Layout Shell Components' (Protocol in workflow.md) `5e6fe21`
 
-## Phase 2: Card and Content Styling Components
+## Phase 2: Card and Content Styling Components [checkpoint: c125ab2]
 
 - [x] Task: Write tests for Card component `03028d8`
   - [x] Test renders slot content
@@ -68,7 +68,7 @@
   - [x] Add global CSS/SCSS for input, select, textarea elements
   - [x] Apply Tahoma font, consistent sizing
   - [x] Add focus states with Magenta outline
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Card and Content Styling Components' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Card and Content Styling Components' (Protocol in workflow.md) `c125ab2`
 
 ## Phase 3: Responsive Sidebar Behavior
 
