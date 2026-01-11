@@ -39,141 +39,141 @@
 
 - [ ] Task: Conductor - User Manual Verification 'Admin Navigation & User Management Backend' (Protocol in workflow.md)
 
-## Phase 2: User Management Frontend [checkpoint: ]
+## Phase 2: User Management Frontend [checkpoint: complete]
 
-- [ ] Task: Create UserList component
-  - [ ] Write tests for user table rendering
-  - [ ] Write tests for search input functionality
-  - [ ] Write tests for role filter dropdown
-  - [ ] Write tests for status filter dropdown
-  - [ ] Write tests for pagination controls
-  - [ ] Implement UserList.vue with data table
+- [x] Task: Create UserList component
+  - [x] Write tests for user table rendering
+  - [x] Write tests for search input functionality
+  - [x] Write tests for role filter dropdown
+  - [x] Write tests for status filter dropdown
+  - [x] Write tests for pagination controls
+  - [x] Implement UserList.vue with data table
 
-- [ ] Task: Create UserDetailModal component
-  - [ ] Write tests for modal rendering with user data
-  - [ ] Write tests for role checkboxes
-  - [ ] Write tests for manager dropdown
-  - [ ] Write tests for save action
-  - [ ] Implement UserDetailModal.vue
+- [x] Task: Create UserDetailModal component
+  - [x] Write tests for modal rendering with user data
+  - [x] Write tests for role checkboxes
+  - [x] Write tests for manager dropdown
+  - [x] Write tests for save action
+  - [x] Implement UserDetailModal.vue
 
-- [ ] Task: Create DeactivateUserModal component
-  - [ ] Write tests for confirmation dialog rendering
-  - [ ] Write tests for confirm/cancel actions
-  - [ ] Implement DeactivateUserModal.vue with confirmation
+- [x] Task: Create DeactivateUserModal component
+  - [x] Write tests for confirmation dialog rendering
+  - [x] Write tests for confirm/cancel actions
+  - [x] Implement DeactivateUserModal.vue with confirmation
 
-- [ ] Task: Create BulkActionBar component
-  - [ ] Write tests for selection count display
-  - [ ] Write tests for bulk role assignment
-  - [ ] Write tests for bulk manager assignment
-  - [ ] Implement BulkActionBar.vue
+- [x] Task: Create BulkActionBar component
+  - [x] Write tests for selection count display
+  - [x] Write tests for bulk role assignment
+  - [x] Write tests for bulk manager assignment
+  - [x] Implement BulkActionBar.vue
 
-- [ ] Task: Integrate user management into AdminView
-  - [ ] Write tests for Users tab content
-  - [ ] Write tests for API integration
-  - [ ] Write tests for loading and error states
-  - [ ] Implement Users tab with all components
+- [x] Task: Integrate user management into AdminView
+  - [x] Write tests for Users tab content
+  - [x] Write tests for API integration
+  - [x] Write tests for loading and error states
+  - [x] Implement Users tab with all components
 
-- [ ] Task: Add i18n translations for user management UI
-  - [ ] Add English translations
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for user management UI
+  - [x] Add English translations
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Conductor - User Manual Verification 'User Management Frontend' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'User Management Frontend' (Protocol in workflow.md)
 
-## Phase 3: OpCo Settings & Business Unit Management [checkpoint: ]
+## Phase 3: OpCo Settings & Business Unit Management [checkpoint: complete]
 
-- [ ] Task: Create OpCo settings database schema
-  - [ ] Write migration for opco_settings table (if not exists)
-  - [ ] Write migration for logo_url column
-  - [ ] Write migration for review_cycle_config columns
+- [x] Task: Create OpCo settings database schema
+  - [x] Write migration for opco_settings table (if not exists)
+  - [x] Write migration for logo_url column
+  - [x] Write migration for review_cycle_config columns
 
-- [ ] Task: Create OpCo settings API endpoints
-  - [ ] Write tests for GET /api/v1/admin/opco/settings
-  - [ ] Write tests for PUT /api/v1/admin/opco/settings
-  - [ ] Write tests for POST /api/v1/admin/opco/logo (file upload)
-  - [ ] Write tests for admin role authorization
-  - [ ] Implement opco settings router and repository
+- [x] Task: Create OpCo settings API endpoints
+  - [x] Write tests for GET /api/v1/admin/opco/settings
+  - [x] Write tests for PUT /api/v1/admin/opco/settings
+  - [x] Write tests for POST /api/v1/admin/opco/logo (file upload)
+  - [x] Write tests for admin role authorization
+  - [x] Implement opco settings router and repository
 
-- [ ] Task: Create business units API endpoints
-  - [ ] Write tests for GET /api/v1/admin/business-units
-  - [ ] Write tests for POST /api/v1/admin/business-units
-  - [ ] Write tests for PUT /api/v1/admin/business-units/{id}
-  - [ ] Write tests for DELETE /api/v1/admin/business-units/{id}
-  - [ ] Write tests for delete rejection when users assigned
-  - [ ] Write tests for admin role authorization
-  - [ ] Implement business units router and repository
+- [x] Task: Create business units API endpoints
+  - [x] Write tests for GET /api/v1/admin/business-units
+  - [x] Write tests for POST /api/v1/admin/business-units
+  - [x] Write tests for PUT /api/v1/admin/business-units/{id}
+  - [x] Write tests for DELETE /api/v1/admin/business-units/{id}
+  - [x] Write tests for delete rejection when users assigned
+  - [x] Write tests for admin role authorization
+  - [x] Implement business units router and repository
 
-- [ ] Task: Create OpCoSettingsForm component
-  - [ ] Write tests for form rendering with current values
-  - [ ] Write tests for field validation
-  - [ ] Write tests for logo upload preview
-  - [ ] Write tests for save action
-  - [ ] Implement OpCoSettingsForm.vue
+- [x] Task: Create OpCoSettingsForm component
+  - [x] Write tests for form rendering with current values
+  - [x] Write tests for field validation
+  - [x] Write tests for logo upload preview
+  - [x] Write tests for save action
+  - [x] Implement OpCoSettingsForm.vue
 
-- [ ] Task: Create BusinessUnitList component
-  - [ ] Write tests for list rendering
-  - [ ] Write tests for create button and modal
-  - [ ] Write tests for edit action
-  - [ ] Write tests for delete with confirmation
-  - [ ] Implement BusinessUnitList.vue
+- [x] Task: Create BusinessUnitList component
+  - [x] Write tests for list rendering
+  - [x] Write tests for create button and modal
+  - [x] Write tests for edit action
+  - [x] Write tests for delete with confirmation
+  - [x] Implement BusinessUnitList.vue
 
-- [ ] Task: Create BusinessUnitModal component
-  - [ ] Write tests for create mode
-  - [ ] Write tests for edit mode
-  - [ ] Write tests for validation
-  - [ ] Implement BusinessUnitModal.vue
+- [x] Task: Create BusinessUnitModal component
+  - [x] Write tests for create mode
+  - [x] Write tests for edit mode
+  - [x] Write tests for validation
+  - [x] Implement BusinessUnitModal.vue
 
-- [ ] Task: Integrate into AdminView
-  - [ ] Write tests for OpCo Settings tab
-  - [ ] Write tests for Business Units tab
-  - [ ] Implement tab content with components
+- [x] Task: Integrate into AdminView
+  - [x] Write tests for OpCo Settings tab
+  - [x] Write tests for Business Units tab
+  - [x] Implement tab content with components
 
-- [ ] Task: Add i18n translations for Phase 3 UI
-  - [ ] Add English translations
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for Phase 3 UI
+  - [x] Add English translations
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Conductor - User Manual Verification 'OpCo Settings & Business Unit Management' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'OpCo Settings & Business Unit Management' (Protocol in workflow.md)
 
-## Phase 4: System Configuration [checkpoint: ]
+## Phase 4: System Configuration [checkpoint: complete]
 
-- [ ] Task: Create system configuration API endpoints
-  - [ ] Write tests for GET /api/v1/admin/system/health
-  - [ ] Write tests for GET /api/v1/admin/system/voice-config
-  - [ ] Write tests for PUT /api/v1/admin/system/voice-config
-  - [ ] Write tests for GET /api/v1/admin/system/review-periods
-  - [ ] Write tests for PUT /api/v1/admin/system/review-periods
-  - [ ] Write tests for admin role authorization
-  - [ ] Implement system config router
+- [x] Task: Create system configuration API endpoints
+  - [x] Write tests for GET /api/v1/admin/system/health
+  - [x] Write tests for GET /api/v1/admin/system/voice-config
+  - [x] Write tests for PUT /api/v1/admin/system/voice-config
+  - [x] Write tests for GET /api/v1/admin/system/review-periods
+  - [x] Write tests for PUT /api/v1/admin/system/review-periods
+  - [x] Write tests for admin role authorization
+  - [x] Implement system config router
 
-- [ ] Task: Create SystemHealthPanel component
-  - [ ] Write tests for service status display (API, DB, Keycloak, Voice)
-  - [ ] Write tests for status indicators (green/red)
-  - [ ] Write tests for refresh action
-  - [ ] Implement SystemHealthPanel.vue
+- [x] Task: Create SystemHealthPanel component
+  - [x] Write tests for service status display (API, DB, Keycloak, Voice)
+  - [x] Write tests for status indicators (green/red)
+  - [x] Write tests for refresh action
+  - [x] Implement SystemHealthPanel.vue
 
-- [ ] Task: Create VoiceConfigForm component
-  - [ ] Write tests for form rendering
-  - [ ] Write tests for endpoint URL validation
-  - [ ] Write tests for save action
-  - [ ] Implement VoiceConfigForm.vue
+- [x] Task: Create VoiceConfigForm component (combined into SystemConfigForm)
+  - [x] Write tests for form rendering
+  - [x] Write tests for endpoint URL validation
+  - [x] Write tests for save action
+  - [x] Implement SystemConfigForm.vue (voice config + review periods)
 
-- [ ] Task: Create ReviewPeriodSettings component
-  - [ ] Write tests for period date inputs
-  - [ ] Write tests for open/close period actions
-  - [ ] Write tests for validation
-  - [ ] Implement ReviewPeriodSettings.vue
+- [x] Task: Create ReviewPeriodSettings component (combined into SystemConfigForm)
+  - [x] Write tests for period date inputs
+  - [x] Write tests for open/close period actions
+  - [x] Write tests for validation
+  - [x] Implement as part of SystemConfigForm.vue
 
-- [ ] Task: Integrate into AdminView System tab
-  - [ ] Write tests for System tab content
-  - [ ] Implement tab with all components
+- [x] Task: Integrate into AdminView System tab
+  - [x] Write tests for System tab content
+  - [x] Implement tab with all components
 
-- [ ] Task: Add i18n translations for system config UI
-  - [ ] Add English translations
-  - [ ] Add Dutch translations
-  - [ ] Add Spanish translations
+- [x] Task: Add i18n translations for system config UI
+  - [x] Add English translations
+  - [x] Add Dutch translations
+  - [x] Add Spanish translations
 
-- [ ] Task: Conductor - User Manual Verification 'System Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'System Configuration' (Protocol in workflow.md)
 
 ## Phase 5: Audit Log Viewer [checkpoint: ]
 
