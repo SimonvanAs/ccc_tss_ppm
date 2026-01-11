@@ -148,11 +148,11 @@ describe('NineGrid', () => {
       expect(cell.classes()).toContain('color-orange')
     })
 
-    it('should have orange color for cell (2,2)', () => {
+    it('should have green color for cell (2,2)', () => {
       const wrapper = mount(NineGrid)
 
       const cell = wrapper.find('[data-what="2"][data-how="2"]')
-      expect(cell.classes()).toContain('color-orange')
+      expect(cell.classes()).toContain('color-green')
     })
 
     it('should have orange color for cell (3,1)', () => {

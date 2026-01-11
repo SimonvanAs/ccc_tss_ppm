@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { getCurrentUser } from '../../api/auth'
+import { getCurrentUser, logout } from '../../api/auth'
 
 type SidebarMode = 'expanded' | 'collapsed' | 'hidden'
 
@@ -37,11 +37,15 @@ const isManager = computed(() => {
   return user?.roles?.includes('manager') ?? false
 })
 
+const isHR = computed(() => {
+  return user?.roles?.includes('hr') ?? false
+})
+
 const userInitials = computed(() => {
   if (!user?.name) return '?'
   const parts = user.name.split(' ')
   if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
   }
   return user.name[0]?.toUpperCase() || '?'
 })
@@ -150,14 +154,30 @@ function changeLocale(code: string) {
         </span>
         <span class="nav-label">{{ t('nav.team') }}</span>
       </RouterLink>
+
+      <RouterLink
+        v-if="isHR"
+        to="/calibration"
+        class="nav-item"
+        :class="{ 'is-active': isActive('/calibration') }"
+        @click="handleNavClick"
+      >
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+        </span>
+        <span class="nav-label">{{ t('nav.calibration') }}</span>
+      </RouterLink>
     </nav>
 
-    <div class="sidebar-profile" :aria-label="t('layout.sidebar.profile')">
+    <!-- Profile Section (sticky at bottom) -->
+    <div class="sidebar-profile">
       <div class="profile-avatar">
         <img
           v-if="user?.picture"
           :src="user.picture"
-          :alt="user?.name || 'User avatar'"
+          :alt="user?.name || 'User'"
           class="avatar-image"
         />
         <span v-else class="avatar-initials">{{ userInitials }}</span>
@@ -165,6 +185,19 @@ function changeLocale(code: string) {
       <div class="profile-info">
         <span class="profile-name">{{ user?.name || 'User' }}</span>
       </div>
+      <button
+        class="logout-btn"
+        type="button"
+        :title="t('nav.logout')"
+        :aria-label="t('nav.logout')"
+        @click="logout"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      </button>
     </div>
   </aside>
 </template>
@@ -172,7 +205,7 @@ function changeLocale(code: string) {
 <style scoped>
 .app-sidebar {
   width: 240px;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--color-white);
   color: var(--color-navy);
   border-right: 1px solid var(--color-gray-200);
@@ -180,6 +213,8 @@ function changeLocale(code: string) {
   flex-direction: column;
   transition: width 0.25s ease, transform 0.25s ease;
   z-index: 50;
+  position: sticky;
+  top: 0;
 }
 
 /* Collapsed state (tablet) */
@@ -206,11 +241,6 @@ function changeLocale(code: string) {
 .app-sidebar--collapsed .nav-item {
   justify-content: center;
   padding: 0.75rem;
-}
-
-.app-sidebar--collapsed .sidebar-profile {
-  justify-content: center;
-  padding: 1rem 0.75rem;
 }
 
 /* Hidden state (mobile - default hidden) */
@@ -290,6 +320,8 @@ function changeLocale(code: string) {
 .sidebar-nav {
   flex: 1;
   padding: 1rem 0;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .nav-item {
@@ -328,17 +360,20 @@ function changeLocale(code: string) {
   white-space: nowrap;
 }
 
+/* Profile Section - sticky at bottom */
 .sidebar-profile {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--color-gray-200);
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-gray-200);
+  background-color: var(--color-white);
+  flex-shrink: 0;
 }
 
 .profile-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background-color: var(--color-magenta);
   display: flex;
@@ -366,12 +401,46 @@ function changeLocale(code: string) {
 }
 
 .profile-name {
-  display: block;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-navy);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-gray-400);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.logout-btn:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-magenta);
+}
+
+/* Collapsed state for profile */
+.app-sidebar--collapsed .sidebar-profile {
+  padding: 0.75rem;
+  justify-content: center;
+}
+
+.app-sidebar--collapsed .profile-avatar {
+  width: 32px;
+  height: 32px;
+}
+
+.app-sidebar--collapsed .logout-btn {
+  display: none;
 }
 </style>

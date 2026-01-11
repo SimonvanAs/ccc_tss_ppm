@@ -25,15 +25,15 @@ const howValues = [1, 2, 3] as const // Columns from left to right
 
 // Color mapping based on cell position
 // Red: Low performance (1,1), (1,2), (2,1)
-// Orange: Developing (1,3), (2,2), (3,1)
-// Green: Solid performers (2,3), (3,2)
+// Orange: Developing (1,3), (3,1)
+// Green: Solid performers (2,2), (2,3), (3,2)
 // Dark Green: Top performers (3,3)
 function getCellColor(what: number, how: number): string {
   const sum = what + how
 
   if (what === 3 && how === 3) return 'color-dark-green'
-  if (sum >= 5) return 'color-green'
-  if (sum >= 4 || (what === 2 && how === 2)) return 'color-orange'
+  if (sum >= 5 || (what === 2 && how === 2)) return 'color-green'
+  if (sum >= 4) return 'color-orange'
   return 'color-red'
 }
 

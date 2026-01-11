@@ -86,8 +86,8 @@ function getCellColor(what: number, how: number): string {
   const sum = what + how
 
   if (what === 3 && how === 3) return 'color-dark-green'
-  if (sum >= 5) return 'color-green'
-  if (sum >= 4 || (what === 2 && how === 2)) return 'color-orange'
+  if (sum >= 5 || (what === 2 && how === 2)) return 'color-green'
+  if (sum >= 4) return 'color-orange'
   return 'color-red'
 }
 
