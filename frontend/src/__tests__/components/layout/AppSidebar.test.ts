@@ -34,6 +34,7 @@ vi.mock('../../../api/auth', () => ({
 }))
 
 // Mock vue-i18n
+const mockLocale = ref('en')
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
     t: (key: string) => {
@@ -45,12 +46,14 @@ vi.mock('vue-i18n', () => ({
       }
       return messages[key] || key
     },
+    locale: mockLocale,
   }),
 }))
 
 describe('AppSidebar', () => {
   beforeEach(() => {
     mockRoute.value = { path: '/' }
+    mockLocale.value = 'en'
     mockUser.value = {
       id: 'user-123',
       name: 'Test User',
@@ -167,10 +170,48 @@ describe('AppSidebar', () => {
       expect(wrapper.find('.app-sidebar').exists()).toBe(true)
     })
 
-    it('should have navy background color class', () => {
+    it('should have white background with navy accents', () => {
       const wrapper = createWrapper()
-      // The sidebar should have navy background styling
+      // The sidebar should have the app-sidebar class with white background styling
       expect(wrapper.find('.app-sidebar').exists()).toBe(true)
+    })
+  })
+
+  describe('language selector', () => {
+    it('should render language selector with three options', () => {
+      const wrapper = createWrapper()
+      const langButtons = wrapper.findAll('.lang-btn')
+      expect(langButtons.length).toBe(3)
+    })
+
+    it('should show EN, NL, and ES options with flag emojis', () => {
+      const wrapper = createWrapper()
+      const text = wrapper.text()
+      expect(text).toContain('EN')
+      expect(text).toContain('NL')
+      expect(text).toContain('ES')
+    })
+
+    it('should highlight current locale button', () => {
+      mockLocale.value = 'nl'
+      const wrapper = createWrapper()
+      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.text().includes('NL'))
+      expect(nlButton?.classes()).toContain('is-active')
+    })
+
+    it('should emit locale-change when language button clicked', async () => {
+      const wrapper = createWrapper()
+      const nlButton = wrapper.findAll('.lang-btn').find((btn) => btn.text().includes('NL'))
+      await nlButton?.trigger('click')
+      expect(wrapper.emitted('locale-change')).toBeTruthy()
+      expect(wrapper.emitted('locale-change')?.[0]).toEqual(['nl'])
+    })
+
+    it('should change locale when language button clicked', async () => {
+      const wrapper = createWrapper()
+      const esButton = wrapper.findAll('.lang-btn').find((btn) => btn.text().includes('ES'))
+      await esButton?.trigger('click')
+      expect(mockLocale.value).toBe('es')
     })
   })
 })
