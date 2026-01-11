@@ -136,7 +136,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Create/read notes at review level
 - [x] Task: Conductor - User Manual Verification 'Phase 5: Calibration Backend - Reviews & Score Adjustments' (Protocol in workflow.md)
 
-## Phase 6: Calibration Frontend - Session Management
+## Phase 6: Calibration Frontend - Session Management [checkpoint: cc5727c]
 
 - [x] Task: Write tests for CalibrationSessionList component
   - [x] Test displays list of sessions
@@ -167,7 +167,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Show status with available actions
   - [x] Implement start and complete actions
 - [x] Task: Add i18n translations for calibration UI (EN/NL/ES)
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Calibration Frontend - Session Management' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Calibration Frontend - Session Management' (Protocol in workflow.md)
 
 ## Phase 7: Calibration Frontend - Grid View & Score Adjustment
 
