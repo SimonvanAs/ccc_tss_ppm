@@ -70,7 +70,7 @@
   - [x] Add focus states with Magenta outline
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Card and Content Styling Components' (Protocol in workflow.md) `c125ab2`
 
-## Phase 3: Responsive Sidebar Behavior
+## Phase 3: Responsive Sidebar Behavior [checkpoint: 5d2c397]
 
 - [x] Task: Write tests for sidebar responsive behavior `0c7509f`
   - [x] Test sidebar expanded on desktop (≥1024px)
@@ -91,7 +91,7 @@
   - [x] Add overlay backdrop when sidebar open on mobile
   - [x] Click outside closes sidebar
   - [x] Slide-in animation from left
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Responsive Sidebar Behavior' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Responsive Sidebar Behavior' (Protocol in workflow.md) `5d2c397`
 
 ## Phase 4: View Integration
 
