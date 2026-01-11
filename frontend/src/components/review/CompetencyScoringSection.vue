@@ -1,107 +1,154 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import ScoreCard from './ScoreCard.vue'
+// TSS PPM v3.0 - CompetencyScoringSection Integration Component
+// Integrates CompetencyList, HOWScoreIndicator, and useCompetencyScoring
 
-export interface Competency {
-  id: string
-  name: string
-  description?: string
-  category: string
-}
-
-export interface CompetencyScore {
-  score: number | null
-}
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useCompetencyScoring } from '../../composables/useCompetencyScoring'
+import CompetencyList from './CompetencyList.vue'
+import HOWScoreIndicator from './HOWScoreIndicator.vue'
+import type { TovLevel } from '../../types/competency'
 
 interface Props {
-  competencies: Competency[]
-  scores: Record<string, CompetencyScore>
+  reviewId: string
+  tovLevel: TovLevel
+  initialScores?: Record<string, number>
+  initialNotes?: Record<string, string>
   disabled?: boolean
-  compact?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  initialScores: () => ({}),
+  initialNotes: () => ({}),
   disabled: false,
-  compact: false,
 })
 
 const emit = defineEmits<{
-  (e: 'score-change', competencyId: string, score: number): void
+  (e: 'score-change', payload: { competencyId: string; score: number }): void
+  (e: 'notes-change', payload: { competencyId: string; notes: string }): void
+  (e: 'score-save', payload: { scores: { competency_id: string; score: number }[]; notes: Record<string, string> }): void
+  (e: 'how-score-change', payload: { howScore: number | null; gridPosition: number | null; vetoActive: boolean }): void
 }>()
 
-// Group competencies by category
-const groupedCompetencies = computed(() => {
-  const groups: Record<string, Competency[]> = {}
+const { t } = useI18n()
 
-  for (const comp of props.competencies) {
-    if (!groups[comp.category]) {
-      groups[comp.category] = []
-    }
-    groups[comp.category].push(comp)
+// Composable for HOW score calculation
+const {
+  scores,
+  scoredCount,
+  isComplete,
+  vetoActive,
+  vetoCompetencyId,
+  howScore,
+  gridPosition,
+  setScore,
+  initializeScores,
+  getScoresArray,
+} = useCompetencyScoring()
+
+// Local notes state
+const localNotes = ref<Record<string, string>>({})
+
+// Auto-save debounce timer
+let saveTimer: ReturnType<typeof setTimeout> | null = null
+const DEBOUNCE_MS = 1000
+
+// Initialize from props
+onMounted(() => {
+  if (props.initialScores && Object.keys(props.initialScores).length > 0) {
+    const scoreArray = Object.entries(props.initialScores).map(([id, score]) => ({
+      id,
+      score,
+    }))
+    initializeScores(scoreArray)
   }
 
-  return groups
+  if (props.initialNotes) {
+    localNotes.value = { ...props.initialNotes }
+  }
 })
 
-const categories = computed(() => Object.keys(groupedCompetencies.value))
+// Cleanup on unmount
+onUnmounted(() => {
+  if (saveTimer) {
+    clearTimeout(saveTimer)
+  }
+})
 
-function getCompetencyScore(compId: string): number | null {
-  return props.scores[compId]?.score ?? null
+// Watch for HOW score changes and emit to parent
+watch(
+  [howScore, gridPosition, vetoActive],
+  ([newHowScore, newGridPosition, newVetoActive]) => {
+    emit('how-score-change', {
+      howScore: newHowScore,
+      gridPosition: newGridPosition,
+      vetoActive: newVetoActive,
+    })
+  }
+)
+
+// Handle score change from CompetencyList
+function handleScoreChange(payload: { competencyId: string; score: number }) {
+  setScore(payload.competencyId, payload.score)
+  emit('score-change', payload)
+  scheduleSave()
 }
 
-function handleScoreChange(compId: string, score: number) {
-  emit('score-change', compId, score)
+// Handle notes change from CompetencyList
+function handleNotesChange(payload: { competencyId: string; notes: string }) {
+  localNotes.value[payload.competencyId] = payload.notes
+  emit('notes-change', payload)
+  scheduleSave()
 }
 
-const scoreLabels = {
-  1: 'Below',
-  2: 'Meets',
-  3: 'Exceeds',
+// Debounced auto-save
+function scheduleSave() {
+  if (saveTimer) {
+    clearTimeout(saveTimer)
+  }
+
+  saveTimer = setTimeout(() => {
+    emit('score-save', {
+      scores: getScoresArray(),
+      notes: localNotes.value,
+    })
+  }, DEBOUNCE_MS)
+}
+
+// Convert scores Map to Record for CompetencyList
+function getScoresRecord(): Record<string, number> {
+  const record: Record<string, number> = {}
+  for (const [id, score] of scores.value.entries()) {
+    record[id] = score
+  }
+  return record
 }
 </script>
 
 <template>
-  <div class="competency-scoring-section" :class="{ compact }">
-    <h2 class="section-title">Competencies (HOW)</h2>
+  <div class="competency-scoring-section">
+    <!-- Header with HOW Score Indicator -->
+    <div class="section-header">
+      <h2 class="section-title">{{ t('competencies.how') }}</h2>
 
-    <div v-if="competencies.length === 0" class="empty-state">
-      No competencies defined for this review.
+      <HOWScoreIndicator
+        :how-score="howScore"
+        :veto-active="vetoActive"
+        :veto-competency-id="vetoCompetencyId"
+        :grid-position="gridPosition"
+        :scored-count="scoredCount"
+      />
     </div>
 
-    <div v-else class="category-list">
-      <div
-        v-for="category in categories"
-        :key="category"
-        class="category-group"
-      >
-        <h3 class="category-title">{{ category }}</h3>
-
-        <div class="competency-list">
-          <div
-            v-for="comp in groupedCompetencies[category]"
-            :key="comp.id"
-            :data-competency-id="comp.id"
-            class="competency-item"
-          >
-            <div class="competency-info">
-              <h4 class="competency-name">{{ comp.name }}</h4>
-              <p v-if="comp.description && !compact" class="competency-description">
-                {{ comp.description }}
-              </p>
-            </div>
-
-            <div class="competency-scoring">
-              <ScoreCard
-                :model-value="getCompetencyScore(comp.id)"
-                :labels="compact ? {} : scoreLabels"
-                :disabled="disabled"
-                @update:model-value="handleScoreChange(comp.id, $event)"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Competency List -->
+    <CompetencyList
+      :tov-level="tovLevel"
+      :scores="getScoresRecord()"
+      :notes="localNotes"
+      :disabled="disabled"
+      @score-change="handleScoreChange"
+      @notes-change="handleNotesChange"
+    />
   </div>
 </template>
 
@@ -110,109 +157,19 @@ const scoreLabels = {
   margin-bottom: 2rem;
 }
 
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-navy);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-navy);
-}
-
-.empty-state {
-  padding: 2rem;
-  text-align: center;
-  color: var(--color-gray-600);
-  background: var(--color-gray-100);
-  border-radius: 8px;
-}
-
-.category-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.category-group {
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-200);
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.category-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-magenta);
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-gray-200);
-}
-
-.competency-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.competency-item {
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: var(--color-gray-100);
-  border-radius: 4px;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.competency-info {
-  flex: 1;
-}
-
-.competency-name {
-  font-size: 0.875rem;
+.section-title {
+  font-size: 1.25rem;
   font-weight: 600;
+  color: var(--color-navy, #004A91);
   margin: 0;
-  color: var(--color-gray-900);
-}
-
-.competency-description {
-  font-size: 0.75rem;
-  color: var(--color-gray-600);
-  margin: 0.25rem 0 0;
-}
-
-.competency-scoring {
-  flex-shrink: 0;
-}
-
-/* Compact mode */
-.compact .category-group {
-  padding: 0.75rem;
-}
-
-.compact .category-title {
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-
-.compact .competency-list {
-  gap: 0.5rem;
-}
-
-.compact .competency-item {
-  padding: 0.5rem;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.5rem;
-}
-
-.compact .competency-name {
-  font-size: 0.75rem;
-}
-
-.compact .competency-scoring {
-  display: flex;
-  justify-content: center;
 }
 </style>

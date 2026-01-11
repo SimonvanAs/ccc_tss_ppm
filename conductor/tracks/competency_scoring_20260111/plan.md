@@ -85,16 +85,16 @@
 
 ## Phase 6: Integration and Auto-Save
 
-- [ ] Task: Write integration tests for competency scoring flow
-  - [ ] Test end-to-end score entry and save
-  - [ ] Test auto-save triggers on score change
-  - [ ] Test 9-Grid updates on HOW score change
-- [ ] Task: Integrate CompetencyList into manager scoring view
-  - [ ] Add CompetencyList to scoring page layout
-  - [ ] Connect to useCompetencyScoring composable
-  - [ ] Wire up auto-save with debounce (1 second)
-  - [ ] Connect SaveIndicator component
-- [ ] Task: Integrate HOW score with 9-Grid component
-  - [ ] Emit HOW score changes to parent view
-  - [ ] Update 9-Grid column position on score change
+- [x] Task: Write integration tests for competency scoring flow
+  - [x] Test end-to-end score entry and save
+  - [x] Test auto-save triggers on score change
+  - [x] Test 9-Grid updates on HOW score change
+- [x] Task: Integrate CompetencyList into manager scoring view
+  - [x] Add CompetencyList to scoring page layout
+  - [x] Connect to useCompetencyScoring composable
+  - [x] Wire up auto-save with debounce (1 second)
+  - [x] Connect SaveIndicator component (via emit)
+- [x] Task: Integrate HOW score with 9-Grid component
+  - [x] Emit HOW score changes to parent view
+  - [x] Update 9-Grid column position on score change
 - [ ] Task: Conductor - User Manual Verification 'Integration and Auto-Save' (Protocol in workflow.md)
