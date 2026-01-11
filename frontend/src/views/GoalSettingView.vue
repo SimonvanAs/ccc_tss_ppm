@@ -6,6 +6,7 @@ import { useGoals } from '../composables/useGoals'
 import { useReviewHeader } from '../composables/useReviewHeader'
 import { useCompetencyPreview } from '../composables/useCompetencyPreview'
 import { submitReview } from '../api/goals'
+import { hasRole } from '../api/auth'
 import type { Goal, GoalCreate } from '../types'
 import type { TovLevel } from '../types/competency'
 import GoalList from '../components/review/GoalList.vue'
@@ -71,6 +72,9 @@ const isHeaderFieldsValid = computed(() => {
 const canSubmit = computed(() => {
   return isWeightValid.value && isHeaderFieldsValid.value
 })
+
+// Check if current user has HR role
+const isHrUser = computed(() => hasRole('hr'))
 
 // Modal states
 const showAddModal = ref(false)
@@ -243,6 +247,7 @@ async function handleSubmit() {
       :goal-setting-completed-at="review.goal_setting_completed_at"
       :mid-year-completed-at="review.mid_year_completed_at"
       :end-year-completed-at="review.end_year_completed_at"
+      :is-hr-user="isHrUser"
       class="review-header-card"
       @update:job-title="handleJobTitleUpdate"
       @update:tov-level="handleTovLevelUpdate"
