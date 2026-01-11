@@ -125,7 +125,7 @@
 
 - [ ] Task: Conductor - User Manual Verification 'PDF Generation Service' (Protocol in workflow.md)
 
-## Phase 5: Frontend PDF Download [checkpoint: ]
+## Phase 5: Frontend PDF Download [checkpoint: e48801e]
 
 - [x] Task: Create PDFDownloadButton component
   - [x] Write tests for button label by review status
