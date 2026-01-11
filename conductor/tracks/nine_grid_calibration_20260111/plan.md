@@ -138,35 +138,35 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
 
 ## Phase 6: Calibration Frontend - Session Management
 
-- [ ] Task: Write tests for CalibrationSessionList component
-  - [ ] Test displays list of sessions
-  - [ ] Test shows session status badges
-  - [ ] Test filter by status works
-  - [ ] Test create new session button
-- [ ] Task: Implement CalibrationSessionList.vue component
-  - [ ] Fetch sessions from API
-  - [ ] Display in table/card format
-  - [ ] Add status filter
-  - [ ] Add create session button
-- [ ] Task: Write tests for CalibrationSessionForm component
-  - [ ] Test form fields render
-  - [ ] Test validation
-  - [ ] Test submit creates session
-  - [ ] Test edit mode populates fields
-- [ ] Task: Implement CalibrationSessionForm.vue component
-  - [ ] Create form with name, description, review cycle
-  - [ ] Add review selection (multi-select or filter)
-  - [ ] Add participant selection
-  - [ ] Handle create and edit modes
-- [ ] Task: Write tests for CalibrationSessionDetail component
-  - [ ] Test displays session info
-  - [ ] Test shows status workflow actions
-  - [ ] Test start/complete buttons work
-- [ ] Task: Implement CalibrationSessionDetail.vue component
-  - [ ] Display session metadata
-  - [ ] Show status with available actions
-  - [ ] Implement start and complete actions
-- [ ] Task: Add i18n translations for calibration UI (EN/NL/ES)
+- [x] Task: Write tests for CalibrationSessionList component
+  - [x] Test displays list of sessions
+  - [x] Test shows session status badges
+  - [x] Test filter by status works
+  - [x] Test create new session button
+- [x] Task: Implement CalibrationSessionList.vue component
+  - [x] Fetch sessions from API
+  - [x] Display in table/card format
+  - [x] Add status filter
+  - [x] Add create session button
+- [x] Task: Write tests for CalibrationSessionForm component
+  - [x] Test form fields render
+  - [x] Test validation
+  - [x] Test submit creates session
+  - [x] Test edit mode populates fields
+- [x] Task: Implement CalibrationSessionForm.vue component
+  - [x] Create form with name, description, review cycle
+  - [x] Add review selection (multi-select or filter)
+  - [x] Add participant selection
+  - [x] Handle create and edit modes
+- [x] Task: Write tests for CalibrationSessionDetail component
+  - [x] Test displays session info
+  - [x] Test shows status workflow actions
+  - [x] Test start/complete buttons work
+- [x] Task: Implement CalibrationSessionDetail.vue component
+  - [x] Display session metadata
+  - [x] Show status with available actions
+  - [x] Implement start and complete actions
+- [x] Task: Add i18n translations for calibration UI (EN/NL/ES)
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Calibration Frontend - Session Management' (Protocol in workflow.md)
 
 ## Phase 7: Calibration Frontend - Grid View & Score Adjustment

@@ -250,7 +250,60 @@
     "originalScore": "Origineel",
     "adjustedScore": "Aangepast",
     "adjustmentNotes": "Aanpassingsnotities",
-    "noReviewsSelected": "Geen beoordelingen geselecteerd voor kalibratie"
+    "noReviewsSelected": "Geen beoordelingen geselecteerd voor kalibratie",
+    "sessions": {
+      "title": "Kalibratiesessies",
+      "createNew": "Nieuwe Sessie Aanmaken",
+      "filterByStatus": "Filteren op Status",
+      "allStatuses": "Alle Statussen",
+      "noSessions": "Geen kalibratiesessies gevonden",
+      "loading": "Sessies laden..."
+    },
+    "form": {
+      "title": {
+        "create": "Kalibratiesessie Aanmaken",
+        "edit": "Kalibratiesessie Bewerken"
+      },
+      "name": "Sessienaam",
+      "namePlaceholder": "Voer sessienaam in",
+      "description": "Beschrijving",
+      "descriptionPlaceholder": "Voer beschrijving in",
+      "reviewYear": "Beoordelingsjaar",
+      "scope": "Bereik",
+      "scope.COMPANY_WIDE": "Bedrijfsbreed",
+      "scope.BUSINESS_UNIT": "Business Unit",
+      "cancel": "Annuleren",
+      "submit": {
+        "create": "Sessie Aanmaken",
+        "edit": "Wijzigingen Opslaan"
+      },
+      "validation": {
+        "nameRequired": "Sessienaam is verplicht",
+        "yearRequired": "Beoordelingsjaar is verplicht"
+      }
+    },
+    "detail": {
+      "title": "Kalibratiesessie",
+      "description": "Beschrijving",
+      "reviewYear": "Beoordelingsjaar",
+      "scope": "Bereik",
+      "status": "Status",
+      "createdAt": "Aangemaakt",
+      "reviews": "Beoordelingen",
+      "participants": "Deelnemers",
+      "noReviews": "Geen beoordelingen in deze sessie",
+      "noParticipants": "Geen deelnemers toegevoegd",
+      "loading": "Laden...",
+      "startSession": "Sessie Starten",
+      "completeSession": "Sessie Voltooien",
+      "edit": "Bewerken",
+      "delete": "Verwijderen",
+      "back": "Terug naar Sessies"
+    },
+    "scope": {
+      "COMPANY_WIDE": "Bedrijfsbreed",
+      "BUSINESS_UNIT": "Business Unit"
+    }
   },
   "team": {
     "title": "Team Overzicht",
@@ -411,5 +464,10 @@
     "midYearCompleted": "Halfjaar",
     "endYearCompleted": "Eindjaar",
     "pending": "In afwachting"
+  },
+  "competencyPreview": {
+    "title": "Competenties voor Geselecteerd Niveau",
+    "selectTovLevel": "Selecteer hierboven een TOV-niveau om de toepasselijke competenties te zien",
+    "emptyState": "Geen competenties beschikbaar voor dit niveau"
   }
 }

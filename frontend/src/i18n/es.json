@@ -250,7 +250,60 @@
     "originalScore": "Original",
     "adjustedScore": "Ajustado",
     "adjustmentNotes": "Notas de Ajuste",
-    "noReviewsSelected": "No hay evaluaciones seleccionadas para calibración"
+    "noReviewsSelected": "No hay evaluaciones seleccionadas para calibración",
+    "sessions": {
+      "title": "Sesiones de Calibración",
+      "createNew": "Crear Nueva Sesión",
+      "filterByStatus": "Filtrar por Estado",
+      "allStatuses": "Todos los Estados",
+      "noSessions": "No se encontraron sesiones de calibración",
+      "loading": "Cargando sesiones..."
+    },
+    "form": {
+      "title": {
+        "create": "Crear Sesión de Calibración",
+        "edit": "Editar Sesión de Calibración"
+      },
+      "name": "Nombre de Sesión",
+      "namePlaceholder": "Ingrese nombre de sesión",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Ingrese descripción",
+      "reviewYear": "Año de Evaluación",
+      "scope": "Alcance",
+      "scope.COMPANY_WIDE": "Toda la Empresa",
+      "scope.BUSINESS_UNIT": "Unidad de Negocio",
+      "cancel": "Cancelar",
+      "submit": {
+        "create": "Crear Sesión",
+        "edit": "Guardar Cambios"
+      },
+      "validation": {
+        "nameRequired": "El nombre de sesión es requerido",
+        "yearRequired": "El año de evaluación es requerido"
+      }
+    },
+    "detail": {
+      "title": "Sesión de Calibración",
+      "description": "Descripción",
+      "reviewYear": "Año de Evaluación",
+      "scope": "Alcance",
+      "status": "Estado",
+      "createdAt": "Creado",
+      "reviews": "Evaluaciones",
+      "participants": "Participantes",
+      "noReviews": "No hay evaluaciones en esta sesión",
+      "noParticipants": "No se han agregado participantes",
+      "loading": "Cargando...",
+      "startSession": "Iniciar Sesión",
+      "completeSession": "Completar Sesión",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "back": "Volver a Sesiones"
+    },
+    "scope": {
+      "COMPANY_WIDE": "Toda la Empresa",
+      "BUSINESS_UNIT": "Unidad de Negocio"
+    }
   },
   "team": {
     "title": "Vista General del Equipo",

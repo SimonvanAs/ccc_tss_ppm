@@ -264,7 +264,60 @@
     "originalScore": "Original",
     "adjustedScore": "Adjusted",
     "adjustmentNotes": "Adjustment Notes",
-    "noReviewsSelected": "No reviews selected for calibration"
+    "noReviewsSelected": "No reviews selected for calibration",
+    "sessions": {
+      "title": "Calibration Sessions",
+      "createNew": "Create New Session",
+      "filterByStatus": "Filter by Status",
+      "allStatuses": "All Statuses",
+      "noSessions": "No calibration sessions found",
+      "loading": "Loading sessions..."
+    },
+    "form": {
+      "title": {
+        "create": "Create Calibration Session",
+        "edit": "Edit Calibration Session"
+      },
+      "name": "Session Name",
+      "namePlaceholder": "Enter session name",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description",
+      "reviewYear": "Review Year",
+      "scope": "Scope",
+      "scope.COMPANY_WIDE": "Company Wide",
+      "scope.BUSINESS_UNIT": "Business Unit",
+      "cancel": "Cancel",
+      "submit": {
+        "create": "Create Session",
+        "edit": "Save Changes"
+      },
+      "validation": {
+        "nameRequired": "Session name is required",
+        "yearRequired": "Review year is required"
+      }
+    },
+    "detail": {
+      "title": "Calibration Session",
+      "description": "Description",
+      "reviewYear": "Review Year",
+      "scope": "Scope",
+      "status": "Status",
+      "createdAt": "Created",
+      "reviews": "Reviews",
+      "participants": "Participants",
+      "noReviews": "No reviews in this session",
+      "noParticipants": "No participants added",
+      "loading": "Loading...",
+      "startSession": "Start Session",
+      "completeSession": "Complete Session",
+      "edit": "Edit",
+      "delete": "Delete",
+      "back": "Back to Sessions"
+    },
+    "scope": {
+      "COMPANY_WIDE": "Company Wide",
+      "BUSINESS_UNIT": "Business Unit"
+    }
   },
   "team": {
     "title": "Team Overview",
@@ -430,5 +483,10 @@
     "midYearCompleted": "Mid-Year",
     "endYearCompleted": "End-Year",
     "pending": "Pending"
+  },
+  "competencyPreview": {
+    "title": "Competencies for Selected Level",
+    "selectTovLevel": "Select a TOV level above to see the applicable competencies",
+    "emptyState": "No competencies available for this level"
   }
 }
