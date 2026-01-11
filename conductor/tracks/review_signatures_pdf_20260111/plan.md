@@ -1,6 +1,6 @@
 # Plan: Review Signatures & PDF Generation
 
-## Phase 1: Database Schema & Models [checkpoint: ]
+## Phase 1: Database Schema & Models [checkpoint: 5ff9c04]
 
 - [x] Task: Add signature fields to reviews table `5b99607`
   - [x] Write migration SQL for employee_signature_by, manager_signature_by columns
@@ -13,7 +13,7 @@
   - [x] Implement audit log entries for sign/reject actions
   - [x] Verify audit logs capture user_id, action, timestamp, review_id
 
-- [ ] Task: Conductor - User Manual Verification 'Database Schema & Models' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Database Schema & Models' (Protocol in workflow.md)
 
 ## Phase 2: Backend Signature API [checkpoint: ]
 
