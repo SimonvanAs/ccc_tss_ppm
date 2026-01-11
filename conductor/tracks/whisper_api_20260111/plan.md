@@ -5,10 +5,10 @@
 - [x] Task: Add WebSocket and HTTP client dependencies to requirements.txt (d32153a)
   - [x] Add `websockets` package for WebSocket support in FastAPI
   - [x] Add `httpx[http2]` for async HTTP client to whisper service (if not present)
-- [ ] Task: Create voice service configuration in backend settings
-  - [ ] Add WHISPER_SERVICE_URL environment variable (default: http://whisper:8001)
-  - [ ] Add VOICE_SESSION_TIMEOUT setting (default: 30 seconds)
-  - [ ] Add VOICE_RATE_LIMIT setting (default: 10 per minute)
+- [x] Task: Create voice service configuration in backend settings (fe4b4c4)
+  - [x] Add WHISPER_SERVICE_URL environment variable (default: http://whisper:8001)
+  - [x] Add VOICE_SESSION_TIMEOUT setting (default: 30 seconds)
+  - [x] Add VOICE_RATE_LIMIT setting (default: 10 per minute)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Configuration' (Protocol in workflow.md)
 
 ## Phase 2: WebSocket Authentication
