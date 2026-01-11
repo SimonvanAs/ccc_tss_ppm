@@ -68,12 +68,12 @@
   - [x] Add Cancel button
   - [x] Style with brand colors
 
-- [ ] Task: Create SignatureStatus component
-  - [ ] Write tests for SignatureStatus display states
-  - [ ] Implement status badge display (Awaiting Signature, Signed, etc.)
-  - [ ] Show signature timestamps when signed
-  - [ ] Show signer information
-  - [ ] Style with brand colors
+- [x] Task: Create SignatureStatus component
+  - [x] Write tests for SignatureStatus display states
+  - [x] Implement status badge display (Awaiting Signature, Signed, etc.)
+  - [x] Show signature timestamps when signed
+  - [x] Show signer information
+  - [x] Style with brand colors
 
 - [ ] Task: Integrate signature UI into ReviewView
   - [ ] Write tests for signature button visibility by role and status
