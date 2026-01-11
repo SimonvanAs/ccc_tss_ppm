@@ -66,7 +66,7 @@ _Note: Phase 2 was completed as part of Manager Goal Scoring track (Phase 5)_
   - [x] Handle navigation to individual reviews
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Team Dashboard 9-Grid' (Protocol in workflow.md) `924e0b3`
 
-## Phase 4: Calibration Backend - Database & Core API [checkpoint: pending]
+## Phase 4: Calibration Backend - Database & Core API [checkpoint: c785664]
 
 - [x] Task: Create calibration_sessions database table (existed in 01-schema.sql)
   - [x] Define schema: id, opco_id, name, description, review_cycle, status, created_by, created_at, updated_at
