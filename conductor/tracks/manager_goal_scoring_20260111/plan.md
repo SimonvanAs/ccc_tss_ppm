@@ -8,10 +8,10 @@
   - [x] Write tests for team member status calculation (Not Started/In Progress/Complete)
   - [x] Implement status logic in repository
 
-- [ ] Task: Create scores repository with raw SQL queries
-  - [ ] Write tests for `get_scores_by_review_id` query
-  - [ ] Write tests for `upsert_scores` query (insert or update)
-  - [ ] Implement `ScoresRepository` class in `backend/src/repositories/scores.py`
+- [x] Task: Create scores repository with raw SQL queries `ed6d33f`
+  - [x] Write tests for `get_scores_by_review_id` query
+  - [x] Write tests for `upsert_scores` query (insert or update)
+  - [x] Implement `ScoresRepository` class in `backend/src/repositories/scores.py`
 
 - [ ] Task: Create GET /api/v1/manager/team endpoint
   - [ ] Write API tests for endpoint with auth (manager role required)
