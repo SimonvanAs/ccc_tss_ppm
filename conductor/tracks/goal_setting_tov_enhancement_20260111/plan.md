@@ -8,11 +8,11 @@
   - [x] Verify manager_id exists on reviews table (add if missing)
   - [x] Run migration and verify schema
 
-- [ ] Task: Update review repository for new fields
-  - [ ] Write tests for get_review returning new fields
-  - [ ] Write tests for update_review with job_title, tov_level
-  - [ ] Write tests for manager reassignment
-  - [ ] Implement repository updates
+- [x] Task: Update review repository for new fields `b66214d`
+  - [x] Write tests for get_review returning new fields
+  - [x] Write tests for update_review with job_title, tov_level
+  - [x] Write tests for manager reassignment
+  - [x] Implement repository updates
 
 - [ ] Task: Conductor - User Manual Verification 'Database Schema Updates' (Protocol in workflow.md)
 
