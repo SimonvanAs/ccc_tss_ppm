@@ -26,11 +26,11 @@ const { t, locale } = useI18n()
 const route = useRoute()
 const user = getCurrentUser()
 
-// Language options with flag emojis
+// Language options
 const languages = [
-  { code: 'en', label: 'EN', flag: '🇬🇧' },
-  { code: 'nl', label: 'NL', flag: '🇳🇱' },
-  { code: 'es', label: 'ES', flag: '🇪🇸' },
+  { code: 'en', label: 'English' },
+  { code: 'nl', label: 'Nederlands' },
+  { code: 'es', label: 'Español' },
 ]
 
 const isManager = computed(() => {
@@ -95,8 +95,25 @@ function changeLocale(code: string) {
           :title="lang.label"
           @click="changeLocale(lang.code)"
         >
-          <span class="lang-flag">{{ lang.flag }}</span>
-          <span class="lang-label">{{ lang.label }}</span>
+          <!-- UK Flag -->
+          <svg v-if="lang.code === 'en'" width="20" height="14" viewBox="0 0 60 42" class="flag-icon">
+            <rect width="60" height="42" fill="#012169"/>
+            <path d="M0,0 L60,42 M60,0 L0,42" stroke="#fff" stroke-width="6"/>
+            <path d="M0,0 L60,42 M60,0 L0,42" stroke="#C8102E" stroke-width="4" stroke-dasharray="1,1,1,42" stroke-dashoffset="1"/>
+            <path d="M30,0 V42 M0,21 H60" stroke="#fff" stroke-width="10"/>
+            <path d="M30,0 V42 M0,21 H60" stroke="#C8102E" stroke-width="6"/>
+          </svg>
+          <!-- Netherlands Flag -->
+          <svg v-else-if="lang.code === 'nl'" width="20" height="14" viewBox="0 0 60 42" class="flag-icon">
+            <rect width="60" height="14" fill="#AE1C28"/>
+            <rect y="14" width="60" height="14" fill="#FFF"/>
+            <rect y="28" width="60" height="14" fill="#21468B"/>
+          </svg>
+          <!-- Spain Flag -->
+          <svg v-else-if="lang.code === 'es'" width="20" height="14" viewBox="0 0 60 42" class="flag-icon">
+            <rect width="60" height="42" fill="#AA151B"/>
+            <rect y="10.5" width="60" height="21" fill="#F1BF00"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -238,37 +255,31 @@ function changeLocale(code: string) {
 .lang-btn {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.5rem;
+  justify-content: center;
+  padding: 0.375rem;
   background: transparent;
-  border: 1px solid var(--color-gray-200);
+  border: 2px solid transparent;
   border-radius: 4px;
   cursor: pointer;
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-gray-600);
   transition: all 0.2s;
+  opacity: 0.6;
 }
 
 .lang-btn:hover {
+  opacity: 1;
   background-color: var(--color-gray-100);
-  border-color: var(--color-gray-300);
 }
 
 .lang-btn.is-active {
-  background-color: var(--color-magenta);
+  opacity: 1;
   border-color: var(--color-magenta);
-  color: var(--color-white);
+  background-color: rgba(204, 14, 112, 0.08);
 }
 
-.lang-flag {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.lang-label {
-  font-size: 0.75rem;
+.flag-icon {
+  display: block;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-nav {

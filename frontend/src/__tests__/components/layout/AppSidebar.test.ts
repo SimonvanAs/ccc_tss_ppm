@@ -184,7 +184,7 @@ describe('AppSidebar', () => {
       expect(langButtons.length).toBe(3)
     })
 
-    it('should show EN, NL, and ES options with flag emojis', () => {
+    it('should show EN, NL, and ES options', () => {
       const wrapper = createWrapper()
       const text = wrapper.text()
       expect(text).toContain('EN')

@@ -1,0 +1,203 @@
+# Plan: 9-Grid Display & Calibration
+
+## Phase 1: 9-Grid Core Component
+
+- [ ] Task: Write tests for NineGrid component
+  - [ ] Test renders 3×3 grid with correct structure
+  - [ ] Test cell colors follow four-color scheme
+  - [ ] Test position marker placement based on WHAT/HOW scores
+  - [ ] Test axis labels display correctly
+  - [ ] Test VETO indicator appears when vetoActive is true
+  - [ ] Test incomplete state (null scores) handling
+- [ ] Task: Implement NineGrid.vue component
+  - [ ] Create 3×3 grid layout with CSS Grid
+  - [ ] Apply four-color scheme to cells
+  - [ ] Add position marker with dynamic positioning
+  - [ ] Display axis labels (Below/Meets/Exceeds)
+  - [ ] Add VETO warning indicator
+  - [ ] Handle incomplete scoring states
+- [ ] Task: Add i18n translations for grid labels (EN/NL/ES)
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: 9-Grid Core Component' (Protocol in workflow.md)
+
+## Phase 2: Manager Scoring View Integration
+
+- [ ] Task: Write tests for 9-Grid integration in scoring view
+  - [ ] Test NineGrid receives WHAT score from goal scoring
+  - [ ] Test NineGrid receives HOW score from competency scoring
+  - [ ] Test grid position updates on score changes
+  - [ ] Test VETO state propagates to grid
+- [ ] Task: Integrate NineGrid into manager review scoring page
+  - [ ] Add NineGrid section to scoring page layout
+  - [ ] Connect WHAT score from goal scoring component
+  - [ ] Connect HOW score from competency scoring component (use existing how-score-change event)
+  - [ ] Handle incomplete scoring (partial WHAT/HOW)
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Manager Scoring View Integration' (Protocol in workflow.md)
+
+## Phase 3: Team Dashboard 9-Grid
+
+- [ ] Task: Write tests for GET /api/v1/manager/team/grid endpoint
+  - [ ] Test returns team members with WHAT/HOW scores
+  - [ ] Test filters by manager_id from JWT
+  - [ ] Test includes review status for each member
+  - [ ] Test OpCo isolation
+- [ ] Task: Implement GET /api/v1/manager/team/grid endpoint
+  - [ ] Create team_grid repository function
+  - [ ] Create router endpoint with JWT auth
+  - [ ] Return employee id, name, what_score, how_score, review_status
+- [ ] Task: Write tests for TeamNineGrid component
+  - [ ] Test displays multiple employee markers
+  - [ ] Test hover shows employee details tooltip
+  - [ ] Test click emits navigation event
+  - [ ] Test distribution counts per cell
+  - [ ] Test handles overlapping positions
+- [ ] Task: Implement TeamNineGrid.vue component
+  - [ ] Extend NineGrid with multi-employee support
+  - [ ] Add employee markers with positioning
+  - [ ] Implement hover tooltip with employee details
+  - [ ] Add click handler for navigation
+  - [ ] Display distribution counts overlay
+- [ ] Task: Create team dashboard page with TeamNineGrid
+  - [ ] Fetch team data from API
+  - [ ] Display TeamNineGrid component
+  - [ ] Handle navigation to individual reviews
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Team Dashboard 9-Grid' (Protocol in workflow.md)
+
+## Phase 4: Calibration Backend - Database & Core API
+
+- [ ] Task: Create calibration_sessions database table
+  - [ ] Define schema: id, opco_id, name, description, review_cycle, status, created_by, created_at, updated_at
+  - [ ] Add status enum: draft, in_progress, completed
+- [ ] Task: Create calibration_session_reviews junction table
+  - [ ] Define schema: session_id, review_id, added_at
+- [ ] Task: Create calibration_session_participants table
+  - [ ] Define schema: session_id, user_id, role, added_at
+- [ ] Task: Create calibration_score_adjustments audit table
+  - [ ] Define schema: id, session_id, review_id, field (what_score/how_score), original_value, new_value, adjusted_by, rationale, adjusted_at
+- [ ] Task: Create calibration_notes table
+  - [ ] Define schema: id, session_id, review_id (nullable for session-level), content, created_by, created_at
+- [ ] Task: Write tests for calibration sessions repository
+  - [ ] Test create session
+  - [ ] Test get session by id
+  - [ ] Test list sessions with filters
+  - [ ] Test update session
+  - [ ] Test delete draft session
+  - [ ] Test add/remove reviews from session
+  - [ ] Test status transitions
+- [ ] Task: Implement calibration sessions repository
+  - [ ] Create CRUD functions for sessions
+  - [ ] Implement review management functions
+  - [ ] Implement status transition logic
+  - [ ] Enforce OpCo isolation
+- [ ] Task: Write tests for calibration session API endpoints
+  - [ ] Test POST /api/v1/calibration-sessions
+  - [ ] Test GET /api/v1/calibration-sessions
+  - [ ] Test GET /api/v1/calibration-sessions/{id}
+  - [ ] Test PUT /api/v1/calibration-sessions/{id}
+  - [ ] Test DELETE /api/v1/calibration-sessions/{id}
+  - [ ] Test POST /api/v1/calibration-sessions/{id}/start
+  - [ ] Test POST /api/v1/calibration-sessions/{id}/complete
+  - [ ] Test HR role authorization
+- [ ] Task: Implement calibration session API endpoints
+  - [ ] Create router with all endpoints
+  - [ ] Add HR role authorization
+  - [ ] Implement request/response schemas
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Calibration Backend - Database & Core API' (Protocol in workflow.md)
+
+## Phase 5: Calibration Backend - Reviews & Score Adjustments
+
+- [ ] Task: Write tests for calibration reviews endpoints
+  - [ ] Test GET /api/v1/calibration-sessions/{id}/reviews
+  - [ ] Test returns reviews with current scores
+  - [ ] Test includes employee and manager info
+- [ ] Task: Implement GET /api/v1/calibration-sessions/{id}/reviews endpoint
+  - [ ] Join reviews with scores and user info
+  - [ ] Return data needed for calibration grid
+- [ ] Task: Write tests for score adjustment endpoint
+  - [ ] Test PUT /api/v1/calibration-sessions/{id}/reviews/{reviewId}/scores
+  - [ ] Test creates audit trail entry
+  - [ ] Test requires rationale
+  - [ ] Test updates review scores
+  - [ ] Test only works for in_progress sessions
+- [ ] Task: Implement score adjustment endpoint
+  - [ ] Validate session is in_progress
+  - [ ] Update review scores
+  - [ ] Create audit trail entry
+  - [ ] Require rationale field
+- [ ] Task: Write tests for calibration notes endpoints
+  - [ ] Test POST /api/v1/calibration-sessions/{id}/notes (session-level)
+  - [ ] Test POST /api/v1/calibration-sessions/{id}/reviews/{reviewId}/notes
+  - [ ] Test GET notes for session
+- [ ] Task: Implement calibration notes endpoints
+  - [ ] Create/read notes at session level
+  - [ ] Create/read notes at review level
+- [ ] Task: Conductor - User Manual Verification 'Phase 5: Calibration Backend - Reviews & Score Adjustments' (Protocol in workflow.md)
+
+## Phase 6: Calibration Frontend - Session Management
+
+- [ ] Task: Write tests for CalibrationSessionList component
+  - [ ] Test displays list of sessions
+  - [ ] Test shows session status badges
+  - [ ] Test filter by status works
+  - [ ] Test create new session button
+- [ ] Task: Implement CalibrationSessionList.vue component
+  - [ ] Fetch sessions from API
+  - [ ] Display in table/card format
+  - [ ] Add status filter
+  - [ ] Add create session button
+- [ ] Task: Write tests for CalibrationSessionForm component
+  - [ ] Test form fields render
+  - [ ] Test validation
+  - [ ] Test submit creates session
+  - [ ] Test edit mode populates fields
+- [ ] Task: Implement CalibrationSessionForm.vue component
+  - [ ] Create form with name, description, review cycle
+  - [ ] Add review selection (multi-select or filter)
+  - [ ] Add participant selection
+  - [ ] Handle create and edit modes
+- [ ] Task: Write tests for CalibrationSessionDetail component
+  - [ ] Test displays session info
+  - [ ] Test shows status workflow actions
+  - [ ] Test start/complete buttons work
+- [ ] Task: Implement CalibrationSessionDetail.vue component
+  - [ ] Display session metadata
+  - [ ] Show status with available actions
+  - [ ] Implement start and complete actions
+- [ ] Task: Add i18n translations for calibration UI (EN/NL/ES)
+- [ ] Task: Conductor - User Manual Verification 'Phase 6: Calibration Frontend - Session Management' (Protocol in workflow.md)
+
+## Phase 7: Calibration Frontend - Grid View & Score Adjustment
+
+- [ ] Task: Write tests for CalibrationNineGrid component
+  - [ ] Test displays all session employees on grid
+  - [ ] Test hover shows employee details
+  - [ ] Test click opens detail panel
+  - [ ] Test handles many employees gracefully
+- [ ] Task: Implement CalibrationNineGrid.vue component
+  - [ ] Extend TeamNineGrid for calibration context
+  - [ ] Add employee detail panel on click
+  - [ ] Handle dense cell populations
+- [ ] Task: Write tests for ScoreAdjustmentPanel component
+  - [ ] Test displays current scores
+  - [ ] Test allows score editing
+  - [ ] Test requires rationale
+  - [ ] Test submits adjustment
+- [ ] Task: Implement ScoreAdjustmentPanel.vue component
+  - [ ] Show current WHAT and HOW scores
+  - [ ] Add score edit controls
+  - [ ] Add rationale textarea (required)
+  - [ ] Submit adjustment to API
+  - [ ] Show success/error feedback
+- [ ] Task: Write tests for CalibrationNotesPanel component
+  - [ ] Test displays existing notes
+  - [ ] Test add new note
+  - [ ] Test session vs review level notes
+- [ ] Task: Implement CalibrationNotesPanel.vue component
+  - [ ] List existing notes with author and timestamp
+  - [ ] Add new note form
+  - [ ] Support session and review level
+- [ ] Task: Integrate components into CalibrationSessionView
+  - [ ] Combine grid, adjustment panel, and notes
+  - [ ] Handle component communication
+  - [ ] Refresh grid after score adjustment
+- [ ] Task: Add i18n translations for calibration grid UI (EN/NL/ES)
+- [ ] Task: Conductor - User Manual Verification 'Phase 7: Calibration Frontend - Grid View & Score Adjustment' (Protocol in workflow.md)

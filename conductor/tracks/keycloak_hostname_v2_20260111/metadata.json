@@ -1,0 +1,8 @@
+{
+  "track_id": "keycloak_hostname_v2_20260111",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-01-11T10:20:00Z",
+  "updated_at": "2026-01-11T10:20:00Z",
+  "description": "Keycloak hostname-port config migration - migrate from deprecated v1 hostname-port option to v2 hostname configuration"
+}
