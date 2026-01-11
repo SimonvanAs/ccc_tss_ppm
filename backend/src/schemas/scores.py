@@ -4,7 +4,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class GoalScoreResponse(BaseModel):
@@ -50,16 +50,30 @@ class GoalScoreUpdate(BaseModel):
     """Schema for updating a single goal score."""
 
     goal_id: UUID
-    score: Optional[int] = Field(None, ge=1, le=3)
+    score: Optional[int] = None
     feedback: Optional[str] = None
+
+    @field_validator('score')
+    @classmethod
+    def validate_score(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and (v < 1 or v > 3):
+            raise ValueError('Score must be between 1 and 3')
+        return v
 
 
 class CompetencyScoreUpdate(BaseModel):
     """Schema for updating a single competency score."""
 
     competency_id: UUID
-    score: Optional[int] = Field(None, ge=1, le=3)
+    score: Optional[int] = None
     notes: Optional[str] = None
+
+    @field_validator('score')
+    @classmethod
+    def validate_score(cls, v: Optional[int]) -> Optional[int]:
+        if v is not None and (v < 1 or v > 3):
+            raise ValueError('Score must be between 1 and 3')
+        return v
 
 
 class ScoresUpdateRequest(BaseModel):
