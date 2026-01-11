@@ -22,17 +22,17 @@
   - [x] Implement role-based visibility using useAuth composable
   - [x] Add profile section at bottom with avatar from Keycloak user info
   - [x] Style active nav item with Magenta highlight
-- [ ] Task: Write tests for AppHeader component
-  - [ ] Test renders progress bar with percentage
-  - [ ] Test renders language selector with three flags
-  - [ ] Test language change emits event
-  - [ ] Test displays TSS PPM branding
-- [ ] Task: Implement AppHeader.vue component
-  - [ ] Create header bar with flexbox layout
-  - [ ] Add progress bar component (receives percentage as prop)
-  - [ ] Add language selector with EN/NL/ES flag icons
-  - [ ] Wire language selector to vue-i18n locale change
-  - [ ] Add TSS PPM logo/branding
+- [x] Task: Write tests for AppHeader component `3881824`
+  - [x] Test renders progress bar with percentage
+  - [x] Test renders language selector with three flags
+  - [x] Test language change emits event
+  - [x] Test displays TSS PPM branding
+- [x] Task: Implement AppHeader.vue component `3881824`
+  - [x] Create header bar with flexbox layout
+  - [x] Add progress bar component (receives percentage as prop)
+  - [x] Add language selector with EN/NL/ES flag icons
+  - [x] Wire language selector to vue-i18n locale change
+  - [x] Add TSS PPM logo/branding
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Layout Shell Components' (Protocol in workflow.md)
 
 ## Phase 2: Card and Content Styling Components
