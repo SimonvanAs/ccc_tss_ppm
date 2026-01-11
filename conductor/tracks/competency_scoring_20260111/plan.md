@@ -20,7 +20,7 @@
   - [x] Add method to update review how_score fields
 - [x] Task: Conductor - User Manual Verification 'Backend Scoring Service' (Protocol in workflow.md) `a067c6a`
 
-## Phase 2: Frontend Scoring Composable
+## Phase 2: Frontend Scoring Composable [checkpoint: 838fc68]
 
 - [x] Task: Write tests for useCompetencyScoring composable `7ccdefa`
   - [x] Test HOW score calculation
@@ -33,7 +33,7 @@
   - [x] Implement `checkVeto()` function
   - [x] Implement `getGridPosition()` function
   - [x] Implement `isComplete` computed property
-- [ ] Task: Conductor - User Manual Verification 'Frontend Scoring Composable' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Scoring Composable' (Protocol in workflow.md) `838fc68`
 
 ## Phase 3: Frontend Score Card Component
 

@@ -2,7 +2,7 @@
 
 ## Phase 1: Core Layout Shell Components
 
-- [ ] Task: Write tests for AppLayout component
+- [~] Task: Write tests for AppLayout component
   - [ ] Test renders sidebar and main content area
   - [ ] Test passes content via default slot
   - [ ] Test applies correct CSS grid/flexbox structure
