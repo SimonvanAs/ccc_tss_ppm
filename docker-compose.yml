@@ -84,7 +84,7 @@ services:
       KEYCLOAK_REALM: tss-ppm
       KEYCLOAK_CLIENT_ID: tss-ppm-api
       KEYCLOAK_ISSUER_URL: http://localhost:8080
-      WHISPER_URL: http://whisper:8000
+      WHISPER_SERVICE_URL: http://whisper:8000
       CORS_ORIGINS: http://localhost:5173
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:

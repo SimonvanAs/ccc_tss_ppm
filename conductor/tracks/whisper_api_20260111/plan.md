@@ -70,7 +70,7 @@
   - [x] Forward combined audio to whisper client
   - [x] Implement message format: `{"type": "final", "text": "...", "language": "..."}`
   - [x] Handle set_language message to configure language hint
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: End-to-End Audio Pipeline' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: End-to-End Audio Pipeline' (Protocol in workflow.md)
 
 ## Phase 6: Error Handling & Resilience [checkpoint: 10c2737]
 
@@ -86,7 +86,7 @@
   - [x] Handle NO_AUDIO error when no chunks received
   - [x] Clear audio buffer after each transcription
   - [x] Ensure proper cleanup on disconnect via finally block
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Error Handling & Resilience' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Error Handling & Resilience' (Protocol in workflow.md)
 
 ## Phase 7: Observability & Documentation [checkpoint: db8708e]
 
@@ -97,4 +97,4 @@
 - [x] Task: Implement observability features
   - [x] Structured logging for connect/disconnect events (already in place)
   - [x] Add `/api/v1/voice/health` endpoint for whisper service status
-- [ ] Task: Conductor - User Manual Verification 'Phase 7: Observability & Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 7: Observability & Documentation' (Protocol in workflow.md)
