@@ -8,6 +8,7 @@ from httpx import ASGITransport, AsyncClient
 from src.main import app
 from src.auth import CurrentUser, get_current_user
 from src.routers.admin import get_keycloak_admin
+from src.database import get_db
 
 pytestmark = pytest.mark.asyncio
 
@@ -205,8 +206,12 @@ class TestAdminUserRoles:
         mock_keycloak.assign_role.return_value = True
         mock_keycloak.remove_role.return_value = True
 
+        mock_db = AsyncMock()
+        mock_db.fetchrow.return_value = {'id': 1}
+
         app.dependency_overrides[get_current_user] = lambda: admin_user
         app.dependency_overrides[get_keycloak_admin] = lambda: mock_keycloak
+        app.dependency_overrides[get_db] = lambda: mock_db
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url='http://test') as client:
@@ -241,8 +246,12 @@ class TestAdminUserManager:
         mock_keycloak = AsyncMock()
         mock_keycloak.update_user_manager.return_value = True
 
+        mock_db = AsyncMock()
+        mock_db.fetchrow.return_value = {'id': 1}
+
         app.dependency_overrides[get_current_user] = lambda: admin_user
         app.dependency_overrides[get_keycloak_admin] = lambda: mock_keycloak
+        app.dependency_overrides[get_db] = lambda: mock_db
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url='http://test') as client:
@@ -277,8 +286,12 @@ class TestAdminUserStatus:
         mock_keycloak = AsyncMock()
         mock_keycloak.disable_user.return_value = True
 
+        mock_db = AsyncMock()
+        mock_db.fetchrow.return_value = {'id': 1}
+
         app.dependency_overrides[get_current_user] = lambda: admin_user
         app.dependency_overrides[get_keycloak_admin] = lambda: mock_keycloak
+        app.dependency_overrides[get_db] = lambda: mock_db
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url='http://test') as client:
@@ -295,8 +308,12 @@ class TestAdminUserStatus:
         mock_keycloak = AsyncMock()
         mock_keycloak.enable_user.return_value = True
 
+        mock_db = AsyncMock()
+        mock_db.fetchrow.return_value = {'id': 1}
+
         app.dependency_overrides[get_current_user] = lambda: admin_user
         app.dependency_overrides[get_keycloak_admin] = lambda: mock_keycloak
+        app.dependency_overrides[get_db] = lambda: mock_db
 
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url='http://test') as client:

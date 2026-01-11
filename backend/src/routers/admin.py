@@ -2,11 +2,15 @@
 """API endpoints for admin operations."""
 
 from typing import Annotated, List, Optional
+from uuid import UUID
 
+import asyncpg
 from fastapi import APIRouter, Depends, Query, HTTPException
 
 from src.auth import CurrentUser, require_admin
+from src.database import get_db
 from src.services.keycloak_admin import KeycloakAdminService, KeycloakAdminError
+from src.repositories.audit import AuditRepository
 from src.schemas.admin import (
     AdminUserResponse,
     UpdateRolesRequest,
@@ -22,6 +26,41 @@ router = APIRouter(prefix='/api/v1/admin', tags=['Admin'])
 def get_keycloak_admin() -> KeycloakAdminService:
     """Dependency for Keycloak Admin Service."""
     return KeycloakAdminService()
+
+
+async def log_admin_action(
+    conn: asyncpg.Connection,
+    action: str,
+    entity_type: str,
+    entity_id: str,
+    admin_user: CurrentUser,
+    changes: dict = None,
+) -> None:
+    """Log an admin action to the audit log.
+
+    Args:
+        conn: Database connection
+        action: The action performed
+        entity_type: Type of entity affected
+        entity_id: ID of the affected entity
+        admin_user: The admin user performing the action
+        changes: Dictionary of changes made
+    """
+    try:
+        # Convert string IDs to UUIDs where possible
+        # For Keycloak IDs that aren't UUIDs, we store them as the entity_id
+        audit_repo = AuditRepository(conn)
+        await audit_repo.log_action(
+            action=action,
+            entity_type=entity_type,
+            entity_id=UUID(entity_id) if len(entity_id) == 36 else UUID('00000000-0000-0000-0000-000000000000'),
+            user_id=UUID(admin_user.keycloak_id) if len(admin_user.keycloak_id) == 36 else None,
+            opco_id=UUID(admin_user.opco_id) if admin_user.opco_id and len(admin_user.opco_id) == 36 else None,
+            changes=changes or {'keycloak_user_id': entity_id},
+        )
+    except Exception:
+        # Don't fail the operation if audit logging fails
+        pass
 
 
 def keycloak_user_to_response(
@@ -128,6 +167,7 @@ async def update_user_roles(
     request: UpdateRolesRequest,
     current_user: Annotated[CurrentUser, Depends(require_admin)],
     keycloak: Annotated[KeycloakAdminService, Depends(get_keycloak_admin)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
 ) -> dict:
     """Update user's roles.
 
@@ -162,6 +202,19 @@ async def update_user_roles(
         for role_name in to_remove:
             await keycloak.remove_role(user_id, role_name)
 
+        # Log the action
+        await log_admin_action(
+            conn=conn,
+            action='UPDATE_USER_ROLES',
+            entity_type='user',
+            entity_id=user_id,
+            admin_user=current_user,
+            changes={
+                'roles_added': list(to_add),
+                'roles_removed': list(to_remove),
+            },
+        )
+
         return {'message': 'Roles updated successfully'}
 
     except KeycloakAdminError as e:
@@ -174,6 +227,7 @@ async def update_user_manager(
     request: UpdateManagerRequest,
     current_user: Annotated[CurrentUser, Depends(require_admin)],
     keycloak: Annotated[KeycloakAdminService, Depends(get_keycloak_admin)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
 ) -> dict:
     """Update user's manager.
 
@@ -182,12 +236,24 @@ async def update_user_manager(
         request: The new manager ID
         current_user: The authenticated admin user
         keycloak: Keycloak Admin Service
+        conn: Database connection
 
     Returns:
         Success message
     """
     try:
         await keycloak.update_user_manager(user_id, request.manager_id)
+
+        # Log the action
+        await log_admin_action(
+            conn=conn,
+            action='UPDATE_USER_MANAGER',
+            entity_type='user',
+            entity_id=user_id,
+            admin_user=current_user,
+            changes={'new_manager_id': request.manager_id},
+        )
+
         return {'message': 'Manager updated successfully'}
 
     except KeycloakAdminError as e:
@@ -200,6 +266,7 @@ async def update_user_status(
     request: UpdateStatusRequest,
     current_user: Annotated[CurrentUser, Depends(require_admin)],
     keycloak: Annotated[KeycloakAdminService, Depends(get_keycloak_admin)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
 ) -> dict:
     """Enable or disable a user.
 
@@ -208,6 +275,7 @@ async def update_user_status(
         request: The new status
         current_user: The authenticated admin user
         keycloak: Keycloak Admin Service
+        conn: Database connection
 
     Returns:
         Success message
@@ -217,6 +285,17 @@ async def update_user_status(
             await keycloak.enable_user(user_id)
         else:
             await keycloak.disable_user(user_id)
+
+        # Log the action
+        action = 'ENABLE_USER' if request.enabled else 'DISABLE_USER'
+        await log_admin_action(
+            conn=conn,
+            action=action,
+            entity_type='user',
+            entity_id=user_id,
+            admin_user=current_user,
+            changes={'enabled': request.enabled},
+        )
 
         return {'message': f"User {'enabled' if request.enabled else 'disabled'} successfully"}
 
