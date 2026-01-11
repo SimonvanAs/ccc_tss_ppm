@@ -1,6 +1,7 @@
 # TSS PPM v3.0 - Reviews Router
 """API endpoints for review management."""
 
+from datetime import datetime
 from typing import Annotated, Optional
 from uuid import UUID
 
@@ -168,6 +169,9 @@ class ReviewDetailResponse(BaseModel):
     how_score: Optional[float] = None
     employee_name: Optional[str] = None
     manager_name: Optional[str] = None
+    goal_setting_completed_at: Optional[datetime] = None
+    mid_year_completed_at: Optional[datetime] = None
+    end_year_completed_at: Optional[datetime] = None
 
     model_config = {'from_attributes': True}
 
@@ -559,11 +563,10 @@ async def sign_review(
                 detail='Not authorized to sign this review (manager signature required)',
             )
 
-        # Check if employee already signed - if so, go to SIGNED, else go to EMPLOYEE_SIGNED
-        if review.get('employee_signature_by'):
-            new_status = 'SIGNED'
-        else:
-            new_status = 'MANAGER_SIGNED'
+        # Manager approval always completes the signature process → SIGNED
+        # For goal setting: manager approval completes the stage
+        # For mid/end year: employee already signed, manager counter-sign completes
+        new_status = 'SIGNED'
         signature_action = 'MANAGER_SIGNED'
 
         # Record manager signature
@@ -707,28 +710,46 @@ async def reject_review(
         )
 
     elif old_status == 'PENDING_MANAGER_SIGNATURE':
-        # Manager rejection - return to employee for re-review
+        # Manager rejection
         if review['manager_id'] != user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail='Not authorized to reject this review',
             )
-        new_status = 'PENDING_EMPLOYEE_SIGNATURE'
-        rejection_action = 'MANAGER_REJECTED'
 
-        # Record rejection - clear employee signature and return to them
-        await conn.execute(
-            '''
-            UPDATE reviews
-            SET status = $1, rejection_feedback = $2,
-                employee_signature_by = NULL, employee_signature_date = NULL,
-                updated_at = NOW()
-            WHERE id = $3
-            ''',
-            new_status,
-            request.feedback.strip(),
-            review_id,
-        )
+        # Determine target status based on stage
+        stage = review.get('stage', '')
+        if stage == 'GOAL_SETTING':
+            # Goal setting rejection → return to DRAFT for employee to revise
+            new_status = 'DRAFT'
+            rejection_action = 'GOALS_REJECTED'
+            await conn.execute(
+                '''
+                UPDATE reviews
+                SET status = $1, rejection_feedback = $2, updated_at = NOW()
+                WHERE id = $3
+                ''',
+                new_status,
+                request.feedback.strip(),
+                review_id,
+            )
+        else:
+            # Mid/end year rejection → return to employee for re-review
+            new_status = 'PENDING_EMPLOYEE_SIGNATURE'
+            rejection_action = 'MANAGER_REJECTED'
+            # Clear employee signature and return to them
+            await conn.execute(
+                '''
+                UPDATE reviews
+                SET status = $1, rejection_feedback = $2,
+                    employee_signature_by = NULL, employee_signature_date = NULL,
+                    updated_at = NOW()
+                WHERE id = $3
+                ''',
+                new_status,
+                request.feedback.strip(),
+                review_id,
+            )
 
     else:
         raise HTTPException(

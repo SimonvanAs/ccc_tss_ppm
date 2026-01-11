@@ -424,6 +424,189 @@ class TestSignReviewEndpoint:
 
 
 @pytest.mark.asyncio
+class TestGetReviewEndpoint:
+    """Tests for GET /api/v1/reviews/{id} endpoint with header fields."""
+
+    @pytest.fixture
+    def mock_current_user(self):
+        """Mock authenticated user."""
+        return CurrentUser(
+            keycloak_id='test-user-id',
+            email='test@example.com',
+            name='Test User',
+            roles=['employee'],
+            opco_id='test-opco',
+        )
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        return AsyncMock()
+
+    @pytest.fixture
+    def sample_review_with_header(self):
+        """Sample review with all header fields populated."""
+        from datetime import datetime, timezone
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'opco_id': uuid4(),
+            'status': 'DRAFT',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'what_score': None,
+            'how_score': None,
+            'job_title': 'Senior Developer',
+            'tov_level': 'B',
+            'employee_name': 'John Doe',
+            'manager_name': 'Jane Smith',
+            'goal_setting_completed_at': datetime(2026, 2, 15, 10, 0, tzinfo=timezone.utc),
+            'mid_year_completed_at': None,
+            'end_year_completed_at': None,
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc),
+        }
+
+    @pytest_asyncio.fixture
+    async def client(self, mock_current_user, mock_db_conn):
+        """Async HTTP client with dependency overrides."""
+        app.dependency_overrides[get_current_user] = lambda: mock_current_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    async def test_get_review_returns_job_title(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return job_title field."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'job_title' in data
+        assert data['job_title'] == 'Senior Developer'
+
+    async def test_get_review_returns_tov_level(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return tov_level field."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'tov_level' in data
+        assert data['tov_level'] == 'B'
+
+    async def test_get_review_returns_employee_name(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return employee_name from joined users table."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'employee_name' in data
+        assert data['employee_name'] == 'John Doe'
+
+    async def test_get_review_returns_manager_name(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return manager_name from joined users table."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'manager_name' in data
+        assert data['manager_name'] == 'Jane Smith'
+
+    async def test_get_review_returns_goal_setting_completed_at(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return goal_setting_completed_at timestamp."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'goal_setting_completed_at' in data
+        assert data['goal_setting_completed_at'] is not None
+        assert '2026-02-15' in data['goal_setting_completed_at']
+
+    async def test_get_review_returns_mid_year_completed_at(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return mid_year_completed_at timestamp."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'mid_year_completed_at' in data
+        # Currently None in sample data
+        assert data['mid_year_completed_at'] is None
+
+    async def test_get_review_returns_end_year_completed_at(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return end_year_completed_at timestamp."""
+        review_id = sample_review_with_header['id']
+        mock_db_conn.fetchrow.return_value = sample_review_with_header
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert 'end_year_completed_at' in data
+        # Currently None in sample data
+        assert data['end_year_completed_at'] is None
+
+    async def test_get_review_all_stage_timestamps_populated(
+        self, client, mock_db_conn, sample_review_with_header
+    ):
+        """GET /reviews/:id should return all stage timestamps when populated."""
+        from datetime import datetime, timezone
+        review_with_all_dates = {
+            **sample_review_with_header,
+            'status': 'SIGNED',
+            'stage': 'END_YEAR_REVIEW',
+            'goal_setting_completed_at': datetime(2026, 2, 15, 10, 0, tzinfo=timezone.utc),
+            'mid_year_completed_at': datetime(2026, 7, 15, 10, 0, tzinfo=timezone.utc),
+            'end_year_completed_at': datetime(2026, 12, 15, 10, 0, tzinfo=timezone.utc),
+        }
+        review_id = review_with_all_dates['id']
+        mock_db_conn.fetchrow.return_value = review_with_all_dates
+
+        response = await client.get(f'/api/v1/reviews/{review_id}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert '2026-02-15' in data['goal_setting_completed_at']
+        assert '2026-07-15' in data['mid_year_completed_at']
+        assert '2026-12-15' in data['end_year_completed_at']
+
+
+@pytest.mark.asyncio
 class TestRejectReviewEndpoint:
     """Tests for review rejection endpoint."""
 
@@ -474,7 +657,7 @@ class TestRejectReviewEndpoint:
 
     @pytest.fixture
     def sample_review_pending_manager(self, employee_user_id, manager_user_id):
-        """Sample review awaiting manager signature."""
+        """Sample review awaiting manager signature (end year)."""
         return {
             'id': uuid4(),
             'employee_id': employee_user_id,
@@ -484,6 +667,19 @@ class TestRejectReviewEndpoint:
             'stage': 'END_YEAR_REVIEW',
             'review_year': 2026,
             'employee_signature_by': employee_user_id,
+        }
+
+    @pytest.fixture
+    def sample_review_pending_manager_goal_setting(self, employee_user_id, manager_user_id):
+        """Sample review awaiting manager approval for goal setting."""
+        return {
+            'id': uuid4(),
+            'employee_id': employee_user_id,
+            'manager_id': manager_user_id,
+            'opco_id': uuid4(),
+            'status': 'PENDING_MANAGER_SIGNATURE',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
         }
 
     @pytest.fixture
@@ -562,7 +758,7 @@ class TestRejectReviewEndpoint:
     async def test_manager_reject_success(
         self, manager_client, mock_db_conn, sample_review_pending_manager, manager_user_id
     ):
-        """Manager can reject review and return to PENDING_EMPLOYEE_SIGNATURE."""
+        """Manager can reject end-year review and return to PENDING_EMPLOYEE_SIGNATURE."""
         review_id = sample_review_pending_manager['id']
         rejected_review = {
             **sample_review_pending_manager,
@@ -585,6 +781,33 @@ class TestRejectReviewEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert data['status'] == 'PENDING_EMPLOYEE_SIGNATURE'
+
+    async def test_manager_reject_goals_returns_to_draft(
+        self, manager_client, mock_db_conn, sample_review_pending_manager_goal_setting, manager_user_id
+    ):
+        """Manager can reject goals and return to DRAFT."""
+        review_id = sample_review_pending_manager_goal_setting['id']
+        rejected_review = {
+            **sample_review_pending_manager_goal_setting,
+            'status': 'DRAFT',
+            'rejection_feedback': 'Please revise goals',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': manager_user_id},  # User lookup
+            sample_review_pending_manager_goal_setting,  # Get review
+            {'id': uuid4()},  # Audit log entry
+            rejected_review,  # Get updated review
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await manager_client.post(
+            f'/api/v1/reviews/{review_id}/reject',
+            json={'feedback': 'Please revise goals'},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['status'] == 'DRAFT'
 
     async def test_reject_requires_feedback(
         self, employee_client, mock_db_conn, sample_review_pending_employee, employee_user_id
