@@ -46,7 +46,7 @@ _Link: [./tracks/nine_grid_calibration_20260111/](./tracks/nine_grid_calibration
 
 ---
 
-## [~] Track: Keycloak Hostname Configuration Migration (v1 → v2)
+## [x] Track: Keycloak Hostname Configuration Migration (v1 → v2)
 
 _Link: [./tracks/keycloak_hostname_v2_20260111/](./tracks/keycloak_hostname_v2_20260111/)_
 
