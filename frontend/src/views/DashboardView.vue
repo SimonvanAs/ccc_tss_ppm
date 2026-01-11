@@ -98,15 +98,15 @@ function handleStepClick(step: WorkflowStep) {
 
   // Navigate to goal setting or review scoring based on stage
   if (step.stage === 'GOAL_SETTING') {
-    router.push({ name: 'goal-setting', params: { reviewId: currentReview.value.id } })
+    router.push({ name: 'GoalSetting', params: { reviewId: currentReview.value.id } })
   } else {
-    router.push({ name: 'review-scoring', params: { reviewId: currentReview.value.id } })
+    router.push({ name: 'ReviewScoring', params: { reviewId: currentReview.value.id } })
   }
 }
 
 // Navigate to a historical review
 function viewHistoricalReview(review: ReviewDetails) {
-  router.push({ name: 'goal-setting', params: { reviewId: review.id } })
+  router.push({ name: 'GoalSetting', params: { reviewId: review.id } })
 }
 
 // Get status badge for historical review
