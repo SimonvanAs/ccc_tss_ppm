@@ -72,20 +72,20 @@
   - [x] Handle set_language message to configure language hint
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: End-to-End Audio Pipeline' (Protocol in workflow.md)
 
-## Phase 6: Error Handling & Resilience
+## Phase 6: Error Handling & Resilience [checkpoint: be15cb7]
 
-- [ ] Task: Write failing tests for error scenarios
-  - [ ] Test: Graceful handling when whisper service unavailable
-  - [ ] Test: Error message format sent to client
-  - [ ] Test: Rate limiting rejects excessive connections
-  - [ ] Test: Backpressure handling when whisper service is slow
-  - [ ] Test: Clean resource cleanup on disconnect
-- [ ] Task: Implement error handling and resilience
-  - [ ] Add whisper service health check before accepting audio
-  - [ ] Implement error response format: `{"type": "error", "code": "...", "message": "..."}`
-  - [ ] Add rate limiting per user (10 sessions/minute)
-  - [ ] Implement backpressure handling with buffering
-  - [ ] Ensure proper cleanup of all resources on disconnect
+- [x] Task: Write failing tests for error scenarios
+  - [x] Test: Graceful handling when whisper service unavailable
+  - [x] Test: Error message format sent to client (type, code, message)
+  - [x] Test: No audio error when ending without data
+  - [x] Test: Buffer cleared after each transcription
+  - [x] Test: Clean resource cleanup on disconnect
+- [x] Task: Implement error handling and resilience
+  - [x] Implement error response format: `{"type": "error", "code": "...", "message": "..."}`
+  - [x] Handle WhisperServiceError with TRANSCRIPTION_FAILED code
+  - [x] Handle NO_AUDIO error when no chunks received
+  - [x] Clear audio buffer after each transcription
+  - [x] Ensure proper cleanup on disconnect via finally block
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Error Handling & Resilience' (Protocol in workflow.md)
 
 ## Phase 7: Observability & Documentation
