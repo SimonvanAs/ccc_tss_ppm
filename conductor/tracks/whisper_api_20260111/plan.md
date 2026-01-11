@@ -13,7 +13,7 @@
 
 ## Phase 2: WebSocket Authentication
 
-- [ ] Task: Write failing tests for WebSocket JWT authentication
+- [~] Task: Write failing tests for WebSocket JWT authentication
   - [ ] Test: Connection with valid JWT succeeds
   - [ ] Test: Connection with expired JWT rejected with close code 4001
   - [ ] Test: Connection with missing token rejected with close code 4001
