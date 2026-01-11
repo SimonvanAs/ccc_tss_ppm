@@ -1,6 +1,6 @@
 # Plan: Backend API Whisper Setup
 
-## Phase 1: Project Setup & Configuration
+## Phase 1: Project Setup & Configuration [checkpoint: cd8cd19]
 
 - [x] Task: Add WebSocket and HTTP client dependencies to requirements.txt (d32153a)
   - [x] Add `websockets` package for WebSocket support in FastAPI
@@ -9,7 +9,7 @@
   - [x] Add WHISPER_SERVICE_URL environment variable (default: http://whisper:8001)
   - [x] Add VOICE_SESSION_TIMEOUT setting (default: 30 seconds)
   - [x] Add VOICE_RATE_LIMIT setting (default: 10 per minute)
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Project Setup & Configuration' (Protocol in workflow.md)
 
 ## Phase 2: WebSocket Authentication
 
