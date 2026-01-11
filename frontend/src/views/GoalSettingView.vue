@@ -60,6 +60,18 @@ const {
 // Computed to determine if we should show "select TOV" message
 const showSelectTovMessage = computed(() => !review.value?.tov_level)
 
+// Computed for header field validation
+const isHeaderFieldsValid = computed(() => {
+  const jobTitle = review.value?.job_title
+  const tovLevel = review.value?.tov_level
+  return Boolean(jobTitle && jobTitle.trim() !== '' && tovLevel && tovLevel.trim() !== '')
+})
+
+// Combined validation for submission
+const canSubmit = computed(() => {
+  return isWeightValid.value && isHeaderFieldsValid.value
+})
+
 // Modal states
 const showAddModal = ref(false)
 const showEditModal = ref(false)
@@ -193,7 +205,7 @@ async function handleReorder(goalIds: string[]) {
 
 // Handle goal submission
 async function handleSubmit() {
-  if (!isWeightValid.value || isSubmitting.value) {
+  if (!canSubmit.value || isSubmitting.value) {
     return
   }
 
@@ -302,12 +314,15 @@ async function handleSubmit() {
       <div class="submit-actions">
         <button
           class="btn btn-submit"
-          :disabled="!isWeightValid || isSubmitting || submitSuccess"
+          :disabled="!canSubmit || isSubmitting || submitSuccess"
           @click="handleSubmit"
         >
           {{ isSubmitting ? t('goals.submitting') : t('goals.submit') }}
         </button>
-        <p v-if="!isWeightValid && !submitSuccess" class="submit-hint">
+        <p v-if="!isHeaderFieldsValid && !submitSuccess" class="submit-hint">
+          {{ t('goals.headerFieldsRequired') }}
+        </p>
+        <p v-if="isHeaderFieldsValid && !isWeightValid && !submitSuccess" class="submit-hint">
           {{ t('goals.submitHint') }}
         </p>
       </div>

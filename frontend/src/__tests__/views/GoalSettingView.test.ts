@@ -26,6 +26,7 @@ vi.mock('vue-i18n', () => ({
         'actions.cancel': 'Cancel',
         'errors.generic': 'An error occurred',
         'errors.submitFailed': 'Failed to submit goals',
+        'goals.headerFieldsRequired': 'Job title and TOV level are required',
         'competencyPreview.title': 'Competencies for Selected Level',
         'competencyPreview.selectTovLevel': 'Select a TOV level',
         'competencyPreview.emptyState': 'No competencies available',
@@ -62,8 +63,15 @@ vi.mock('../../api/competencies', () => ({
   getCompetencies: vi.fn(),
 }))
 
+// Mock reviews API
+vi.mock('../../api/reviews', () => ({
+  fetchReview: vi.fn(),
+  updateReviewHeader: vi.fn(),
+}))
+
 import * as goalsApi from '../../api/goals'
 import * as competenciesApi from '../../api/competencies'
+import * as reviewsApi from '../../api/reviews'
 
 function createMockGoals(): Goal[] {
   return [
@@ -107,6 +115,35 @@ function createInvalidWeightGoals(): Goal[] {
   ]
 }
 
+function createMockReview(overrides: Partial<{
+  job_title: string | null
+  tov_level: string | null
+  status: string
+}> = {}) {
+  return {
+    id: 'review-123',
+    employee_id: 'emp-456',
+    manager_id: 'mgr-789',
+    status: overrides.status !== undefined ? overrides.status : 'DRAFT',
+    stage: 'GOAL_SETTING',
+    review_year: 2026,
+    job_title: 'job_title' in overrides ? overrides.job_title : 'Software Engineer',
+    tov_level: 'tov_level' in overrides ? overrides.tov_level : 'B',
+    what_score: null,
+    how_score: null,
+    employee_name: 'John Doe',
+    manager_name: 'Jane Smith',
+    employee_signature_date: null,
+    employee_signature_by: null,
+    manager_signature_date: null,
+    manager_signature_by: null,
+    rejection_feedback: null,
+    goal_setting_completed_at: null,
+    mid_year_completed_at: null,
+    end_year_completed_at: null,
+  }
+}
+
 describe('GoalSettingView - Submission', () => {
   beforeEach(() => {
     vi.resetAllMocks()
@@ -115,6 +152,10 @@ describe('GoalSettingView - Submission', () => {
 
   function createWrapper(goals: Goal[] = createMockGoals()) {
     vi.mocked(goalsApi.fetchGoals).mockResolvedValue(goals)
+    // Mock review with valid header fields so canSubmit works
+    vi.mocked(reviewsApi.fetchReview).mockResolvedValue(createMockReview())
+    // Mock competencies to avoid undefined errors
+    vi.mocked(competenciesApi.getCompetencies).mockResolvedValue([])
 
     return mount(GoalSettingView, {
       props: {
@@ -338,5 +379,114 @@ describe('GoalSettingView - Competency Preview Integration', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Competencies for Selected Level')
+  })
+})
+
+describe('GoalSettingView - Header Field Validation', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  function createWrapperWithValidation(
+    goals: Goal[] = createMockGoals(),
+    reviewOverrides: Partial<{ job_title: string | null; tov_level: string | null }> = {}
+  ) {
+    vi.mocked(goalsApi.fetchGoals).mockResolvedValue(goals)
+    vi.mocked(competenciesApi.getCompetencies).mockResolvedValue(mockCompetencies)
+    vi.mocked(reviewsApi.fetchReview).mockResolvedValue(createMockReview(reviewOverrides))
+
+    return mount(GoalSettingView, {
+      props: {
+        reviewId: 'review-123',
+      },
+      global: {
+        stubs: {
+          Modal: {
+            template: '<div class="modal-stub"><slot /></div>',
+            props: ['show', 'title'],
+          },
+          ConfirmDialog: {
+            template: '<div class="confirm-stub"></div>',
+            props: ['show', 'title', 'message', 'confirmText', 'danger'],
+          },
+          teleport: true,
+        },
+      },
+    })
+  }
+
+  describe('submit button disabled when job_title empty', () => {
+    it('should disable submit button when job_title is null', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), { job_title: null })
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.attributes('disabled')).toBeDefined()
+    })
+
+    it('should disable submit button when job_title is empty string', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), { job_title: '' })
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.attributes('disabled')).toBeDefined()
+    })
+  })
+
+  describe('submit button disabled when tov_level empty', () => {
+    it('should disable submit button when tov_level is null', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), { tov_level: null })
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.attributes('disabled')).toBeDefined()
+    })
+
+    it('should disable submit button when tov_level is empty string', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), { tov_level: '' })
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.attributes('disabled')).toBeDefined()
+    })
+  })
+
+  describe('validation error messages display', () => {
+    it('should show validation hint when job_title is missing', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), { job_title: null })
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Job title and TOV level are required')
+    })
+
+    it('should show validation hint when tov_level is missing', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), { tov_level: null })
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Job title and TOV level are required')
+    })
+
+    it('should not show header validation hint when both fields are set', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), {
+        job_title: 'Engineer',
+        tov_level: 'B',
+      })
+      await flushPromises()
+
+      expect(wrapper.text()).not.toContain('Job title and TOV level are required')
+    })
+  })
+
+  describe('submit enabled when all validations pass', () => {
+    it('should enable submit when weights valid and header fields set', async () => {
+      const wrapper = createWrapperWithValidation(createMockGoals(), {
+        job_title: 'Engineer',
+        tov_level: 'B',
+      })
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.attributes('disabled')).toBeUndefined()
+    })
   })
 })
