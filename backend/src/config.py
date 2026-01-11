@@ -17,11 +17,11 @@ class Settings:
 
     # Keycloak
     # Internal URL for fetching JWKS (inside Docker network)
-    keycloak_url: str = os.getenv('KEYCLOAK_URL', 'http://localhost:8080')
+    keycloak_url: str = os.getenv('KEYCLOAK_URL', 'http://localhost:8082')
     keycloak_realm: str = os.getenv('KEYCLOAK_REALM', 'tss-ppm')
     keycloak_client_id: str = os.getenv('KEYCLOAK_CLIENT_ID', 'tss-ppm-api')
     # External URL for issuer validation (how clients access Keycloak)
-    keycloak_issuer_url: str = os.getenv('KEYCLOAK_ISSUER_URL', 'http://localhost:8080')
+    keycloak_issuer_url: str = os.getenv('KEYCLOAK_ISSUER_URL', 'http://localhost:8082')
 
     # CORS
     cors_origins: list[str] = None

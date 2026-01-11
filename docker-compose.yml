@@ -35,13 +35,13 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-tss_ppm}
       KC_DB_USERNAME: ${DB_USER:-ppm}
       KC_DB_PASSWORD: ${DB_PASSWORD:-ppm_dev_password}
-      KC_HOSTNAME: http://localhost:8080
+      KC_HOSTNAME: http://localhost:8082
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
     ports:
-      - "8080:8080"
+      - "8082:8080"
     volumes:
       - ./keycloak/themes/tss-ppm:/opt/keycloak/themes/tss-ppm:ro
       - ./keycloak/tss-ppm-realm.json:/opt/keycloak/data/import/tss-ppm-realm.json:ro
@@ -83,7 +83,7 @@ services:
       KEYCLOAK_URL: http://keycloak:8080
       KEYCLOAK_REALM: tss-ppm
       KEYCLOAK_CLIENT_ID: tss-ppm-api
-      KEYCLOAK_ISSUER_URL: http://localhost:8080
+      KEYCLOAK_ISSUER_URL: http://localhost:8082
       WHISPER_SERVICE_URL: http://whisper:8000
       CORS_ORIGINS: http://localhost:5173
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
@@ -119,7 +119,7 @@ services:
     container_name: tss_ppm_web
     environment:
       VITE_API_URL: http://localhost:8000/api/v1
-      VITE_KEYCLOAK_URL: http://localhost:8080
+      VITE_KEYCLOAK_URL: http://localhost:8082
       VITE_KEYCLOAK_REALM: tss-ppm
       VITE_KEYCLOAK_CLIENT_ID: tss-ppm-web
     ports:
