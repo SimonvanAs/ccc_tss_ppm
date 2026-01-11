@@ -463,3 +463,144 @@ async def submit_scores(
     )
 
     return SubmitScoresResponse(status=updated_review['status'])
+
+
+# --- Sign Review Endpoint ---
+
+
+class SignReviewResponse(BaseModel):
+    """Response schema for sign review endpoint."""
+
+    status: str
+    employee_signature_by: Optional[UUID] = None
+    manager_signature_by: Optional[UUID] = None
+
+
+@router.post('/reviews/{review_id}/sign', response_model=SignReviewResponse)
+async def sign_review(
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> SignReviewResponse:
+    """Sign a review (employee or manager signature).
+
+    This endpoint handles signing for both employees and managers:
+    - Employee: PENDING_EMPLOYEE_SIGNATURE → EMPLOYEE_SIGNED (then auto → PENDING_MANAGER_SIGNATURE)
+    - Manager: PENDING_MANAGER_SIGNATURE → SIGNED (if employee already signed)
+
+    Args:
+        review_id: The review UUID
+        current_user: The authenticated user
+        conn: Database connection
+
+    Returns:
+        The updated review status and signature info
+
+    Raises:
+        HTTPException 403: If user is not authorized to sign this review
+        HTTPException 404: If review not found
+        HTTPException 400: If review is not in a signable state
+    """
+    review_repo = ReviewRepository(conn)
+    audit_repo = AuditRepository(conn)
+
+    # Get user's internal ID from keycloak_id
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    if user_row is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='User not found in database',
+        )
+    user_id = user_row['id']
+
+    # Get the review
+    review = await review_repo.get_review(review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    old_status = review['status']
+    new_status = None
+    signature_action = None
+
+    # Determine signature action based on status and user role
+    if old_status == 'PENDING_EMPLOYEE_SIGNATURE':
+        # Employee signature required
+        if review['employee_id'] != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to sign this review (employee signature required)',
+            )
+        new_status = 'PENDING_MANAGER_SIGNATURE'  # After employee signs, manager is next
+        signature_action = 'EMPLOYEE_SIGNED'
+
+        # Record employee signature
+        await conn.execute(
+            '''
+            UPDATE reviews
+            SET employee_signature_by = $1, employee_signature_date = NOW(), status = $2, updated_at = NOW()
+            WHERE id = $3
+            ''',
+            user_id,
+            new_status,
+            review_id,
+        )
+
+    elif old_status == 'PENDING_MANAGER_SIGNATURE':
+        # Manager signature required
+        if review['manager_id'] != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to sign this review (manager signature required)',
+            )
+
+        # Check if employee already signed - if so, go to SIGNED, else go to EMPLOYEE_SIGNED
+        if review.get('employee_signature_by'):
+            new_status = 'SIGNED'
+        else:
+            new_status = 'MANAGER_SIGNED'
+        signature_action = 'MANAGER_SIGNED'
+
+        # Record manager signature
+        await conn.execute(
+            '''
+            UPDATE reviews
+            SET manager_signature_by = $1, manager_signature_date = NOW(), status = $2, updated_at = NOW()
+            WHERE id = $3
+            ''',
+            user_id,
+            new_status,
+            review_id,
+        )
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Review is not awaiting signature (current status: {old_status})',
+        )
+
+    # Create audit log entry
+    await audit_repo.log_action(
+        action=signature_action,
+        entity_type='review',
+        entity_id=review_id,
+        user_id=user_id,
+        opco_id=review.get('opco_id'),
+        changes={
+            'status': {'from': old_status, 'to': new_status},
+        },
+    )
+
+    # Get updated review
+    updated_review = await review_repo.get_review(review_id)
+
+    return SignReviewResponse(
+        status=updated_review['status'],
+        employee_signature_by=updated_review.get('employee_signature_by'),
+        manager_signature_by=updated_review.get('manager_signature_by'),
+    )
