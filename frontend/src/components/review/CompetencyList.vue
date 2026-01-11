@@ -6,20 +6,20 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getCompetencies } from '../../api/competencies'
 import type { Competency, TovLevel } from '../../types/competency'
-import CompetencyScoreCard from './CompetencyScoreCard.vue'
-import VoiceInput from '../common/VoiceInput.vue'
 
 interface Props {
   tovLevel: TovLevel
   scores?: Record<string, number>
   notes?: Record<string, string>
   disabled?: boolean
+  previewMode?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   scores: () => ({}),
   notes: () => ({}),
   disabled: false,
+  previewMode: false,
 })
 
 const emit = defineEmits<{
@@ -35,31 +35,15 @@ const loading = ref(true)
 const expandedIndicators = ref<Set<string>>(new Set())
 const localNotes = ref<Record<string, string>>({})
 
-// Computed: group competencies by category
-const groupedCompetencies = computed(() => {
-  const groups: Record<string, Competency[]> = {
-    Dedicated: [],
-    Entrepreneurial: [],
-    Innovative: [],
-  }
-
-  for (const comp of competencies.value) {
-    if (groups[comp.category]) {
-      groups[comp.category].push(comp)
-    }
-  }
-
-  return groups
-})
-
-// Computed: category order
-const categories = computed(() => ['Dedicated', 'Entrepreneurial', 'Innovative'])
-
-// Fetch competencies
+// Fetch competencies with current locale
 async function fetchCompetencies() {
   loading.value = true
   try {
-    competencies.value = await getCompetencies(props.tovLevel)
+    competencies.value = await getCompetencies(props.tovLevel, locale.value)
+    // In preview mode, expand all indicators by default
+    if (props.previewMode) {
+      expandedIndicators.value = new Set(competencies.value.map((c) => c.id))
+    }
   } catch (error) {
     console.error('Failed to fetch competencies:', error)
     competencies.value = []
@@ -68,9 +52,9 @@ async function fetchCompetencies() {
   }
 }
 
-// Watch for tovLevel changes
+// Watch for tovLevel or locale changes
 watch(
-  () => props.tovLevel,
+  [() => props.tovLevel, locale],
   () => {
     fetchCompetencies()
   }
@@ -97,11 +81,6 @@ function getTitle(comp: Competency): string {
   return comp.title_en
 }
 
-// Check if competency has VETO (score = 1)
-function hasVeto(competencyId: string): boolean {
-  return props.scores[competencyId] === 1
-}
-
 // Toggle indicators visibility
 function toggleIndicators(competencyId: string) {
   if (expandedIndicators.value.has(competencyId)) {
@@ -113,23 +92,21 @@ function toggleIndicators(competencyId: string) {
   expandedIndicators.value = new Set(expandedIndicators.value)
 }
 
-// Handle score change from score card
-function handleScoreChange(payload: { competencyId: string; score: number }) {
-  emit('score-change', payload)
+// Handle score selection
+function selectScore(competencyId: string, score: number) {
+  if (props.disabled) return
+  emit('score-change', { competencyId, score })
 }
 
 // Handle notes change
-function handleNotesChange(competencyId: string, notes: string) {
-  localNotes.value[competencyId] = notes
-  emit('notes-change', { competencyId, notes })
+function handleNotesChange(competencyId: string, event: Event) {
+  const target = event.target as HTMLTextAreaElement
+  localNotes.value[competencyId] = target.value
+  emit('notes-change', { competencyId, notes: target.value })
 }
 
-// Handle voice transcription
-function handleTranscription(competencyId: string, text: string) {
-  const currentNotes = localNotes.value[competencyId] || ''
-  const newNotes = currentNotes ? `${currentNotes} ${text}` : text
-  handleNotesChange(competencyId, newNotes)
-}
+// Score options
+const scoreOptions = [1, 2, 3] as const
 </script>
 
 <template>
@@ -140,92 +117,79 @@ function handleTranscription(competencyId: string, text: string) {
       <p>{{ t('common.loading') }}</p>
     </div>
 
-    <!-- Competency list -->
-    <div v-else class="competencies">
+    <!-- Competency cards -->
+    <div v-else class="competency-cards">
       <div
-        v-for="category in categories"
-        :key="category"
-        class="category-group"
-        :data-category="category"
+        v-for="comp in competencies"
+        :key="comp.id"
+        class="competency-card"
+        :data-competency-id="comp.id"
       >
-        <h3 class="category-title">
-          {{ t(`competencies.categories.${category}`) }}
-        </h3>
-
-        <div
-          v-for="comp in groupedCompetencies[category]"
-          :key="comp.id"
-          class="competency-item"
-          :class="{ 'veto-warning': hasVeto(comp.id) }"
-          :data-competency-id="comp.id"
-        >
-          <div class="competency-header">
-            <div class="competency-info">
-              <span class="category-badge">{{ comp.subcategory }}</span>
-              <h4 class="competency-title">{{ getTitle(comp) }}</h4>
-            </div>
-
-            <CompetencyScoreCard
-              :competency-id="comp.id"
-              :model-value="scores[comp.id] ?? null"
-              :labels="{
-                1: t('competencies.scores.1'),
-                2: t('competencies.scores.2'),
-                3: t('competencies.scores.3'),
-              }"
-              :disabled="disabled"
-              :show-veto-warning="true"
-              @score-change="handleScoreChange"
-            />
-          </div>
-
-          <!-- VETO indicator -->
-          <div v-if="hasVeto(comp.id)" class="veto-indicator">
-            {{ t('competencies.veto') }}
-          </div>
-
-          <!-- Behavioral indicators toggle -->
-          <button
-            v-if="comp.indicators_en && comp.indicators_en.length > 0"
-            class="indicators-toggle"
-            @click="toggleIndicators(comp.id)"
-          >
-            {{
-              expandedIndicators.has(comp.id)
-                ? t('competencies.hideIndicators')
-                : t('competencies.showIndicators')
-            }}
-          </button>
-
-          <!-- Indicators list -->
-          <ul
-            v-if="expandedIndicators.has(comp.id) && comp.indicators_en"
-            class="indicators-list"
-          >
-            <li v-for="(indicator, idx) in comp.indicators_en" :key="idx">
-              {{ indicator }}
-            </li>
-          </ul>
-
-          <!-- Notes section -->
-          <div class="notes-section">
-            <label class="notes-label">{{ t('competencies.notes') }}</label>
-            <div class="notes-input-wrapper">
-              <textarea
-                class="notes-textarea"
-                :value="localNotes[comp.id] || ''"
-                :disabled="disabled"
-                rows="2"
-                @input="handleNotesChange(comp.id, ($event.target as HTMLTextAreaElement).value)"
-                @blur="handleNotesChange(comp.id, localNotes[comp.id] || '')"
-              />
-              <VoiceInput
-                :disabled="disabled"
-                @transcription="handleTranscription(comp.id, $event)"
-              />
-            </div>
-          </div>
+        <!-- Category breadcrumb -->
+        <div class="competency-breadcrumb">
+          <span class="category-name">{{ t(`competencies.categories.${comp.category}`) }}</span>
+          <span class="breadcrumb-separator">›</span>
+          <span class="subcategory-name">{{ t(`competencies.subcategories.${comp.subcategory}`) }}</span>
         </div>
+
+        <!-- Description -->
+        <p class="competency-description">{{ getTitle(comp) }}</p>
+
+        <!-- Behavioral Indicators Toggle -->
+        <button
+          v-if="comp.indicators_en && comp.indicators_en.length > 0"
+          class="indicators-toggle"
+          :aria-expanded="expandedIndicators.has(comp.id)"
+          @click="toggleIndicators(comp.id)"
+        >
+          <span class="toggle-arrow" :class="{ expanded: expandedIndicators.has(comp.id) }">
+            {{ expandedIndicators.has(comp.id) ? '▼' : '▶' }}
+          </span>
+          {{ t('competencies.behavioralIndicators') }}
+        </button>
+
+        <!-- Indicators list -->
+        <ul
+          v-if="expandedIndicators.has(comp.id) && comp.indicators_en"
+          class="indicators-list"
+        >
+          <li v-for="(indicator, idx) in comp.indicators_en" :key="idx">
+            {{ indicator }}
+          </li>
+        </ul>
+
+        <!-- Scoring section (hidden in preview mode) -->
+        <template v-if="!previewMode">
+          <!-- Divider -->
+          <div class="card-divider"></div>
+
+          <!-- Score section -->
+          <div class="score-section">
+            <span class="score-label">{{ t('goals.score') }}:</span>
+            <div class="score-buttons">
+              <button
+                v-for="score in scoreOptions"
+                :key="score"
+                class="score-btn"
+                :class="{ selected: scores[comp.id] === score }"
+                :disabled="disabled"
+                @click="selectScore(comp.id, score)"
+              >
+                {{ score }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Explanation textarea -->
+          <textarea
+            class="explanation-textarea"
+            :value="localNotes[comp.id] || ''"
+            :disabled="disabled"
+            :placeholder="t('competencies.explanationPlaceholder')"
+            rows="2"
+            @input="handleNotesChange(comp.id, $event)"
+          />
+        </template>
       </div>
     </div>
   </div>
@@ -262,131 +226,143 @@ function handleTranscription(competencyId: string, text: string) {
   }
 }
 
-.category-group {
-  margin-bottom: 2rem;
+.competency-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.category-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-navy, #004A91);
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-gray-200);
-}
-
-.competency-item {
-  padding: 1rem;
-  margin-bottom: 1rem;
+.competency-card {
+  padding: 1.25rem;
   border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   background: var(--color-white, #ffffff);
-  transition: all 0.2s ease;
 }
 
-.competency-item:hover {
-  border-color: var(--color-gray-300);
-}
-
-.competency-item.veto-warning {
-  border-color: var(--color-grid-red, #dc2626);
-  background: #FEF2F2;
-}
-
-.competency-header {
+.competency-breadcrumb {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
-.competency-info {
-  flex: 1;
-  min-width: 200px;
-}
-
-.category-badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
+.category-name {
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-white, #ffffff);
-  background: var(--color-navy, #004A91);
-  border-radius: 4px;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  color: var(--color-navy, #004A91);
 }
 
-.competency-title {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 500;
+.breadcrumb-separator {
+  color: var(--color-gray-400);
+  font-size: 0.875rem;
+}
+
+.subcategory-name {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+.competency-description {
+  font-size: 0.9375rem;
   color: var(--color-gray-900);
-}
-
-.veto-indicator {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  margin-top: 0.5rem;
-  font-size: 0.7rem;
-  font-weight: bold;
-  color: var(--color-white, #ffffff);
-  background: var(--color-grid-red, #dc2626);
-  border-radius: 4px;
-  text-transform: uppercase;
+  line-height: 1.5;
+  margin: 0 0 1rem;
 }
 
 .indicators-toggle {
-  display: inline-block;
-  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--color-navy, #004A91);
   background: none;
   border: none;
   cursor: pointer;
-  text-decoration: underline;
+  margin-bottom: 0.75rem;
 }
 
 .indicators-toggle:hover {
   color: var(--color-magenta, #CC0E70);
 }
 
+.toggle-arrow {
+  font-size: 0.625rem;
+  transition: transform 0.2s;
+}
+
 .indicators-list {
-  margin: 0.75rem 0 0;
+  margin: 0 0 1rem;
   padding-left: 1.5rem;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   color: var(--color-gray-700);
+  line-height: 1.6;
 }
 
 .indicators-list li {
   margin-bottom: 0.25rem;
 }
 
-.notes-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-gray-200);
+.card-divider {
+  height: 1px;
+  background-color: var(--color-gray-200);
+  margin: 1rem 0;
 }
 
-.notes-label {
-  display: block;
-  font-size: 0.8rem;
+.score-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.score-label {
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-gray-600);
-  margin-bottom: 0.5rem;
+  color: var(--color-gray-700);
 }
 
-.notes-input-wrapper {
+.score-buttons {
   display: flex;
   gap: 0.5rem;
-  align-items: flex-start;
 }
 
-.notes-textarea {
-  flex: 1;
-  padding: 0.5rem;
+.score-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  background: var(--color-white);
+  border: 2px solid var(--color-gray-300);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.score-btn:hover:not(:disabled):not(.selected) {
+  border-color: var(--color-gray-400);
+  background: var(--color-gray-50);
+}
+
+.score-btn.selected {
+  color: var(--color-white);
+  background: var(--color-gray-700);
+  border-color: var(--color-gray-700);
+}
+
+.score-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.explanation-textarea {
+  width: 100%;
+  padding: 0.75rem;
   font-size: 0.875rem;
   font-family: inherit;
   border: 1px solid var(--color-gray-300);
@@ -395,13 +371,17 @@ function handleTranscription(competencyId: string, text: string) {
   min-height: 60px;
 }
 
-.notes-textarea:focus {
-  outline: none;
-  border-color: var(--color-magenta, #CC0E70);
-  box-shadow: 0 0 0 2px rgba(204, 14, 112, 0.1);
+.explanation-textarea::placeholder {
+  color: var(--color-gray-400);
 }
 
-.notes-textarea:disabled {
+.explanation-textarea:focus {
+  outline: none;
+  border-color: var(--color-navy, #004A91);
+  box-shadow: 0 0 0 3px rgba(0, 74, 145, 0.1);
+}
+
+.explanation-textarea:disabled {
   background: var(--color-gray-100);
   cursor: not-allowed;
 }

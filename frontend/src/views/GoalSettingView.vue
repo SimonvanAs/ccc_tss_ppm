@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useGoals } from '../composables/useGoals'
 import { useReviewHeader } from '../composables/useReviewHeader'
-import { useCompetencyPreview } from '../composables/useCompetencyPreview'
 import { submitReview } from '../api/goals'
+import { ApiRequestError } from '../api/client'
 import { hasRole } from '../api/auth'
 import { reassignManager, downloadReviewPdf } from '../api/reviews'
 import type { Goal, GoalCreate } from '../types'
@@ -14,7 +14,7 @@ import GoalList from '../components/review/GoalList.vue'
 import GoalForm from '../components/review/GoalForm.vue'
 import WeightIndicator from '../components/review/WeightIndicator.vue'
 import ReviewHeader from '../components/review/ReviewHeader.vue'
-import CompetencyPreview from '../components/review/CompetencyPreview.vue'
+import CompetencyScoringSection from '../components/review/CompetencyScoringSection.vue'
 import ManagerReassignModal from '../components/review/ManagerReassignModal.vue'
 import type { Manager } from '../components/review/ManagerReassignModal.vue'
 import SaveIndicator from '../components/common/SaveIndicator.vue'
@@ -53,15 +53,8 @@ const {
   updateTovLevel,
 } = useReviewHeader(props.reviewId)
 
-// Competency preview based on TOV level
-const {
-  competencies,
-  loading: competenciesLoading,
-  loadCompetencies,
-} = useCompetencyPreview()
-
-// Computed to determine if we should show "select TOV" message
-const showSelectTovMessage = computed(() => !review.value?.tov_level)
+// Computed to check if TOV level is set
+const hasTovLevel = computed(() => Boolean(review.value?.tov_level))
 
 // Computed for header field validation
 const isHeaderFieldsValid = computed(() => {
@@ -104,23 +97,7 @@ const editModalTitle = computed(() =>
 
 onMounted(async () => {
   await Promise.all([loadGoals(), loadReview()])
-  // Load competencies if TOV level is already set
-  if (review.value?.tov_level) {
-    await loadCompetencies(review.value.tov_level as TovLevel)
-  }
 })
-
-// Watch for TOV level changes to load competencies
-watch(
-  () => review.value?.tov_level,
-  async (newLevel) => {
-    if (newLevel) {
-      await loadCompetencies(newLevel as TovLevel)
-    } else {
-      await loadCompetencies(null)
-    }
-  }
-)
 
 // Handle header field updates (auto-save)
 function handleJobTitleUpdate(value: string) {
@@ -215,6 +192,33 @@ async function handleReorder(goalIds: string[]) {
   }
 }
 
+// Parse backend error and return user-friendly message
+function getSubmitErrorMessage(error: unknown): string {
+  if (error instanceof ApiRequestError) {
+    const detail = error.detail.toLowerCase()
+
+    // Check for specific error types
+    if (detail.includes('draft status')) {
+      return t('errors.submit.notDraft')
+    }
+    if (detail.includes('missing required fields') || detail.includes('job_title') || detail.includes('tov_level')) {
+      return t('errors.submit.missingFields')
+    }
+    if (detail.includes('weights must total 100') || detail.includes('weight')) {
+      // Extract current weight if available
+      const match = error.detail.match(/current:\s*(\d+)%?/)
+      if (match) {
+        return t('errors.submit.invalidWeight', { current: match[1] })
+      }
+      return t('errors.submit.invalidWeightGeneric')
+    }
+    if (detail.includes('not found')) {
+      return t('errors.submit.notFound')
+    }
+  }
+  return t('errors.submitFailed')
+}
+
 // Handle goal submission
 async function handleSubmit() {
   if (!canSubmit.value || isSubmitting.value) {
@@ -233,7 +237,7 @@ async function handleSubmit() {
       router.push({ name: 'Dashboard' })
     }, 1500)
   } catch (e) {
-    submitError.value = t('errors.submitFailed')
+    submitError.value = getSubmitErrorMessage(e)
     isSubmitting.value = false
   }
 }
@@ -356,13 +360,13 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
       />
     </div>
 
-    <!-- Competency Preview -->
-    <CompetencyPreview
-      :competencies="competencies"
-      :loading="competenciesLoading"
-      :show-select-message="showSelectTovMessage"
-      class="competency-preview-card"
-      data-testid="competency-preview"
+    <!-- HOW-Axis Competencies Section (preview mode - no scoring) -->
+    <CompetencyScoringSection
+      v-if="hasTovLevel && review"
+      :review-id="reviewId"
+      :tov-level="(review.tov_level as TovLevel)"
+      :preview-mode="true"
+      data-testid="competency-scoring"
     />
 
     <!-- Footer Actions -->
@@ -514,10 +518,6 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
 .weight-indicator-wrapper {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
-}
-
-.competency-preview-card {
-  margin-bottom: 1.5rem;
 }
 
 /* Footer Actions */

@@ -20,6 +20,7 @@ async def get_competencies(
     tov_level: Annotated[str, Query(description='TOV level (A, B, C, or D)')],
     current_user: Annotated[CurrentUser, Depends(get_current_user)],
     conn: Annotated[asyncpg.Connection, Depends(get_db)],
+    language: Annotated[str, Query(description='Language code (en, nl, es)')] = 'en',
 ) -> List[CompetencyResponse]:
     """Get competencies for a specific TOV level.
 
@@ -30,6 +31,7 @@ async def get_competencies(
         tov_level: The TOV level to filter by
         current_user: The authenticated user
         conn: Database connection
+        language: Language code for indicators (en, nl, es)
 
     Returns:
         List of competencies for the TOV level
@@ -46,6 +48,6 @@ async def get_competencies(
         if opco_row:
             opco_id = opco_row['id']
 
-    competencies = await repo.get_competencies_by_level(tov_level, opco_id)
+    competencies = await repo.get_competencies_by_level(tov_level, opco_id, language)
 
     return [CompetencyResponse(**c) for c in competencies]

@@ -12,7 +12,7 @@ class Settings:
     # Database
     database_url: str = os.getenv(
         'DATABASE_URL',
-        'postgresql://ppm:ppm_dev_password@localhost:5432/tss_ppm'
+        'postgresql://ppm:ppm_dev_password@localhost:5433/tss_ppm'
     )
 
     # Keycloak

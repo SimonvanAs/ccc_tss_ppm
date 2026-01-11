@@ -23,18 +23,25 @@ const props = withDefaults(defineProps<Props>(), {
 const whatValues = [3, 2, 1] as const // Rows from top to bottom
 const howValues = [1, 2, 3] as const // Columns from left to right
 
-// Color mapping based on cell position
-// Red: Low performance (1,1), (1,2), (2,1)
-// Orange: Developing (1,3), (3,1)
-// Green: Solid performers (2,2), (2,3), (3,2)
-// Dark Green: Top performers (3,3)
+// Color mapping based on cell position (matches standard 9-grid)
+// Red: Immediate attention (1,1)
+// Orange: Development area (1,2), (1,3), (2,1), (3,1)
+// Green: Good performance (2,2), (2,3), (3,2)
+// Dark Green: Exceptional (3,3)
 function getCellColor(what: number, how: number): string {
-  const sum = what + how
-
+  // Exceptional - top performer
   if (what === 3 && how === 3) return 'color-dark-green'
-  if (sum >= 5 || (what === 2 && how === 2)) return 'color-green'
-  if (sum >= 4) return 'color-orange'
-  return 'color-red'
+
+  // Good performance - solid performers
+  if ((what === 2 && how === 2) || (what === 2 && how === 3) || (what === 3 && how === 2)) {
+    return 'color-green'
+  }
+
+  // Immediate attention - needs urgent intervention
+  if (what === 1 && how === 1) return 'color-red'
+
+  // Development area - all remaining cells
+  return 'color-orange'
 }
 
 // Calculate the rounded cell position
@@ -109,6 +116,26 @@ const ariaLabel = computed(() => {
     <!-- VETO indicator -->
     <div v-if="vetoActive" class="veto-indicator">
       VETO Active
+    </div>
+
+    <!-- Legend -->
+    <div v-if="!compact" class="legend">
+      <div class="legend-item">
+        <span class="legend-color color-dark-green" />
+        <span class="legend-label">{{ $t('nineGrid.exceptional') }}</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color color-green" />
+        <span class="legend-label">{{ $t('nineGrid.goodPerformance') }}</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color color-orange" />
+        <span class="legend-label">{{ $t('nineGrid.developmentArea') }}</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color color-red" />
+        <span class="legend-label">{{ $t('nineGrid.immediateAttention') }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -281,6 +308,41 @@ const ariaLabel = computed(() => {
 
   .row-labels {
     left: -1.25rem;
+  }
+}
+
+/* Legend styles */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-700);
+}
+
+@media (max-width: 480px) {
+  .legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
 </style>

@@ -7,7 +7,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import Response
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 import asyncpg
 
@@ -209,7 +209,7 @@ class CreateReviewResponse(BaseModel):
 @router.post('/reviews', response_model=CreateReviewResponse, status_code=201)
 async def create_review(
     request: CreateReviewRequest,
-    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    current_user: Annotated[CurrentUser, Depends(require_hr)],
     conn: Annotated[asyncpg.Connection, Depends(get_db)],
 ) -> CreateReviewResponse:
     """Create a new review with pre-population from previous year.
@@ -219,7 +219,7 @@ async def create_review(
 
     Args:
         request: Employee ID and review year
-        current_user: The authenticated user (must be HR)
+        current_user: The authenticated HR user
         conn: Database connection
 
     Returns:
@@ -275,6 +275,78 @@ async def create_review(
     return CreateReviewResponse(**dict(created_review))
 
 
+@router.get('/reviews/me', response_model=ReviewDetailResponse)
+async def get_my_review(
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+    year: int = Query(..., description='The review year'),
+) -> ReviewDetailResponse:
+    """Get the current user's review for a specific year.
+
+    Returns the most recent review stage (END_YEAR > MID_YEAR > GOAL_SETTING)
+    for the specified year.
+
+    Args:
+        current_user: The authenticated user
+        conn: Database connection
+        year: The review year to fetch
+
+    Returns:
+        The user's review for the specified year
+
+    Raises:
+        HTTPException 404: If no review found for the user/year
+    """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    if user_row is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User not found',
+        )
+    user_id = user_row['id']
+
+    # Get the user's review for this year (prioritize most advanced stage)
+    query = """
+        SELECT
+            r.id, r.employee_id, r.manager_id, r.opco_id,
+            r.status, r.stage, r.review_year,
+            r.what_score, r.how_score,
+            r.job_title, r.tov_level,
+            r.goal_setting_completed_at,
+            r.mid_year_completed_at,
+            r.end_year_completed_at,
+            r.created_at, r.updated_at,
+            CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
+            CONCAT(m.first_name, ' ', m.last_name) AS manager_name
+        FROM reviews r
+        LEFT JOIN users e ON r.employee_id = e.id
+        LEFT JOIN users m ON r.manager_id = m.id
+        WHERE r.employee_id = $1
+          AND r.review_year = $2
+          AND r.deleted_at IS NULL
+        ORDER BY
+            CASE r.stage
+                WHEN 'END_YEAR_REVIEW' THEN 1
+                WHEN 'MID_YEAR_REVIEW' THEN 2
+                WHEN 'GOAL_SETTING' THEN 3
+            END
+        LIMIT 1
+    """
+    row = await conn.fetchrow(query, user_id, year)
+
+    if row is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'No review found for year {year}',
+        )
+
+    return ReviewDetailResponse(**dict(row))
+
+
 @router.get('/reviews/{review_id}', response_model=ReviewDetailResponse)
 async def get_review(
     review_id: UUID,
@@ -282,6 +354,11 @@ async def get_review(
     conn: Annotated[asyncpg.Connection, Depends(get_db)],
 ) -> ReviewDetailResponse:
     """Get a review by ID.
+
+    RBAC:
+    - Employee can access their own review
+    - Manager can access their team's reviews
+    - HR can access all reviews in their OpCo
 
     Args:
         review_id: The review UUID
@@ -292,8 +369,16 @@ async def get_review(
         The review details
 
     Raises:
-        HTTPException: If review not found
+        HTTPException 404: If review not found
+        HTTPException 403: If user not authorized to view this review
     """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    user_id = user_row['id'] if user_row else None
+
     review_repo = ReviewRepository(conn)
     review = await review_repo.get_review(review_id)
 
@@ -303,34 +388,43 @@ async def get_review(
             detail='Review not found',
         )
 
+    # RBAC check: employee, manager, or HR
+    is_employee = user_id == review['employee_id']
+    is_manager = user_id == review['manager_id']
+    is_hr = 'hr' in [r.lower() for r in current_user.roles]
+
+    if not (is_employee or is_manager or is_hr):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to view this review',
+        )
+
+    # OpCo check for HR
+    if is_hr and not is_employee and not is_manager:
+        if str(review.get('opco_id')) != current_user.opco_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to access reviews from other OpCos',
+            )
+
     return ReviewDetailResponse(**review)
-
-
-class ReviewHeaderUpdateRequest(BaseModel):
-    """Request schema for updating review header fields."""
-
-    job_title: Optional[str] = None
-    tov_level: Optional[str] = None
-
-    @property
-    def has_updates(self) -> bool:
-        """Check if any update fields are provided."""
-        return self.job_title is not None or self.tov_level is not None
-
-    model_config = {
-        'json_schema_extra': {
-            'examples': [
-                {'job_title': 'Senior Developer', 'tov_level': 'B'},
-            ]
-        }
-    }
 
 
 class ReviewHeaderUpdateRequestValidated(BaseModel):
     """Request schema for updating review header fields with validation."""
 
-    job_title: Optional[str] = None
+    job_title: Optional[str] = Field(None, max_length=255)
     tov_level: Optional[str] = None
+
+    @field_validator('job_title')
+    @classmethod
+    def validate_job_title(cls, v: Optional[str]) -> Optional[str]:
+        """Validate job_title is not empty or whitespace-only."""
+        if v is not None:
+            v = v.strip()
+            if not v:
+                raise ValueError('job_title cannot be empty or whitespace-only')
+        return v
 
     @field_validator('tov_level')
     @classmethod
@@ -352,6 +446,10 @@ async def update_review_header(
 
     Only allowed when review is in DRAFT status.
 
+    RBAC:
+    - Employee can update their own review
+    - HR can update any review in their OpCo
+
     Args:
         review_id: The review UUID
         update_data: Fields to update (job_title, tov_level)
@@ -363,8 +461,16 @@ async def update_review_header(
 
     Raises:
         HTTPException 404: If review not found
+        HTTPException 403: If user not authorized to update this review
         HTTPException 400: If review is not in DRAFT status
     """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    user_id = user_row['id'] if user_row else None
+
     review_repo = ReviewRepository(conn)
 
     # Get current review to check status
@@ -374,6 +480,24 @@ async def update_review_header(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Review not found',
         )
+
+    # RBAC check: only employee owner or HR can update
+    is_employee = user_id == review['employee_id']
+    is_hr = 'hr' in [r.lower() for r in current_user.roles]
+
+    if not (is_employee or is_hr):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to update this review',
+        )
+
+    # OpCo check for HR
+    if is_hr and not is_employee:
+        if str(review.get('opco_id')) != current_user.opco_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to access reviews from other OpCos',
+            )
 
     # Only allow updates in DRAFT status
     if review['status'] != 'DRAFT':
@@ -405,8 +529,9 @@ async def submit_review(
 
     Validates that:
     1. Review exists
-    2. Review is in DRAFT status
-    3. Goal weights total 100%
+    2. Current user is the employee owner
+    3. Review is in DRAFT status
+    4. Goal weights total 100%
 
     On success, transitions status to PENDING_MANAGER_SIGNATURE.
 
@@ -421,6 +546,13 @@ async def submit_review(
     Raises:
         HTTPException: If validation fails
     """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    user_id = user_row['id'] if user_row else None
+
     review_repo = ReviewRepository(conn)
     goal_repo = GoalRepository(conn)
 
@@ -430,6 +562,13 @@ async def submit_review(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Review not found',
+        )
+
+    # RBAC: Only the employee owner can submit their review
+    if user_id != review['employee_id']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to submit this review',
         )
 
     # Check review is in DRAFT status
@@ -479,6 +618,11 @@ async def get_scores(
 ) -> AllScoresResponse:
     """Get all scores (goals and competencies) for a review.
 
+    RBAC:
+    - Employee can access their own review scores
+    - Manager can access their team's review scores
+    - HR can access all review scores in their OpCo
+
     Args:
         review_id: The review UUID
         current_user: The authenticated user
@@ -486,7 +630,47 @@ async def get_scores(
 
     Returns:
         Combined goal and competency scores
+
+    Raises:
+        HTTPException 404: If review not found
+        HTTPException 403: If user not authorized to view scores
     """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    user_id = user_row['id'] if user_row else None
+
+    # Get review to check authorization
+    review_repo = ReviewRepository(conn)
+    review = await review_repo.get_review(review_id)
+
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # RBAC check: employee, manager, or HR
+    is_employee = user_id == review['employee_id']
+    is_manager = user_id == review['manager_id']
+    is_hr = 'hr' in [r.lower() for r in current_user.roles]
+
+    if not (is_employee or is_manager or is_hr):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to view scores for this review',
+        )
+
+    # OpCo check for HR
+    if is_hr and not is_employee and not is_manager:
+        if str(review.get('opco_id')) != current_user.opco_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail='Not authorized to access reviews from other OpCos',
+            )
+
     scores_repo = ScoresRepository(conn)
     scores = await scores_repo.get_all_scores(review_id)
 
@@ -509,6 +693,9 @@ async def update_scores(
 
     Allows partial updates - you can update only goals, only competencies, or both.
 
+    RBAC:
+    - Only the manager of the review can update scores
+
     Args:
         review_id: The review UUID
         scores_data: Scores to update
@@ -517,7 +704,35 @@ async def update_scores(
 
     Returns:
         Update confirmation with counts
+
+    Raises:
+        HTTPException 404: If review not found
+        HTTPException 403: If user not authorized to update scores
     """
+    # Get user's internal ID
+    user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    user_id = user_row['id'] if user_row else None
+
+    # Get review to check authorization
+    review_repo = ReviewRepository(conn)
+    review = await review_repo.get_review(review_id)
+
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # RBAC check: only the manager can update scores
+    if user_id != review['manager_id']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to update scores for this review',
+        )
+
     scores_repo = ScoresRepository(conn)
 
     updated_goals = 0
@@ -1089,17 +1304,42 @@ async def reassign_manager(
             detail='Review not found',
         )
 
+    # OpCo check: HR can only modify reviews in their own OpCo
+    if str(review.get('opco_id')) != current_user.opco_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to access reviews from other OpCos',
+        )
+
     old_manager_id = review['manager_id']
 
-    # Validate new manager exists and is in the same OpCo
+    # Validate new manager exists, is in the same OpCo, and has manager role
     new_manager = await conn.fetchrow(
-        'SELECT id, opco_id FROM users WHERE id = $1',
+        '''
+        SELECT u.id, u.opco_id,
+               EXISTS(SELECT 1 FROM user_roles ur WHERE ur.user_id = u.id AND ur.role = 'manager') as is_manager
+        FROM users u WHERE u.id = $1
+        ''',
         request.new_manager_id,
     )
     if new_manager is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Invalid new manager: user not found',
+        )
+
+    # Verify new manager has the manager role
+    if not new_manager.get('is_manager'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='New manager must have the manager role',
+        )
+
+    # Verify new manager is in the same OpCo as the review
+    if new_manager['opco_id'] != review['opco_id']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='New manager must be in the same OpCo as the review',
         )
 
     # Update the review's manager
@@ -1181,7 +1421,7 @@ async def get_review_pdf(
     # RBAC check: employee, manager, or HR
     is_employee = user_id == review['employee_id']
     is_manager = user_id == review['manager_id']
-    is_hr = 'HR' in current_user.roles
+    is_hr = 'hr' in [r.lower() for r in current_user.roles]
 
     if not (is_employee or is_manager or is_hr):
         raise HTTPException(

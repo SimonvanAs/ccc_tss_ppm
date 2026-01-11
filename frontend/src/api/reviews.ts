@@ -59,6 +59,18 @@ export function fetchReview(reviewId: string): Promise<ReviewDetails> {
 }
 
 /**
+ * Fetch the current user's review for a given year.
+ * Returns null if no review exists.
+ */
+export async function getReviewForUser(year: number): Promise<ReviewDetails | null> {
+  try {
+    return await get<ReviewDetails>(`/reviews/me?year=${year}`)
+  } catch {
+    return null
+  }
+}
+
+/**
  * Sign a review (as employee or manager).
  */
 export function signReview(reviewId: string): Promise<SignReviewResponse> {

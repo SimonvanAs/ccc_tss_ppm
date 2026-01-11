@@ -59,23 +59,20 @@ const percentage = computed(() => {
 
 <style scoped>
 .weight-indicator {
-  background: var(--color-white);
-  border: 1px solid var(--color-gray-200);
-  border-radius: 8px;
-  padding: 1rem;
+  padding: 0.75rem 0;
 }
 
 .weight-bar {
-  height: 8px;
+  height: 4px;
   background: var(--color-gray-200);
-  border-radius: 4px;
+  border-radius: 2px;
   overflow: hidden;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .weight-progress {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 2px;
   transition: width 0.3s ease;
 }
 
@@ -101,17 +98,17 @@ const percentage = computed(() => {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .status-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   margin-right: 0.25rem;
 }
 
@@ -131,7 +128,7 @@ const percentage = computed(() => {
 }
 
 .weight-value {
-  font-size: 1.25rem;
+  font-size: 0.875rem;
 }
 
 .status-valid .weight-value {
@@ -147,17 +144,18 @@ const percentage = computed(() => {
 }
 
 .weight-separator {
-  color: var(--color-gray-600);
+  color: var(--color-gray-500);
   margin: 0 0.125rem;
+  font-size: 0.875rem;
 }
 
 .weight-target {
-  color: var(--color-gray-600);
-  font-size: 1rem;
+  color: var(--color-gray-500);
+  font-size: 0.875rem;
 }
 
 .weight-message {
-  font-size: 0.875rem;
-  color: var(--color-gray-600);
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
 }
 </style>
