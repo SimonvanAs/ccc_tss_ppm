@@ -76,11 +76,11 @@
   - [x] Write tests for competency VETO rule (any=1 → HOW=1.00)
   - [x] Implement `frontend/src/services/scoring.ts`
 
-- [ ] Task: Create ScoreCard component
-  - [ ] Write tests for three-card display (1, 2, 3)
-  - [ ] Write tests for selection state and visual feedback
-  - [ ] Write tests for click handler emitting score
-  - [ ] Implement `frontend/src/components/review/ScoreCard.vue`
+- [x] Task: Create ScoreCard component `a95d919`
+  - [x] Write tests for three-card display (1, 2, 3)
+  - [x] Write tests for selection state and visual feedback
+  - [x] Write tests for click handler emitting score
+  - [x] Implement `frontend/src/components/review/ScoreCard.vue`
 
 - [ ] Task: Create VetoWarning component
   - [ ] Write tests for SCF VETO warning display

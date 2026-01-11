@@ -22,7 +22,7 @@
 
 ## Phase 2: Frontend Scoring Composable
 
-- [ ] Task: Write tests for useCompetencyScoring composable
+- [~] Task: Write tests for useCompetencyScoring composable
   - [ ] Test HOW score calculation
   - [ ] Test VETO detection
   - [ ] Test grid position calculation
