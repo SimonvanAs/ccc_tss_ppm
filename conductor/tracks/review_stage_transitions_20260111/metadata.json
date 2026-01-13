@@ -1,0 +1,10 @@
+{
+  "id": "review_stage_transitions_20260111",
+  "title": "Review Stage Transitions",
+  "priority": "critical",
+  "status": "planned",
+  "created": "2026-01-11",
+  "tags": ["backend", "frontend", "workflow", "critical"],
+  "dependencies": [],
+  "blocks": ["goal_change_requests_20260111", "notification_system_20260111"]
+}

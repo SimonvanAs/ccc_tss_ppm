@@ -65,11 +65,20 @@ const isHeaderFieldsValid = computed(() => {
 
 // Combined validation for submission
 const canSubmit = computed(() => {
-  return isWeightValid.value && isHeaderFieldsValid.value
+  return isWeightValid.value && isHeaderFieldsValid.value && isGoalSettingStage.value
 })
 
 // Check if current user has HR role
 const isHrUser = computed(() => hasRole('hr'))
+
+// Stage-based read-only mode: goals can only be edited during GOAL_SETTING stage
+const isGoalSettingStage = computed(() => review.value?.stage === 'GOAL_SETTING')
+
+// Read-only if not in goal setting stage or review is not in draft status
+const isReadOnly = computed(() => {
+  if (!review.value) return true
+  return review.value.stage !== 'GOAL_SETTING' || review.value.status !== 'DRAFT'
+})
 
 // Modal states
 const showAddModal = ref(false)
@@ -311,6 +320,7 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
       :mid-year-completed-at="review.mid_year_completed_at"
       :end-year-completed-at="review.end_year_completed_at"
       :is-hr-user="isHrUser"
+      :readonly="isReadOnly"
       class="review-header-card"
       @update:job-title="handleJobTitleUpdate"
       @update:tov-level="handleTovLevelUpdate"
@@ -332,6 +342,7 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
           <p class="section-subtitle">{{ t('goals.whatAxisSubtitle') }}</p>
         </div>
         <button
+          v-if="!isReadOnly"
           class="btn btn-primary"
           :disabled="isMaxGoalsReached"
           @click="handleAddGoal"
@@ -350,10 +361,16 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
         <WeightIndicator :total="totalWeight" />
       </div>
 
+      <!-- Read-only banner when not in GOAL_SETTING stage -->
+      <div v-if="isReadOnly && review" class="readonly-banner">
+        {{ t('goals.readOnlyStage', { stage: t(`stageTransition.stages.${review.stage}`) }) }}
+      </div>
+
       <!-- Goals list -->
       <GoalList
         :goals="goals"
         :loading="loading"
+        :readonly="isReadOnly"
         @edit="handleEditGoal"
         @delete="handleDeleteGoal"
         @reorder="handleReorder"
@@ -389,6 +406,7 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
           {{ t('pdf.downloadDraft') }}
         </button>
         <button
+          v-if="!isReadOnly"
           class="btn btn-submit"
           :disabled="!canSubmit || isSubmitting || submitSuccess"
           @click="handleSubmit"
@@ -396,10 +414,10 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
           {{ isSubmitting ? t('goals.submitting') : t('goals.submitReview') }}
         </button>
       </div>
-      <p v-if="!isHeaderFieldsValid && !submitSuccess" class="submit-hint">
+      <p v-if="!isReadOnly && !isHeaderFieldsValid && !submitSuccess" class="submit-hint">
         {{ t('goals.headerFieldsRequired') }}
       </p>
-      <p v-if="isHeaderFieldsValid && !isWeightValid && !submitSuccess" class="submit-hint">
+      <p v-if="!isReadOnly && isHeaderFieldsValid && !isWeightValid && !submitSuccess" class="submit-hint">
         {{ t('goals.submitHint') }}
       </p>
     </div>
@@ -611,6 +629,16 @@ async function handleReassignSubmit(payload: { managerId: string; reason: string
   border-radius: 8px;
   font-weight: 500;
   display: inline-block;
+}
+
+.readonly-banner {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  border: 1px solid #FCD34D;
 }
 
 /* Responsive */

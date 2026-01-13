@@ -161,6 +161,37 @@ class ReviewRepository:
         row = await self.conn.fetchrow(query, new_manager_id, review_id)
         return dict(row) if row else None
 
+    async def advance_stage(self, review_id: UUID, new_stage: str) -> Optional[dict]:
+        """Advance a review to the next stage.
+
+        Resets status to DRAFT, clears signatures, and sets stage completion timestamp.
+
+        Args:
+            review_id: The review UUID
+            new_stage: The new stage (MID_YEAR_REVIEW, END_YEAR_REVIEW, or ARCHIVED)
+
+        Returns:
+            Updated review dict or None if not found
+        """
+        # Determine which completion timestamp to set based on current stage
+        # When advancing FROM a stage, we mark that stage as completed
+        query = """
+            UPDATE reviews
+            SET stage = $1,
+                status = CASE WHEN $1 = 'ARCHIVED' THEN 'ARCHIVED' ELSE 'DRAFT' END,
+                employee_signature_by = NULL,
+                employee_signature_date = NULL,
+                manager_signature_by = NULL,
+                manager_signature_date = NULL,
+                rejection_feedback = NULL,
+                updated_at = NOW()
+            WHERE id = $2 AND deleted_at IS NULL
+            RETURNING id, employee_id, manager_id, opco_id, status, stage,
+                      review_year, what_score, how_score, job_title, tov_level
+        """
+        row = await self.conn.fetchrow(query, new_stage, review_id)
+        return dict(row) if row else None
+
 
 class ReviewDetailResponse(BaseModel):
     """Schema for detailed review API responses including TOV level."""
@@ -1373,6 +1404,265 @@ async def reassign_manager(
     updated_review = await review_repo.get_review(review_id)
 
     return ManagerReassignResponse(**updated_review)
+
+
+# ============================================================================
+# Stage Transition Endpoint
+# ============================================================================
+
+
+# Valid stage transitions
+STAGE_TRANSITIONS = {
+    'GOAL_SETTING': 'MID_YEAR_REVIEW',
+    'MID_YEAR_REVIEW': 'END_YEAR_REVIEW',
+    'END_YEAR_REVIEW': 'ARCHIVED',
+}
+
+
+class StageTransitionResponse(BaseModel):
+    """Response schema for stage transition endpoint."""
+
+    id: UUID
+    old_stage: str
+    new_stage: str
+    status: str
+
+
+@router.post('/reviews/{review_id}/advance-stage', response_model=StageTransitionResponse)
+async def advance_review_stage(
+    review_id: UUID,
+    current_user: Annotated[CurrentUser, Depends(require_hr)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> StageTransitionResponse:
+    """Advance a review to the next stage in the annual review cycle.
+
+    Stage progression:
+    - GOAL_SETTING → MID_YEAR_REVIEW
+    - MID_YEAR_REVIEW → END_YEAR_REVIEW
+    - END_YEAR_REVIEW → ARCHIVED
+
+    Requirements:
+    - Only HR can advance stages
+    - Review must be in SIGNED status before advancing
+    - Status resets to DRAFT when entering new stage (except ARCHIVED)
+    - Signatures are cleared when advancing
+
+    Args:
+        review_id: The review UUID
+        current_user: The authenticated HR user
+        conn: Database connection
+
+    Returns:
+        The stage transition result
+
+    Raises:
+        HTTPException 403: If user is not HR or not in same OpCo
+        HTTPException 404: If review not found
+        HTTPException 400: If review not in SIGNED status or already at final stage
+    """
+    review_repo = ReviewRepository(conn)
+    audit_repo = AuditRepository(conn)
+
+    # Get the review
+    review = await review_repo.get_review(review_id)
+    if review is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Review not found',
+        )
+
+    # OpCo check: HR can only modify reviews in their own OpCo
+    if str(review.get('opco_id')) != current_user.opco_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Not authorized to access reviews from other OpCos',
+        )
+
+    old_stage = review['stage']
+    old_status = review['status']
+
+    # Check review is in SIGNED status (required before advancing)
+    if old_status != 'SIGNED':
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Review must be in SIGNED status to advance stage (current: {old_status})',
+        )
+
+    # Check if stage can be advanced
+    if old_stage not in STAGE_TRANSITIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Review is already at final stage: {old_stage}',
+        )
+
+    new_stage = STAGE_TRANSITIONS[old_stage]
+
+    # Advance the stage
+    updated_review = await review_repo.advance_stage(review_id, new_stage)
+
+    # Get HR user's internal ID for audit log
+    hr_user_row = await conn.fetchrow(
+        'SELECT id FROM users WHERE keycloak_id = $1',
+        current_user.keycloak_id,
+    )
+    hr_user_id = hr_user_row['id'] if hr_user_row else None
+
+    # Create audit log entry
+    await audit_repo.log_action(
+        action='STAGE_ADVANCED',
+        entity_type='review',
+        entity_id=review_id,
+        user_id=hr_user_id,
+        opco_id=review.get('opco_id'),
+        changes={
+            'stage': {'from': old_stage, 'to': new_stage},
+            'status': {'from': old_status, 'to': updated_review['status']},
+        },
+    )
+
+    return StageTransitionResponse(
+        id=review_id,
+        old_stage=old_stage,
+        new_stage=new_stage,
+        status=updated_review['status'],
+    )
+
+
+class BulkStageAdvanceRequest(BaseModel):
+    """Request schema for bulk stage advancement."""
+
+    from_stage: str
+    review_year: Optional[int] = None
+
+    @field_validator('from_stage')
+    @classmethod
+    def validate_from_stage(cls, v: str) -> str:
+        """Validate from_stage is a valid stage that can be advanced."""
+        if v not in STAGE_TRANSITIONS:
+            raise ValueError(f'Invalid stage: {v}. Must be one of: {list(STAGE_TRANSITIONS.keys())}')
+        return v
+
+
+class BulkStageAdvanceResponse(BaseModel):
+    """Response schema for bulk stage advancement."""
+
+    advanced_count: int
+    skipped_count: int
+    from_stage: str
+    to_stage: str
+    review_ids: list[UUID]
+
+
+@router.post('/hr/reviews/advance-stage', response_model=BulkStageAdvanceResponse)
+async def bulk_advance_stage(
+    request: BulkStageAdvanceRequest,
+    current_user: Annotated[CurrentUser, Depends(require_hr)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> BulkStageAdvanceResponse:
+    """Bulk advance all eligible reviews in the OpCo to the next stage.
+
+    This endpoint advances all reviews that:
+    - Are in the specified from_stage
+    - Are in SIGNED status
+    - Belong to the HR user's OpCo
+    - Match the optional review_year filter
+
+    Args:
+        request: The bulk advance request with from_stage and optional year filter
+        current_user: The authenticated HR user
+        conn: Database connection
+
+    Returns:
+        Summary of advanced and skipped reviews
+
+    Raises:
+        HTTPException 403: If user is not HR
+        HTTPException 400: If from_stage is invalid
+    """
+    audit_repo = AuditRepository(conn)
+    from_stage = request.from_stage
+    to_stage = STAGE_TRANSITIONS[from_stage]
+
+    # Build query to find eligible reviews
+    query_params = [current_user.opco_id, from_stage]
+    year_filter = ''
+    if request.review_year:
+        year_filter = 'AND review_year = $3'
+        query_params.append(request.review_year)
+
+    # Find all eligible reviews (in OpCo, in from_stage, status SIGNED)
+    eligible_reviews = await conn.fetch(
+        f'''
+        SELECT id, status
+        FROM reviews
+        WHERE opco_id = $1::uuid
+          AND stage = $2
+          AND deleted_at IS NULL
+          {year_filter}
+        ''',
+        *query_params,
+    )
+
+    # Separate into advanceable (SIGNED) and skipped (not SIGNED)
+    advanceable_ids = []
+    skipped_count = 0
+
+    for review in eligible_reviews:
+        if review['status'] == 'SIGNED':
+            advanceable_ids.append(review['id'])
+        else:
+            skipped_count += 1
+
+    # Bulk update eligible reviews
+    if advanceable_ids:
+        new_status = 'ARCHIVED' if to_stage == 'ARCHIVED' else 'DRAFT'
+        await conn.execute(
+            '''
+            UPDATE reviews
+            SET stage = $1,
+                status = $2,
+                employee_signature_by = NULL,
+                employee_signature_date = NULL,
+                manager_signature_by = NULL,
+                manager_signature_date = NULL,
+                rejection_feedback = NULL,
+                updated_at = NOW()
+            WHERE id = ANY($3::uuid[])
+            ''',
+            to_stage,
+            new_status,
+            advanceable_ids,
+        )
+
+        # Get HR user's internal ID for audit log
+        hr_user_row = await conn.fetchrow(
+            'SELECT id FROM users WHERE keycloak_id = $1',
+            current_user.keycloak_id,
+        )
+        hr_user_id = hr_user_row['id'] if hr_user_row else None
+
+        # Create audit log entry for bulk operation
+        await audit_repo.log_action(
+            action='BULK_STAGE_ADVANCED',
+            entity_type='reviews',
+            entity_id=None,
+            user_id=hr_user_id,
+            opco_id=UUID(current_user.opco_id),
+            changes={
+                'stage': {'from': from_stage, 'to': to_stage},
+                'review_count': len(advanceable_ids),
+                'review_ids': [str(rid) for rid in advanceable_ids],
+                'review_year': request.review_year,
+            },
+        )
+
+    return BulkStageAdvanceResponse(
+        advanced_count=len(advanceable_ids),
+        skipped_count=skipped_count,
+        from_stage=from_stage,
+        to_stage=to_stage,
+        review_ids=advanceable_ids,
+    )
 
 
 # ============================================================================

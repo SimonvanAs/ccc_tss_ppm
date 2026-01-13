@@ -139,3 +139,70 @@ export function reassignManager(
   }
   return put<ManagerReassignResponse>(`/reviews/${reviewId}/manager`, payload)
 }
+
+// --- Stage Transition API ---
+
+export interface StageTransitionResponse {
+  id: string
+  old_stage: string
+  new_stage: string
+  status: string
+}
+
+export interface BulkStageAdvanceRequest {
+  from_stage: ReviewStage
+  review_year?: number
+}
+
+export interface BulkStageAdvanceResponse {
+  advanced_count: number
+  skipped_count: number
+  from_stage: string
+  to_stage: string
+  review_ids: string[]
+}
+
+/**
+ * Advance a single review to the next stage.
+ * Only HR users can perform this action.
+ * Review must be in SIGNED status.
+ * @param reviewId - The review ID
+ */
+export function advanceReviewStage(reviewId: string): Promise<StageTransitionResponse> {
+  return post<StageTransitionResponse>(`/reviews/${reviewId}/advance-stage`, {})
+}
+
+/**
+ * Bulk advance all eligible reviews in the OpCo to the next stage.
+ * Only HR users can perform this action.
+ * @param request - The bulk advance request with from_stage and optional year filter
+ */
+export function bulkAdvanceStage(
+  request: BulkStageAdvanceRequest
+): Promise<BulkStageAdvanceResponse> {
+  return post<BulkStageAdvanceResponse>('/hr/reviews/advance-stage', request)
+}
+
+/**
+ * Get human-readable stage name.
+ */
+export function getStageName(stage: ReviewStage): string {
+  const stageNames: Record<ReviewStage, string> = {
+    GOAL_SETTING: 'Goal Setting',
+    MID_YEAR_REVIEW: 'Mid-Year Review',
+    END_YEAR_REVIEW: 'End-Year Review',
+  }
+  return stageNames[stage] || stage
+}
+
+/**
+ * Get the next stage in the progression.
+ */
+export function getNextStage(stage: ReviewStage): ReviewStage | 'ARCHIVED' | null {
+  const stageOrder: Record<ReviewStage, ReviewStage | 'ARCHIVED'> = {
+    GOAL_SETTING: 'MID_YEAR_REVIEW',
+    MID_YEAR_REVIEW: 'END_YEAR_REVIEW',
+    END_YEAR_REVIEW: 'ARCHIVED',
+  }
+  return stageOrder[stage] || null
+}

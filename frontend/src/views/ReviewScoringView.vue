@@ -42,7 +42,6 @@ const competencies = ref<Competency[]>([])
 const tovLevel = ref<TovLevel>('B')
 const isDataLoading = ref(true)
 const dataError = ref<string | null>(null)
-const readOnly = ref(false)
 
 // Review data for signature flow
 const reviewData = ref<ReviewDetails | null>(null)
@@ -112,6 +111,21 @@ const howVetoActive = computed(() => howScoreResult.value?.vetoActive ?? false)
 // Signature computed properties
 const reviewStatus = computed<ReviewStatus>(() => reviewData.value?.status ?? 'DRAFT')
 const reviewStage = computed<ReviewStage>(() => reviewData.value?.stage ?? 'GOAL_SETTING')
+
+// Stage-based read-only: scoring is only allowed during MID_YEAR_REVIEW or END_YEAR_REVIEW stages
+const isScoringStage = computed(() => {
+  const stage = reviewStage.value
+  return stage === 'MID_YEAR_REVIEW' || stage === 'END_YEAR_REVIEW'
+})
+
+// Computed read-only state that considers both status and stage
+const isReadOnly = computed(() => {
+  // Read-only if not in draft status
+  if (reviewStatus.value !== 'DRAFT') return true
+  // Read-only if not in a scoring stage
+  if (!isScoringStage.value) return true
+  return false
+})
 
 const isCurrentUserEmployee = computed(() => {
   return currentUserId.value === reviewData.value?.employee_id
@@ -265,9 +279,6 @@ async function loadReviewData() {
     // Store review data for signature flow
     reviewData.value = review
 
-    // Check if read-only based on status (scoring is read-only unless DRAFT)
-    readOnly.value = review.status !== 'DRAFT'
-
     // Set TOV level
     tovLevel.value = (review.tov_level as TovLevel) || 'B'
 
@@ -312,6 +323,16 @@ onMounted(() => {
       </template>
     </SectionHeader>
 
+    <!-- Read-only banner when not in scoring stage -->
+    <div v-if="isReadOnly && reviewData && !isDataLoading" class="readonly-banner">
+      <template v-if="!isScoringStage">
+        {{ t('scoring.readOnlyStage', { stage: t(`stageTransition.stages.${reviewStage}`) }) }}
+      </template>
+      <template v-else>
+        {{ t('scoring.readOnlyStatus') }}
+      </template>
+    </div>
+
     <!-- Loading state -->
     <Card v-if="isDataLoading || isLoading" class="state-card">
       <div class="loading-state">
@@ -331,7 +352,7 @@ onMounted(() => {
         <GoalScoringSection
           :goals="goals"
           :scores="goalScores"
-          :disabled="readOnly"
+          :disabled="isReadOnly"
           @score-change="handleGoalScoreChange"
           @feedback-change="handleGoalFeedbackChange"
         />
@@ -339,12 +360,12 @@ onMounted(() => {
         <CompetencyScoringSection
           :review-id="props.reviewId"
           :tov-level="tovLevel"
-          :disabled="readOnly"
+          :disabled="isReadOnly"
           @score-change="handleCompetencyScoreChange"
         />
 
-        <!-- Submit for Signature (manager only, DRAFT status) -->
-        <Card v-if="!readOnly" class="submit-card">
+        <!-- Submit for Signature (manager only, DRAFT status, scoring stage) -->
+        <Card v-if="!isReadOnly" class="submit-card">
           <div class="submit-section">
             <SubmitScoresButton
               :all-scores-complete="allScoresComplete"
@@ -468,6 +489,16 @@ onMounted(() => {
   text-align: center;
   padding: 2rem;
   color: var(--color-error);
+}
+
+.readonly-banner {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin: 1rem 0;
+  border: 1px solid #FCD34D;
 }
 
 .scoring-layout {

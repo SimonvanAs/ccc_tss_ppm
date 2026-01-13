@@ -159,7 +159,8 @@
     "submitHint": "Los pesos deben sumar 100% antes de enviar",
     "headerFieldsRequired": "El título del puesto y el nivel TOV son obligatorios",
     "submitting": "Enviando objetivos...",
-    "submitSuccess": "Objetivos enviados exitosamente"
+    "submitSuccess": "Objetivos enviados exitosamente",
+    "readOnlyStage": "Los objetivos no pueden editarse durante la etapa de {stage}. La edición de objetivos solo está disponible durante la etapa de Establecimiento de Objetivos."
   },
   "competencies": {
     "title": "Competencias",
@@ -261,6 +262,8 @@
       "exceeds": "Supera"
     },
     "readOnly": "Esta evaluación es de solo lectura",
+    "readOnlyStage": "La puntuación no está disponible durante la etapa de {stage}. La puntuación solo está disponible durante la Revisión de Mitad de Año o la Revisión de Fin de Año.",
+    "readOnlyStatus": "Esta evaluación ha sido enviada y ya no se puede editar.",
     "noScoreSelected": "Ninguna puntuación seleccionada"
   },
   "signature": {
@@ -815,5 +818,24 @@
     "reasonPlaceholder": "Ingrese motivo del cambio de gerente...",
     "submit": "Reasignar Gerente",
     "submitting": "Reasignando..."
+  },
+  "stageTransition": {
+    "advanceStage": "Avanzar Etapa",
+    "advanceToNextStage": "Avanzar a Siguiente Etapa",
+    "bulkAdvance": "Avance Masivo de Evaluaciones",
+    "confirmAdvance": "¿Está seguro de que desea avanzar esta evaluación a {stage}?",
+    "confirmBulkAdvance": "¿Está seguro de que desea avanzar {count} evaluaciones de {fromStage} a {toStage}?",
+    "advanceSuccess": "Evaluación avanzada a {stage}",
+    "bulkAdvanceSuccess": "Se avanzaron exitosamente {count} evaluaciones",
+    "advanceError": "Error al avanzar la etapa de evaluación",
+    "requiresSigned": "La evaluación debe estar completamente firmada antes de avanzar a la siguiente etapa",
+    "currentStage": "Etapa Actual",
+    "nextStage": "Siguiente Etapa",
+    "selectFromStage": "Seleccionar Etapa para Avanzar",
+    "yearFilter": "Filtrar por Año",
+    "eligibleReviews": "Evaluaciones Elegibles",
+    "skippedReviews": "Omitidas (No Firmadas)",
+    "noEligibleReviews": "No se encontraron evaluaciones elegibles",
+    "reviewsAdvanced": "{count} evaluaciones avanzadas"
   }
 }

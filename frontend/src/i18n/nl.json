@@ -159,7 +159,8 @@
     "submitHint": "Doelgewichten moeten optellen tot 100% om in te dienen",
     "headerFieldsRequired": "Functietitel en TOV niveau zijn verplicht",
     "submitting": "Doelen indienen...",
-    "submitSuccess": "Doelen succesvol ingediend"
+    "submitSuccess": "Doelen succesvol ingediend",
+    "readOnlyStage": "Doelen kunnen niet worden bewerkt tijdens de {stage} fase. Doelen bewerken is alleen mogelijk tijdens de Doelstellingenfase."
   },
   "competencies": {
     "title": "Competenties",
@@ -261,6 +262,8 @@
       "exceeds": "Overtreft"
     },
     "readOnly": "Deze beoordeling is alleen-lezen",
+    "readOnlyStage": "Scoren is niet beschikbaar tijdens de {stage} fase. Scoren is alleen mogelijk tijdens de Halfjaarlijkse Beoordeling of Eindejaars Beoordeling.",
+    "readOnlyStatus": "Deze beoordeling is ingediend en kan niet meer worden bewerkt.",
     "noScoreSelected": "Geen score geselecteerd"
   },
   "signature": {
@@ -815,5 +818,24 @@
     "reasonPlaceholder": "Voer reden voor managerwijziging in...",
     "submit": "Manager Hertoewijzen",
     "submitting": "Bezig met hertoewijzen..."
+  },
+  "stageTransition": {
+    "advanceStage": "Fase Doorvoeren",
+    "advanceToNextStage": "Naar Volgende Fase",
+    "bulkAdvance": "Bulk Fase Doorvoeren",
+    "confirmAdvance": "Weet u zeker dat u deze beoordeling naar {stage} wilt doorvoeren?",
+    "confirmBulkAdvance": "Weet u zeker dat u {count} beoordelingen van {fromStage} naar {toStage} wilt doorvoeren?",
+    "advanceSuccess": "Beoordeling doorgevoerd naar {stage}",
+    "bulkAdvanceSuccess": "Succesvol {count} beoordelingen doorgevoerd",
+    "advanceError": "Fase doorvoeren mislukt",
+    "requiresSigned": "Beoordeling moet volledig getekend zijn voordat naar de volgende fase kan worden gegaan",
+    "currentStage": "Huidige Fase",
+    "nextStage": "Volgende Fase",
+    "selectFromStage": "Selecteer Fase om Door te Voeren",
+    "yearFilter": "Filter op Jaar",
+    "eligibleReviews": "In Aanmerking Komende Beoordelingen",
+    "skippedReviews": "Overgeslagen (Niet Getekend)",
+    "noEligibleReviews": "Geen beoordelingen gevonden die in aanmerking komen",
+    "reviewsAdvanced": "{count} beoordelingen doorgevoerd"
   }
 }

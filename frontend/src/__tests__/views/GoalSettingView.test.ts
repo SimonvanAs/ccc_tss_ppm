@@ -279,7 +279,7 @@ describe('GoalSettingView - Submission', () => {
       vi.advanceTimersByTime(1500)
       await flushPromises()
 
-      expect(mockPush).toHaveBeenCalledWith({ name: 'dashboard' })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'Dashboard' })
       vi.useRealTimers()
     })
 
@@ -487,6 +487,160 @@ describe('GoalSettingView - Header Field Validation', () => {
 
       const submitButton = wrapper.find('.btn-submit')
       expect(submitButton.attributes('disabled')).toBeUndefined()
+    })
+  })
+})
+
+describe('GoalSettingView - Stage-Specific Behavior', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  function createMockReviewWithStage(stage: string, status = 'DRAFT') {
+    return {
+      id: 'review-123',
+      employee_id: 'emp-456',
+      manager_id: 'mgr-789',
+      status,
+      stage,
+      review_year: 2026,
+      job_title: 'Software Engineer',
+      tov_level: 'B',
+      what_score: null,
+      how_score: null,
+      employee_name: 'John Doe',
+      manager_name: 'Jane Smith',
+      employee_signature_date: null,
+      employee_signature_by: null,
+      manager_signature_date: null,
+      manager_signature_by: null,
+      rejection_feedback: null,
+      goal_setting_completed_at: null,
+      mid_year_completed_at: null,
+      end_year_completed_at: null,
+    }
+  }
+
+  function createWrapperWithStage(
+    stage: string,
+    status = 'DRAFT',
+    goals: Goal[] = createMockGoals()
+  ) {
+    vi.mocked(goalsApi.fetchGoals).mockResolvedValue(goals)
+    vi.mocked(competenciesApi.getCompetencies).mockResolvedValue(mockCompetencies)
+    vi.mocked(reviewsApi.fetchReview).mockResolvedValue(createMockReviewWithStage(stage, status))
+
+    return mount(GoalSettingView, {
+      props: {
+        reviewId: 'review-123',
+      },
+      global: {
+        stubs: {
+          Modal: {
+            template: '<div class="modal-stub"><slot /></div>',
+            props: ['show', 'title'],
+          },
+          ConfirmDialog: {
+            template: '<div class="confirm-stub"></div>',
+            props: ['show', 'title', 'message', 'confirmText', 'danger'],
+          },
+          teleport: true,
+        },
+      },
+    })
+  }
+
+  describe('read-only mode for non-GOAL_SETTING stages', () => {
+    it('should hide Add Goal button during MID_YEAR_REVIEW stage', async () => {
+      const wrapper = createWrapperWithStage('MID_YEAR_REVIEW')
+      await flushPromises()
+
+      const addButton = wrapper.findAll('.btn-primary').find(b => b.text().includes('Add Goal'))
+      expect(addButton).toBeUndefined()
+    })
+
+    it('should hide Add Goal button during END_YEAR_REVIEW stage', async () => {
+      const wrapper = createWrapperWithStage('END_YEAR_REVIEW')
+      await flushPromises()
+
+      const addButton = wrapper.findAll('.btn-primary').find(b => b.text().includes('Add Goal'))
+      expect(addButton).toBeUndefined()
+    })
+
+    it('should show Add Goal button during GOAL_SETTING stage', async () => {
+      const wrapper = createWrapperWithStage('GOAL_SETTING')
+      await flushPromises()
+
+      const addButton = wrapper.findAll('.btn-primary').find(b => b.text().includes('Add Goal'))
+      expect(addButton).toBeDefined()
+    })
+
+    it('should hide submit button during MID_YEAR_REVIEW stage', async () => {
+      const wrapper = createWrapperWithStage('MID_YEAR_REVIEW')
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.exists()).toBe(false)
+    })
+
+    it('should hide submit button during END_YEAR_REVIEW stage', async () => {
+      const wrapper = createWrapperWithStage('END_YEAR_REVIEW')
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.exists()).toBe(false)
+    })
+
+    it('should show submit button during GOAL_SETTING stage with DRAFT status', async () => {
+      const wrapper = createWrapperWithStage('GOAL_SETTING', 'DRAFT')
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.exists()).toBe(true)
+    })
+  })
+
+  describe('read-only mode for non-DRAFT status', () => {
+    it('should hide Add Goal button when status is PENDING_MANAGER_SIGNATURE', async () => {
+      const wrapper = createWrapperWithStage('GOAL_SETTING', 'PENDING_MANAGER_SIGNATURE')
+      await flushPromises()
+
+      const addButton = wrapper.findAll('.btn-primary').find(b => b.text().includes('Add Goal'))
+      expect(addButton).toBeUndefined()
+    })
+
+    it('should hide submit button when status is SIGNED', async () => {
+      const wrapper = createWrapperWithStage('GOAL_SETTING', 'SIGNED')
+      await flushPromises()
+
+      const submitButton = wrapper.find('.btn-submit')
+      expect(submitButton.exists()).toBe(false)
+    })
+  })
+
+  describe('read-only banner display', () => {
+    it('should show read-only banner during MID_YEAR_REVIEW stage', async () => {
+      const wrapper = createWrapperWithStage('MID_YEAR_REVIEW')
+      await flushPromises()
+
+      const banner = wrapper.find('.readonly-banner')
+      expect(banner.exists()).toBe(true)
+    })
+
+    it('should show read-only banner during END_YEAR_REVIEW stage', async () => {
+      const wrapper = createWrapperWithStage('END_YEAR_REVIEW')
+      await flushPromises()
+
+      const banner = wrapper.find('.readonly-banner')
+      expect(banner.exists()).toBe(true)
+    })
+
+    it('should not show read-only banner during GOAL_SETTING stage with DRAFT status', async () => {
+      const wrapper = createWrapperWithStage('GOAL_SETTING', 'DRAFT')
+      await flushPromises()
+
+      const banner = wrapper.find('.readonly-banner')
+      expect(banner.exists()).toBe(false)
     })
   })
 })

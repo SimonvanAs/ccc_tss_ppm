@@ -1617,3 +1617,363 @@ class TestManagerReassignmentEndpoint:
         )
 
         assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+class TestStageTransitionEndpoints:
+    """Tests for stage transition endpoints."""
+
+    @pytest.fixture
+    def opco_id(self):
+        """OpCo ID."""
+        return uuid4()
+
+    @pytest.fixture
+    def mock_hr_user(self, opco_id):
+        """Mock authenticated HR user."""
+        return CurrentUser(
+            keycloak_id='hr-keycloak-id',
+            email='hr@example.com',
+            name='HR User',
+            roles=['hr'],
+            opco_id=str(opco_id),
+        )
+
+    @pytest.fixture
+    def mock_employee_user(self, opco_id):
+        """Mock authenticated employee (non-HR)."""
+        return CurrentUser(
+            keycloak_id='employee-keycloak-id',
+            email='employee@example.com',
+            name='Regular Employee',
+            roles=['employee'],
+            opco_id=str(opco_id),
+        )
+
+    @pytest.fixture
+    def mock_db_conn(self):
+        """Mock database connection."""
+        return AsyncMock()
+
+    @pytest.fixture
+    def sample_review_goal_setting(self, opco_id):
+        """Sample review in GOAL_SETTING stage."""
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'opco_id': opco_id,
+            'status': 'SIGNED',
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Developer',
+            'tov_level': 'B',
+        }
+
+    @pytest.fixture
+    def sample_review_mid_year(self, opco_id):
+        """Sample review in MID_YEAR_REVIEW stage."""
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'opco_id': opco_id,
+            'status': 'SIGNED',
+            'stage': 'MID_YEAR_REVIEW',
+            'review_year': 2026,
+            'job_title': 'Developer',
+            'tov_level': 'B',
+        }
+
+    @pytest.fixture
+    def sample_review_end_year(self, opco_id):
+        """Sample review in END_YEAR_REVIEW stage."""
+        return {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'opco_id': opco_id,
+            'status': 'SIGNED',
+            'stage': 'END_YEAR_REVIEW',
+            'review_year': 2026,
+            'job_title': 'Developer',
+            'tov_level': 'B',
+        }
+
+    @pytest_asyncio.fixture
+    async def hr_client(self, mock_hr_user, mock_db_conn):
+        """HTTP client authenticated as HR."""
+        app.dependency_overrides[get_current_user] = lambda: mock_hr_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    @pytest_asyncio.fixture
+    async def employee_client(self, mock_employee_user, mock_db_conn):
+        """HTTP client authenticated as employee (non-HR)."""
+        app.dependency_overrides[get_current_user] = lambda: mock_employee_user
+        app.dependency_overrides[get_db] = lambda: mock_db_conn
+
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url='http://test') as ac:
+            yield ac
+
+        app.dependency_overrides.clear()
+
+    # --- POST /api/v1/reviews/:id/advance-stage tests ---
+
+    async def test_advance_stage_requires_hr_role(
+        self, employee_client, mock_db_conn, sample_review_goal_setting
+    ):
+        """POST /reviews/:id/advance-stage should require HR role."""
+        review_id = sample_review_goal_setting['id']
+
+        response = await employee_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 403
+
+    async def test_advance_stage_success_goal_to_mid_year(
+        self, hr_client, mock_db_conn, sample_review_goal_setting, opco_id
+    ):
+        """POST /reviews/:id/advance-stage should advance from GOAL_SETTING to MID_YEAR_REVIEW."""
+        review_id = sample_review_goal_setting['id']
+        advanced_review = {
+            **sample_review_goal_setting,
+            'stage': 'MID_YEAR_REVIEW',
+            'status': 'DRAFT',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review_goal_setting,  # Get review
+            advanced_review,  # advance_stage returns
+            {'id': uuid4()},  # Get HR user ID
+            {'id': uuid4()},  # Audit log
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['old_stage'] == 'GOAL_SETTING'
+        assert data['new_stage'] == 'MID_YEAR_REVIEW'
+
+    async def test_advance_stage_success_mid_year_to_end_year(
+        self, hr_client, mock_db_conn, sample_review_mid_year, opco_id
+    ):
+        """POST /reviews/:id/advance-stage should advance from MID_YEAR_REVIEW to END_YEAR_REVIEW."""
+        review_id = sample_review_mid_year['id']
+        advanced_review = {
+            **sample_review_mid_year,
+            'stage': 'END_YEAR_REVIEW',
+            'status': 'DRAFT',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review_mid_year,  # Get review
+            advanced_review,  # advance_stage returns
+            {'id': uuid4()},  # Get HR user ID
+            {'id': uuid4()},  # Audit log
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['old_stage'] == 'MID_YEAR_REVIEW'
+        assert data['new_stage'] == 'END_YEAR_REVIEW'
+
+    async def test_advance_stage_end_year_to_archived(
+        self, hr_client, mock_db_conn, sample_review_end_year, opco_id
+    ):
+        """POST /reviews/:id/advance-stage should archive from END_YEAR_REVIEW."""
+        review_id = sample_review_end_year['id']
+        archived_review = {
+            **sample_review_end_year,
+            'stage': 'ARCHIVED',
+            'status': 'ARCHIVED',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review_end_year,  # Get review
+            archived_review,  # advance_stage returns
+            {'id': uuid4()},  # Get HR user ID
+            {'id': uuid4()},  # Audit log
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['old_stage'] == 'END_YEAR_REVIEW'
+        assert data['new_stage'] == 'ARCHIVED'
+
+    async def test_advance_stage_review_not_found(
+        self, hr_client, mock_db_conn
+    ):
+        """POST /reviews/:id/advance-stage should return 404 for non-existent review."""
+        review_id = uuid4()
+        mock_db_conn.fetchrow.return_value = None
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 404
+
+    async def test_advance_stage_already_archived(
+        self, hr_client, mock_db_conn, sample_review_end_year, opco_id
+    ):
+        """POST /reviews/:id/advance-stage should reject already archived reviews."""
+        archived_review = {**sample_review_end_year, 'stage': 'ARCHIVED', 'status': 'ARCHIVED'}
+        review_id = archived_review['id']
+        mock_db_conn.fetchrow.return_value = archived_review
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 400
+        assert 'archived' in response.json()['detail'].lower()
+
+    async def test_advance_stage_creates_audit_log(
+        self, hr_client, mock_db_conn, sample_review_goal_setting, opco_id
+    ):
+        """POST /reviews/:id/advance-stage should create an audit log entry."""
+        review_id = sample_review_goal_setting['id']
+        advanced_review = {
+            **sample_review_goal_setting,
+            'stage': 'MID_YEAR_REVIEW',
+            'status': 'DRAFT',
+        }
+        mock_db_conn.fetchrow.side_effect = [
+            sample_review_goal_setting,  # Get review
+            advanced_review,  # advance_stage returns
+            {'id': uuid4()},  # Get HR user ID
+            {'id': uuid4(), 'action': 'STAGE_ADVANCED'},  # Audit log
+        ]
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 200
+        # Verify audit log was created
+        assert mock_db_conn.fetchrow.call_count >= 3
+
+    async def test_advance_stage_requires_signed_status(
+        self, hr_client, mock_db_conn, opco_id
+    ):
+        """POST /reviews/:id/advance-stage should reject reviews not in SIGNED status."""
+        draft_review = {
+            'id': uuid4(),
+            'employee_id': uuid4(),
+            'manager_id': uuid4(),
+            'opco_id': opco_id,
+            'status': 'DRAFT',  # Not SIGNED
+            'stage': 'GOAL_SETTING',
+            'review_year': 2026,
+            'job_title': 'Developer',
+            'tov_level': 'B',
+        }
+        review_id = draft_review['id']
+        mock_db_conn.fetchrow.return_value = draft_review
+
+        response = await hr_client.post(f'/api/v1/reviews/{review_id}/advance-stage')
+
+        assert response.status_code == 400
+        assert 'SIGNED' in response.json()['detail']
+
+    # --- POST /api/v1/hr/reviews/advance-stage (bulk) tests ---
+
+    async def test_bulk_advance_stage_requires_hr_role(
+        self, employee_client, mock_db_conn
+    ):
+        """POST /hr/reviews/advance-stage should require HR role."""
+        response = await employee_client.post(
+            '/api/v1/hr/reviews/advance-stage',
+            json={
+                'from_stage': 'GOAL_SETTING',
+            },
+        )
+
+        assert response.status_code == 403
+
+    async def test_bulk_advance_stage_success(
+        self, hr_client, mock_db_conn, opco_id
+    ):
+        """POST /hr/reviews/advance-stage should advance all matching reviews."""
+        review_id = uuid4()
+        # Mock fetch to return list of reviews to advance
+        mock_db_conn.fetch.return_value = [
+            {'id': review_id, 'stage': 'GOAL_SETTING', 'status': 'SIGNED'},
+        ]
+        # Mock execute for the bulk update
+        mock_db_conn.execute = AsyncMock()
+        # Mock fetchrow for audit log
+        mock_db_conn.fetchrow.side_effect = [
+            {'id': uuid4()},  # Get HR user ID
+            {'id': uuid4()},  # Audit log
+        ]
+
+        response = await hr_client.post(
+            '/api/v1/hr/reviews/advance-stage',
+            json={
+                'from_stage': 'GOAL_SETTING',
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['from_stage'] == 'GOAL_SETTING'
+        assert data['to_stage'] == 'MID_YEAR_REVIEW'
+        assert 'advanced_count' in data
+
+    async def test_bulk_advance_stage_with_review_year(
+        self, hr_client, mock_db_conn, opco_id
+    ):
+        """POST /hr/reviews/advance-stage should filter by review_year."""
+        mock_db_conn.fetch.return_value = []  # No matching reviews
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.post(
+            '/api/v1/hr/reviews/advance-stage',
+            json={
+                'from_stage': 'GOAL_SETTING',
+                'review_year': 2026,
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['advanced_count'] == 0
+
+    async def test_bulk_advance_stage_validates_from_stage(
+        self, hr_client, mock_db_conn
+    ):
+        """POST /hr/reviews/advance-stage should validate from_stage."""
+        response = await hr_client.post(
+            '/api/v1/hr/reviews/advance-stage',
+            json={
+                'from_stage': 'INVALID_STAGE',
+            },
+        )
+
+        assert response.status_code == 422  # Validation error
+
+    async def test_bulk_advance_stage_no_matching_reviews(
+        self, hr_client, mock_db_conn
+    ):
+        """POST /hr/reviews/advance-stage should handle no matching reviews."""
+        mock_db_conn.fetch.return_value = []  # No reviews found
+        mock_db_conn.execute = AsyncMock()
+
+        response = await hr_client.post(
+            '/api/v1/hr/reviews/advance-stage',
+            json={
+                'from_stage': 'END_YEAR_REVIEW',
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['advanced_count'] == 0
+        assert data['skipped_count'] == 0

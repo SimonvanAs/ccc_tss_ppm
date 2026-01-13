@@ -160,7 +160,8 @@
       "weightStep": "Weight must be a multiple of 5"
     },
     "submitting": "Submitting goals...",
-    "submitSuccess": "Goals submitted successfully"
+    "submitSuccess": "Goals submitted successfully",
+    "readOnlyStage": "Goals cannot be edited during the {stage} stage. Goal editing is only available during the Goal Setting stage."
   },
   "competencies": {
     "title": "Competencies",
@@ -262,6 +263,8 @@
       "exceeds": "Exceeds"
     },
     "readOnly": "This review is read-only",
+    "readOnlyStage": "Scoring is not available during the {stage} stage. Scoring is only available during Mid-Year Review or End-Year Review stages.",
+    "readOnlyStatus": "This review has been submitted and is no longer editable.",
     "noScoreSelected": "No score selected"
   },
   "signature": {
@@ -816,5 +819,24 @@
     "reasonPlaceholder": "Enter reason for manager change...",
     "submit": "Reassign Manager",
     "submitting": "Reassigning..."
+  },
+  "stageTransition": {
+    "advanceStage": "Advance Stage",
+    "advanceToNextStage": "Advance to Next Stage",
+    "bulkAdvance": "Bulk Advance Reviews",
+    "confirmAdvance": "Are you sure you want to advance this review to {stage}?",
+    "confirmBulkAdvance": "Are you sure you want to advance {count} reviews from {fromStage} to {toStage}?",
+    "advanceSuccess": "Review advanced to {stage}",
+    "bulkAdvanceSuccess": "Successfully advanced {count} reviews",
+    "advanceError": "Failed to advance review stage",
+    "requiresSigned": "Review must be fully signed before advancing to the next stage",
+    "currentStage": "Current Stage",
+    "nextStage": "Next Stage",
+    "selectFromStage": "Select Stage to Advance From",
+    "yearFilter": "Filter by Year",
+    "eligibleReviews": "Eligible Reviews",
+    "skippedReviews": "Skipped (Not Signed)",
+    "noEligibleReviews": "No eligible reviews found",
+    "reviewsAdvanced": "{count} reviews advanced"
   }
 }
