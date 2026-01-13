@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useScoring } from '../composables/useScoring'
+import { trackEvent } from '../composables/useAnalytics'
 import { submitScores as submitScoresApi } from '../api/scores'
 import {
   fetchReview,
@@ -206,6 +207,7 @@ async function handleSubmit() {
 
   try {
     await submitScoresApi(props.reviewId)
+    trackEvent('review_submit')
     // Reload review data to get updated status
     await loadReviewData()
   } catch (error) {
@@ -234,6 +236,8 @@ async function handleSign() {
 
   try {
     await signReviewApi(props.reviewId)
+    // Track signature event based on user role
+    trackEvent(isCurrentUserEmployee.value ? 'employee_signature' : 'manager_signature')
     showSignatureModal.value = false
     // Reload review data to get updated status
     await loadReviewData()

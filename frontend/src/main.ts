@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { createI18n } from 'vue-i18n'
 import App from './App.vue'
 import { initAuth } from './api/auth'
+import { initAnalytics } from './composables/useAnalytics'
 
 // Import translations
 import en from './i18n/en.json'
@@ -60,6 +61,9 @@ const router = createRouter({
 // Initialize authentication, then mount app
 initAuth().then((authenticated) => {
   if (authenticated) {
+    // Initialize analytics (Plausible)
+    initAnalytics()
+
     const app = createApp(App)
     app.use(i18n)
     app.use(router)

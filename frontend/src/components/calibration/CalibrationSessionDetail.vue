@@ -2,6 +2,7 @@
 // TSS PPM v3.0 - CalibrationSessionDetail Component
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { trackEvent } from '../../composables/useAnalytics'
 import {
   fetchCalibrationSession,
   fetchSessionReviews,
@@ -104,6 +105,7 @@ async function handleCompleteSession() {
   try {
     const updated = await completeCalibrationSession(session.value.id)
     session.value = updated
+    trackEvent('calibration_complete')
     emit('status-changed', updated)
   } catch (e) {
     console.error('Failed to complete session:', e)

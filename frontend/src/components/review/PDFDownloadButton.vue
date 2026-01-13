@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { downloadReviewPdf } from '@/api/reviews'
+import { trackEvent } from '@/composables/useAnalytics'
 import type { ReviewStatus } from '@/api/reviews'
 
 const props = defineProps<{
@@ -55,6 +56,7 @@ async function handleDownload() {
     link.click()
     link.remove()
     URL.revokeObjectURL(url)
+    trackEvent('pdf_download')
   } catch (error) {
     emit('error', error as Error)
   } finally {

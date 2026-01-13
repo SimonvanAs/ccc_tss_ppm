@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useGoals } from '../composables/useGoals'
 import { useReviewHeader } from '../composables/useReviewHeader'
+import { trackEvent } from '../composables/useAnalytics'
 import { submitReview } from '../api/goals'
 import { ApiRequestError } from '../api/client'
 import { hasRole } from '../api/auth'
@@ -240,6 +241,7 @@ async function handleSubmit() {
   try {
     await submitReview(props.reviewId)
     submitSuccess.value = true
+    trackEvent('goal_save')
 
     // Navigate to dashboard after short delay to show success
     setTimeout(() => {
