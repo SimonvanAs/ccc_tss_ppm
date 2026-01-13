@@ -116,6 +116,7 @@
   ],
   "users": [
     {
+      "id": "e0000000-0000-0000-0000-000000000001",
       "username": "employee@tss.eu",
       "email": "employee@tss.eu",
       "firstName": "Emma",
@@ -131,10 +132,11 @@
       ],
       "realmRoles": ["employee"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     },
     {
+      "id": "e0000000-0000-0000-0000-000000000002",
       "username": "manager@tss.eu",
       "email": "manager@tss.eu",
       "firstName": "Michael",
@@ -150,10 +152,11 @@
       ],
       "realmRoles": ["employee", "manager"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     },
     {
+      "id": "e0000000-0000-0000-0000-000000000003",
       "username": "hr@tss.eu",
       "email": "hr@tss.eu",
       "firstName": "Hannah",
@@ -169,10 +172,11 @@
       ],
       "realmRoles": ["employee", "hr"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     },
     {
+      "id": "e0000000-0000-0000-0000-000000000004",
       "username": "admin@tss.eu",
       "email": "admin@tss.eu",
       "firstName": "Adam",
@@ -188,10 +192,11 @@
       ],
       "realmRoles": ["employee", "manager", "hr", "admin"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     },
     {
+      "id": "e0000000-0000-0000-0000-000000000005",
       "username": "superadmin@tss.eu",
       "email": "superadmin@tss.eu",
       "firstName": "Sarah",
@@ -207,10 +212,11 @@
       ],
       "realmRoles": ["employee", "manager", "hr", "admin"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     },
     {
+      "id": "e0000000-0000-0000-0000-000000000006",
       "username": "dev1@tss.eu",
       "email": "dev1@tss.eu",
       "firstName": "David",
@@ -226,10 +232,11 @@
       ],
       "realmRoles": ["employee"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     },
     {
+      "id": "e0000000-0000-0000-0000-000000000007",
       "username": "dev2@tss.eu",
       "email": "dev2@tss.eu",
       "firstName": "Diana",
@@ -245,7 +252,7 @@
       ],
       "realmRoles": ["employee"],
       "attributes": {
-        "opco_id": ["tss"]
+        "opco_id": ["11111111-1111-1111-1111-111111111111"]
       }
     }
   ]
