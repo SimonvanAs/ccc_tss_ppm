@@ -137,6 +137,35 @@ async def log_admin_action(
 # OpCo Settings Endpoints
 # ============================================================================
 
+async def resolve_opco_id(opco_id_or_code: str, conn: asyncpg.Connection) -> UUID:
+    """Resolve an opco_id which may be a UUID or a code to a UUID.
+
+    Args:
+        opco_id_or_code: Either a UUID string or an OpCo code
+        conn: Database connection
+
+    Returns:
+        The OpCo UUID
+
+    Raises:
+        HTTPException: If OpCo not found
+    """
+    # Try to parse as UUID first
+    try:
+        return UUID(opco_id_or_code)
+    except (ValueError, AttributeError):
+        pass
+
+    # If not a valid UUID, look up by code
+    row = await conn.fetchrow(
+        'SELECT id FROM opcos WHERE UPPER(code) = UPPER($1) AND deleted_at IS NULL',
+        opco_id_or_code,
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail=f'OpCo not found: {opco_id_or_code}')
+    return row['id']
+
+
 @router.get('/opco/settings', response_model=OpCoResponse)
 async def get_opco_settings(
     current_user: Annotated[CurrentUser, Depends(require_admin)],
@@ -151,13 +180,14 @@ async def get_opco_settings(
     Returns:
         OpCo settings including review cycle configuration
     """
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
     row = await conn.fetchrow(
         """
         SELECT id, name, code, logo_url, default_language, settings
         FROM opcos
         WHERE id = $1 AND deleted_at IS NULL
         """,
-        UUID(current_user.opco_id),
+        opco_id,
     )
 
     if not row:
@@ -182,7 +212,7 @@ async def update_opco_settings(
     Returns:
         Updated OpCo settings
     """
-    opco_id = UUID(current_user.opco_id)
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
 
     # Build dynamic update query
     updates = []
@@ -271,7 +301,7 @@ async def upload_opco_logo(
     Returns:
         The URL to the uploaded logo
     """
-    opco_id = UUID(current_user.opco_id)
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
 
     # Validate file type
     if file.content_type not in ALLOWED_LOGO_TYPES:
@@ -357,7 +387,7 @@ async def delete_opco_logo(
         current_user: The authenticated admin user
         conn: Database connection
     """
-    opco_id = UUID(current_user.opco_id)
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
 
     # Get current logo URL
     row = await conn.fetchrow(
@@ -416,7 +446,7 @@ async def list_business_units(
         WHERE opco_id = $1 AND deleted_at IS NULL
         ORDER BY name
         """,
-        UUID(current_user.opco_id),
+        await resolve_opco_id(current_user.opco_id, conn),
     )
 
     return [row_to_business_unit_response(dict(row)) for row in rows]
@@ -438,7 +468,7 @@ async def create_business_unit(
     Returns:
         Created business unit
     """
-    opco_id = UUID(current_user.opco_id)
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
     parent_id = UUID(request.parent_id) if request.parent_id else None
 
     # Verify parent exists if specified
@@ -494,7 +524,7 @@ async def update_business_unit(
     Returns:
         Updated business unit
     """
-    opco_id = UUID(current_user.opco_id)
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
     bu_id = UUID(unit_id)
 
     # Check unit exists
@@ -578,7 +608,7 @@ async def delete_business_unit(
     Raises:
         HTTPException: 409 if users are assigned to the unit
     """
-    opco_id = UUID(current_user.opco_id)
+    opco_id = await resolve_opco_id(current_user.opco_id, conn)
     bu_id = UUID(unit_id)
 
     # Check if any users are assigned to this unit
