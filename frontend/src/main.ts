@@ -58,11 +58,12 @@ const router = createRouter({
   ]
 })
 
+// Initialize analytics early (Plausible) - works regardless of auth state
+initAnalytics()
+
 // Initialize authentication, then mount app
 initAuth().then((authenticated) => {
   if (authenticated) {
-    // Initialize analytics (Plausible)
-    initAnalytics()
 
     const app = createApp(App)
     app.use(i18n)
