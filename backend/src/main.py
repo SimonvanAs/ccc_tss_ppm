@@ -1,10 +1,13 @@
 # TSS PPM v3.0 - FastAPI Application Entry Point
 """Main application module with lifespan management."""
 
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from src.config import settings
 from src.database import db
@@ -37,6 +40,18 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+# Static files for uploaded content (logos, etc.)
+# Use /app/static in Docker, or local ./static for development
+static_dir = Path(os.environ.get('STATIC_FILES_DIR', '/app/static'))
+if not static_dir.exists():
+    try:
+        static_dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # Fall back to local directory if Docker path not available
+        static_dir = Path(__file__).parent.parent / 'static'
+        static_dir.mkdir(parents=True, exist_ok=True)
+app.mount('/static', StaticFiles(directory=str(static_dir)), name='static')
 
 
 @app.get('/health')

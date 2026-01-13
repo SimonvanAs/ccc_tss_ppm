@@ -98,6 +98,40 @@ export function del<T>(endpoint: string): Promise<T> {
 }
 
 /**
+ * POST request with FormData (for file uploads).
+ * Note: Don't set Content-Type header - browser sets it automatically with boundary.
+ */
+export async function postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
+  const token = await getToken()
+
+  const headers: HeadersInit = {}
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const url = `${API_BASE_URL}${endpoint}`
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: formData,
+  })
+
+  if (!response.ok) {
+    let detail = `HTTP ${response.status}: ${response.statusText}`
+    try {
+      const errorData = await response.json()
+      detail = errorData.detail || detail
+    } catch {
+      // Ignore JSON parse errors
+    }
+    throw new ApiRequestError(response.status, detail)
+  }
+
+  return response.json()
+}
+
+/**
  * GET request helper that returns a Blob (for file downloads).
  */
 export async function getBlob(endpoint: string): Promise<Blob> {

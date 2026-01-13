@@ -6,6 +6,8 @@ import { Card, SectionHeader } from '@/components/layout'
 import {
   fetchOpCoSettings,
   updateOpCoSettings,
+  uploadOpCoLogo,
+  deleteOpCoLogo,
   type OpCoResponse,
   type OpCoUpdateRequest,
 } from '@/api/admin'
@@ -18,11 +20,15 @@ const error = ref<string | null>(null)
 const successMessage = ref<string | null>(null)
 const opco = ref<OpCoResponse | null>(null)
 
+// Logo upload state
+const logoUploading = ref(false)
+const logoError = ref<string | null>(null)
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
 // Form state
 const formData = ref<OpCoUpdateRequest>({
   name: '',
   code: '',
-  logo_url: null,
   default_language: 'en',
   settings: {
     review_cycle: {
@@ -44,10 +50,10 @@ const languages = [
 
 const hasChanges = computed(() => {
   if (!opco.value) return false
+  // Note: logo_url is not included - logo is uploaded immediately, not as part of form save
   return (
     formData.value.name !== opco.value.name ||
     formData.value.code !== opco.value.code ||
-    formData.value.logo_url !== opco.value.logo_url ||
     formData.value.default_language !== opco.value.default_language ||
     JSON.stringify(formData.value.settings) !== JSON.stringify(opco.value.settings)
   )
@@ -116,6 +122,75 @@ function resetForm() {
         },
       },
     }
+  }
+}
+
+// Logo upload handlers
+function triggerFileInput() {
+  fileInputRef.value?.click()
+}
+
+async function handleLogoSelect(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  // Validate file type
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp']
+  if (!allowedTypes.includes(file.type)) {
+    logoError.value = t('admin.opco.logoInvalidType')
+    return
+  }
+
+  // Validate file size (5MB max)
+  if (file.size > 5 * 1024 * 1024) {
+    logoError.value = t('admin.opco.logoTooLarge')
+    return
+  }
+
+  logoError.value = null
+  logoUploading.value = true
+
+  try {
+    const response = await uploadOpCoLogo(file)
+    // Update both opco and formData with new logo URL
+    if (opco.value) {
+      opco.value.logo_url = response.logo_url
+    }
+    formData.value.logo_url = response.logo_url
+    successMessage.value = t('admin.opco.logoUploadSuccess')
+    setTimeout(() => {
+      successMessage.value = null
+    }, 3000)
+  } catch (err) {
+    logoError.value = err instanceof Error ? err.message : t('admin.opco.logoUploadError')
+  } finally {
+    logoUploading.value = false
+    // Reset file input
+    if (input) input.value = ''
+  }
+}
+
+async function handleLogoDelete() {
+  if (!opco.value?.logo_url) return
+
+  logoUploading.value = true
+  logoError.value = null
+
+  try {
+    await deleteOpCoLogo()
+    if (opco.value) {
+      opco.value.logo_url = null
+    }
+    formData.value.logo_url = null
+    successMessage.value = t('admin.opco.logoDeleteSuccess')
+    setTimeout(() => {
+      successMessage.value = null
+    }, 3000)
+  } catch (err) {
+    logoError.value = err instanceof Error ? err.message : t('admin.opco.logoDeleteError')
+  } finally {
+    logoUploading.value = false
   }
 }
 
@@ -188,15 +263,51 @@ onMounted(() => {
             </select>
           </div>
 
+          <!-- Logo Upload -->
           <div class="form-group form-group-full">
-            <label for="opco-logo">{{ t('admin.opco.logoUrl') }}</label>
-            <input
-              id="opco-logo"
-              v-model="formData.logo_url"
-              type="url"
-              class="form-control"
-              :placeholder="t('admin.opco.logoUrlPlaceholder')"
-            />
+            <label>{{ t('admin.opco.logo') }}</label>
+            <div class="logo-upload-container">
+              <!-- Current Logo Preview -->
+              <div v-if="opco?.logo_url" class="logo-preview">
+                <img :src="opco.logo_url" :alt="t('admin.opco.logoAlt')" />
+                <button
+                  type="button"
+                  class="btn-delete-logo"
+                  :disabled="logoUploading"
+                  @click="handleLogoDelete"
+                  :title="t('admin.opco.deleteLogo')"
+                >
+                  <span v-if="logoUploading" class="spinner-small"></span>
+                  <span v-else>&times;</span>
+                </button>
+              </div>
+
+              <!-- Upload Button -->
+              <div class="logo-upload-actions">
+                <input
+                  ref="fileInputRef"
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp"
+                  class="hidden-input"
+                  @change="handleLogoSelect"
+                />
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  :disabled="logoUploading"
+                  @click="triggerFileInput"
+                >
+                  <span v-if="logoUploading" class="spinner-small"></span>
+                  {{ opco?.logo_url ? t('admin.opco.changeLogo') : t('admin.opco.uploadLogo') }}
+                </button>
+                <span class="logo-hint">{{ t('admin.opco.logoHint') }}</span>
+              </div>
+
+              <!-- Logo Error -->
+              <div v-if="logoError" class="logo-error">
+                {{ logoError }}
+              </div>
+            </div>
           </div>
         </div>
       </Card>
@@ -472,6 +583,78 @@ onMounted(() => {
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--color-bg-hover);
+}
+
+/* Logo Upload Styles */
+.logo-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.logo-preview {
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+}
+
+.logo-preview img {
+  max-width: 100%;
+  max-height: 100px;
+  object-fit: contain;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  background: white;
+}
+
+.btn-delete-logo {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-error, #dc2626);
+  color: white;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.btn-delete-logo:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn-delete-logo:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.logo-upload-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.logo-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.logo-error {
+  color: var(--color-error, #dc2626);
+  font-size: 0.875rem;
 }
 
 @media (max-width: 640px) {

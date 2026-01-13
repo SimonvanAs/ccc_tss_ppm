@@ -1,11 +1,13 @@
 # TSS PPM v3.0 - OpCo Router
 """API endpoints for OpCo settings and business units management."""
 
+import os
+from pathlib import Path
 from typing import Annotated, List, Optional
 from uuid import UUID
 
 import asyncpg
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
 
 from src.auth import CurrentUser, require_admin
@@ -49,6 +51,12 @@ class OpCoUpdateRequest(BaseModel):
     name: Optional[str] = None
     default_language: Optional[str] = None
     settings: Optional[dict] = None
+
+
+class LogoUploadResponse(BaseModel):
+    """Response model for logo upload."""
+    logo_url: str
+    message: str
 
 
 class BusinessUnitResponse(BaseModel):
@@ -236,6 +244,151 @@ async def update_opco_settings(
     )
 
     return row_to_opco_response(dict(row))
+
+
+# Logo storage directory - use /app/static/logos in Docker, fallback for local dev
+_static_base = Path(os.environ.get('STATIC_FILES_DIR', '/app/static'))
+if not _static_base.exists():
+    _static_base = Path(__file__).parent.parent.parent / 'static'
+LOGO_STORAGE_DIR = _static_base / 'logos'
+ALLOWED_LOGO_TYPES = {'image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp'}
+MAX_LOGO_SIZE = 5 * 1024 * 1024  # 5MB
+
+
+@router.post('/opco/logo', response_model=LogoUploadResponse)
+async def upload_opco_logo(
+    current_user: Annotated[CurrentUser, Depends(require_admin)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+    file: UploadFile = File(...),
+) -> LogoUploadResponse:
+    """Upload a logo for the OpCo.
+
+    Args:
+        current_user: The authenticated admin user
+        conn: Database connection
+        file: The logo file to upload
+
+    Returns:
+        The URL to the uploaded logo
+    """
+    opco_id = UUID(current_user.opco_id)
+
+    # Validate file type
+    if file.content_type not in ALLOWED_LOGO_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'Invalid file type. Allowed types: {", ".join(ALLOWED_LOGO_TYPES)}',
+        )
+
+    # Read file content
+    content = await file.read()
+
+    # Validate file size
+    if len(content) > MAX_LOGO_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'File too large. Maximum size is {MAX_LOGO_SIZE // 1024 // 1024}MB',
+        )
+
+    # Ensure storage directory exists
+    LOGO_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Generate filename with opco_id to ensure uniqueness
+    file_ext = Path(file.filename).suffix if file.filename else '.png'
+    if not file_ext:
+        # Derive extension from content type
+        ext_map = {
+            'image/png': '.png',
+            'image/jpeg': '.jpg',
+            'image/gif': '.gif',
+            'image/svg+xml': '.svg',
+            'image/webp': '.webp',
+        }
+        file_ext = ext_map.get(file.content_type, '.png')
+
+    filename = f'{opco_id}{file_ext}'
+    file_path = LOGO_STORAGE_DIR / filename
+
+    # Delete old logo if exists (different extension)
+    for old_file in LOGO_STORAGE_DIR.glob(f'{opco_id}.*'):
+        if old_file != file_path:
+            old_file.unlink(missing_ok=True)
+
+    # Save the file
+    with open(file_path, 'wb') as f:
+        f.write(content)
+
+    # Update database with logo URL
+    logo_url = f'/static/logos/{filename}'
+    await conn.execute(
+        """
+        UPDATE opcos
+        SET logo_url = $1, updated_at = NOW()
+        WHERE id = $2 AND deleted_at IS NULL
+        """,
+        logo_url,
+        opco_id,
+    )
+
+    # Log the action
+    await log_admin_action(
+        conn=conn,
+        action='UPLOAD_OPCO_LOGO',
+        entity_type='opco',
+        entity_id=opco_id,
+        admin_user=current_user,
+        changes={'logo_url': logo_url},
+    )
+
+    return LogoUploadResponse(
+        logo_url=logo_url,
+        message='Logo uploaded successfully',
+    )
+
+
+@router.delete('/opco/logo', status_code=204)
+async def delete_opco_logo(
+    current_user: Annotated[CurrentUser, Depends(require_admin)],
+    conn: Annotated[asyncpg.Connection, Depends(get_db)],
+) -> None:
+    """Delete the OpCo logo.
+
+    Args:
+        current_user: The authenticated admin user
+        conn: Database connection
+    """
+    opco_id = UUID(current_user.opco_id)
+
+    # Get current logo URL
+    row = await conn.fetchrow(
+        'SELECT logo_url FROM opcos WHERE id = $1 AND deleted_at IS NULL',
+        opco_id,
+    )
+
+    if row and row['logo_url']:
+        # Delete the file
+        file_path = Path('/app') / row['logo_url'].lstrip('/')
+        if file_path.exists():
+            file_path.unlink(missing_ok=True)
+
+    # Update database
+    await conn.execute(
+        """
+        UPDATE opcos
+        SET logo_url = NULL, updated_at = NOW()
+        WHERE id = $1 AND deleted_at IS NULL
+        """,
+        opco_id,
+    )
+
+    # Log the action
+    await log_admin_action(
+        conn=conn,
+        action='DELETE_OPCO_LOGO',
+        entity_type='opco',
+        entity_id=opco_id,
+        admin_user=current_user,
+    )
 
 
 # ============================================================================

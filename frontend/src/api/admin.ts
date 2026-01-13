@@ -1,5 +1,5 @@
 // TSS PPM v3.0 - Admin API
-import { get, put, post, del } from './client'
+import { get, put, post, del, postFormData } from './client'
 
 export interface AdminUser {
   id: string
@@ -149,6 +149,27 @@ export function fetchOpCoSettings(): Promise<OpCoResponse> {
  */
 export function updateOpCoSettings(data: OpCoUpdateRequest): Promise<OpCoResponse> {
   return put<OpCoResponse>('/admin/opco/settings', data)
+}
+
+export interface LogoUploadResponse {
+  logo_url: string
+  message: string
+}
+
+/**
+ * Upload OpCo logo.
+ */
+export function uploadOpCoLogo(file: File): Promise<LogoUploadResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+  return postFormData<LogoUploadResponse>('/admin/opco/logo', formData)
+}
+
+/**
+ * Delete OpCo logo.
+ */
+export function deleteOpCoLogo(): Promise<void> {
+  return del<void>('/admin/opco/logo')
 }
 
 // ===== Business Units =====
