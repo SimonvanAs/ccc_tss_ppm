@@ -14,7 +14,15 @@ const props = withDefaults(
   }
 )
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+// Get competency title based on locale
+function getTitle(comp: Competency): string {
+  const lang = locale.value
+  if (lang === 'nl' && comp.title_nl) return comp.title_nl
+  if (lang === 'es' && comp.title_es) return comp.title_es
+  return comp.title_en
+}
 
 // Group competencies by category
 const groupedCompetencies = computed(() => {
@@ -85,8 +93,8 @@ const categories = ['Dedicated', 'Entrepreneurial', 'Innovative'] as const
             class="competency-item"
           >
             <div class="competency-header">
-              <span class="competency-title">{{ competency.title_en }}</span>
-              <span class="competency-subcategory">{{ competency.subcategory }}</span>
+              <span class="competency-title">{{ getTitle(competency) }}</span>
+              <span class="competency-subcategory">{{ t(`competencies.subcategories.${competency.subcategory}`) }}</span>
             </div>
           </div>
         </div>
@@ -176,6 +184,7 @@ const categories = ['Dedicated', 'Entrepreneurial', 'Innovative'] as const
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
+  align-items: stretch;
 }
 
 .competency-item {
@@ -183,23 +192,29 @@ const categories = ['Dedicated', 'Entrepreneurial', 'Innovative'] as const
   border-radius: 6px;
   padding: 0.75rem 1rem;
   border: 1px solid var(--color-gray-200, #e5e7eb);
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
 }
 
 .competency-header {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  flex: 1;
 }
 
 .competency-title {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-gray-900, #111827);
+  flex: 1;
 }
 
 .competency-subcategory {
   font-size: 0.75rem;
   color: var(--color-gray-500, #6b7280);
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 /* Responsive */

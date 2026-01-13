@@ -1,6 +1,6 @@
 // TSS PPM v3.0 - useCompetencyPreview Composable Tests
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { useCompetencyPreview } from '../../composables/useCompetencyPreview'
+import { useCompetencyPreview, clearCompetencyCache } from '../../composables/useCompetencyPreview'
 import * as competenciesApi from '../../api/competencies'
 import type { Competency } from '../../types/competency'
 
@@ -33,6 +33,7 @@ const mockCompetencies: Competency[] = [
 describe('useCompetencyPreview', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    clearCompetencyCache()
   })
 
   afterEach(() => {
